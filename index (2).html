@@ -1,0 +1,3846 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мониторинг проектов — дизайн 3.0</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --border: #e2e8f0;
+      --border-subtle: #f1f5f9;
+
+      --brand: #2563eb;
+      --brand-light: #eff6ff;
+      --brand-border: #bfdbfe;
+
+      --done: #059669;
+      --done-bg: #ecfdf5;
+      --done-border: #a7f3d0;
+
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --amber-border: #fde68a;
+
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+
+      --ai: #7c3aed;
+      --neutral-dark: #0f172a;
+
+      --radius-card: 14px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 10px 10px 140px 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    /* ДАШБОРД */
+    .dashboard-panel {
+      background: var(--surface);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      padding: 12px 13px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .dash-title {
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-main);
+    }
+
+    .dash-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-icon-refresh {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .btn-icon-refresh:active { transform: rotate(180deg); }
+
+    .btn-ai-compact {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, 0.2);
+    }
+
+    .metrics-ribbon {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 480px) {
+      .metrics-ribbon { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .kpi-cell {
+      padding: 8px 11px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.15s;
+    }
+    .kpi-cell.clickable { cursor: pointer; user-select: none; }
+    .kpi-cell.clickable:active { transform: scale(0.98); }
+    .kpi-cell.danger { border-color: var(--danger-border); background: var(--danger-bg); color: var(--danger); }
+    .kpi-cell.danger.active-filter {
+      box-shadow: 0 0 0 2px var(--danger);
+      background: #fee2e2;
+    }
+    .kpi-cell.green { border-color: var(--done-border); background: var(--done-bg); color: var(--done); }
+
+    .kpi-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      opacity: 0.85;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kpi-val {
+      font-size: 19px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-top: 2px;
+    }
+
+    .format-switch {
+      display: flex;
+      background: var(--surface-subtle);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      gap: 4px;
+    }
+    .format-btn {
+      flex: 1;
+      padding: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .format-btn.active {
+      background: #fff;
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* ПЛАШКА АКТИВНОГО ФИЛЬТРА */
+    .filter-active-banner {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .filter-active-banner.show { display: flex; }
+    .btn-reset-filter {
+      background: #ffffff;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ШАПКА НАПРАВЛЕНИЙ */
+    .section-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+      margin-bottom: 8px;
+    }
+    .section-bar-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+    .btn-add-proc-compact {
+      background: #ffffff;
+      color: var(--brand);
+      border: 1px solid var(--brand-border);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      outline: none;
+    }
+    .btn-add-proc-compact:hover { background: var(--brand-light); }
+
+    /* РЕЕСТР НАПРАВЛЕНИЙ */
+    .registry-card {
+      background: var(--surface);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    }
+
+    .folder-row {
+      border-bottom: 1px solid var(--border);
+    }
+    .folder-row:last-child { border-bottom: none; }
+
+    .folder-header {
+      padding: 11px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      background: #ffffff;
+      transition: background 0.15s;
+      position: relative;
+      gap: 8px;
+    }
+    .folder-row:first-child .folder-header { border-radius: var(--radius-card) var(--radius-card) 0 0; }
+    .folder-row:last-child .folder-header { border-radius: 0 0 var(--radius-card) var(--radius-card); }
+    .folder-header:hover { background: var(--surface-subtle); }
+
+    .folder-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      flex: 1;
+      min-width: 0;
+    }
+    .folder-chevron {
+      font-size: 10px;
+      color: var(--text-subtle);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 14px;
+      display: inline-block;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .folder-chevron.collapsed { transform: rotate(-90deg); }
+
+    .folder-title-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* СЧЕТЧИК ОБЪЕКТОВ В ПАПКЕ С ЦВЕТОВЫМ СТАТУСОМ */
+    .counter-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--surface-subtle);
+      color: var(--text-muted);
+      padding: 1px 7px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .counter-badge.badge-danger {
+      background: #fff5f5;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+    .counter-badge.badge-amber {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #b45309;
+    }
+    .counter-badge.badge-green {
+      background: var(--done-bg);
+      border-color: var(--done-border);
+      color: var(--done);
+    }
+
+    .folder-right-tools {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .btn-row-menu {
+      color: var(--text-subtle);
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      padding: 2px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .btn-row-menu:hover { background: var(--surface-subtle); color: var(--text-main); }
+
+    .folder-content {
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .folder-content.hidden { display: none !important; }
+
+    /* ОБЪЕКТЫ */
+    .item-card {
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    .item-card.is-complete {
+      background: #fcfdfc;
+      border-color: var(--done-border);
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .item-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+      min-width: 0;
+    }
+    .item-chevron {
+      font-size: 8px;
+      color: var(--text-subtle);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .item-chevron.collapsed { transform: rotate(-90deg); }
+    .item-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-meta-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* КОМПАКТНАЯ ШКАЛА ПРОГРЕССА */
+    .progress-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .progress-pill.green {
+      background: var(--done-bg);
+      border-color: var(--done-border);
+      color: var(--done);
+    }
+    .progress-pill.pill-danger {
+      background: #fff5f5;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+    .progress-pill.pill-amber {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #b45309;
+    }
+    .progress-mini-bar {
+      width: 22px;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-pill.pill-danger .progress-mini-bar { background: #fee2e2; }
+    .progress-pill.pill-amber .progress-mini-bar { background: #fef3c7; }
+
+    .progress-mini-fill {
+      height: 100%;
+      background: var(--brand);
+      border-radius: 2px;
+    }
+    .progress-mini-fill.is-danger { background: var(--danger); }
+    .progress-mini-fill.is-amber { background: var(--amber); }
+    .progress-pill.green .progress-mini-fill { background: var(--done); }
+
+    .btn-item-more {
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      font-size: 15px;
+      padding: 2px 4px;
+      cursor: pointer;
+      line-height: 1;
+      border-radius: 4px;
+    }
+    .btn-item-more:hover { background: var(--surface-subtle); color: var(--text-main); }
+
+    /* ВЫПАДАЮЩИЕ МЕНЮ */
+    .obj-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 4px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      min-width: 155px;
+      padding: 4px;
+    }
+    .obj-dropdown-menu.open { display: flex; }
+    .obj-dropdown-item {
+      background: transparent;
+      border: none;
+      padding: 7px 10px;
+      text-align: left;
+      font-size: 12px;
+      color: var(--text-main);
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .obj-dropdown-item:hover { background: var(--surface-subtle); }
+    .obj-dropdown-item.del-action { color: var(--danger); }
+    .obj-dropdown-item.del-action:hover { background: var(--danger-bg); }
+
+    .item-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border);
+    }
+    .item-body.hidden { display: none !important; }
+
+    /* КОМПАКТНЫЙ КОНВЕЙЕР */
+    .conveyor-strip {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      overflow-x: auto;
+      padding: 1px 0 3px 0;
+      scrollbar-width: none;
+    }
+    .conveyor-strip::-webkit-scrollbar { display: none; }
+
+    .conv-node {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      background: var(--surface-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .conv-node:hover { border-color: #94a3b8; color: var(--text-main); }
+    .conv-node.c-done {
+      background: var(--done-bg);
+      border-color: var(--done-border);
+      color: var(--done);
+    }
+    .conv-node.c-blocked {
+      background: var(--danger-bg);
+      border-color: #fca5a5;
+      color: #991b1b;
+      font-weight: 700;
+    }
+    .conv-node.c-overdue {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #92400e;
+      font-weight: 700;
+    }
+    .conv-node.c-current {
+      background: var(--brand-light);
+      border-color: #93c5fd;
+      color: var(--brand);
+      font-weight: 700;
+    }
+    .conv-node.c-pinned {
+      box-shadow: 0 0 0 1.5px var(--text-main);
+    }
+    .conv-arrow {
+      color: #cbd5e1;
+      font-size: 8px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    /* ЭТАПЫ */
+    .step-unit {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .step-unit.done { background: var(--done-bg); border-color: var(--done-border); }
+    .step-unit.blocked { background: #fffbfb; border-color: #fecaca; }
+
+    .step-top-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .step-left-part {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      flex: 1;
+      min-width: 0;
+    }
+    .step-check {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--done);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      overflow-wrap: break-word;
+      user-select: none;
+      line-height: 1.3;
+    }
+    .step-unit.done .step-text {
+      text-decoration: line-through;
+      color: var(--done);
+      opacity: 0.75;
+    }
+
+    .step-chips-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      padding-left: 22px;
+    }
+
+    /* ЧИПЫ ДАТЫ И ЗАДЕРЖКИ */
+    .chip-btn {
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      line-height: 1.3;
+      outline: none;
+    }
+    .chip-btn.ghost {
+      background: transparent;
+      border: 1px dashed #cbd5e1;
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+    .chip-btn.ghost:hover {
+      opacity: 1;
+      background: #ffffff;
+      border-color: #94a3b8;
+      color: var(--text-main);
+    }
+
+    .chip-btn.date-normal {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .chip-btn.overdue {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      font-weight: 700;
+    }
+    .chip-btn.urgent {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      font-weight: 700;
+    }
+    .chip-btn.done {
+      background: transparent;
+      border: 1px solid var(--done-border);
+      color: var(--done);
+    }
+    .chip-btn.risk-active {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      font-weight: 700;
+    }
+    .chip-btn.risk-notes {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .step-del-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      font-size: 15px;
+      padding: 0 4px;
+      cursor: pointer;
+      line-height: 1;
+      border-radius: 4px;
+    }
+    .step-del-btn:hover { background: var(--surface-subtle); color: var(--text-main); }
+
+    /* ЛЕНТА ЗАМЕЧАНИЙ */
+    .step-remarks-thread {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-left: 22px;
+      margin-top: 2px;
+    }
+    .step-remark-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      line-height: 1.35;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    .step-remark-item.is-active-block {
+      background: #fef2f2;
+      border-left: 2.5px solid #ef4444;
+      color: #991b1b;
+    }
+    .step-remark-item.is-resolved {
+      background: #f8fafc;
+      border-left: 2.5px solid #94a3b8;
+      color: #64748b;
+    }
+    .remark-icon { font-size: 10.5px; flex-shrink: 0; margin-top: 1px; }
+    .remark-date { font-weight: 700; opacity: 0.85; margin-right: 4px; }
+    .remark-text { flex: 1; cursor: pointer; min-width: 0; }
+    .btn-remark-clear {
+      background: none;
+      border: none;
+      color: #b91c1c;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 4px;
+      text-decoration: underline;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ПОДСВЕТКА СТОРОН И НОМЕРА ДОКУМЕНТА */
+    .tag-party {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-right: 4px;
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    .tag-party.cpp { background: #fee2e2; color: #991b1b; }
+    .tag-party.kmgi { background: #fef3c7; color: #92400e; }
+    .tag-party.kmgp { background: #eff6ff; color: #1d4ed8; }
+    .tag-party.mio { background: #f3e8ff; color: #6b21a8; }
+    .tag-party.nao { background: #ecfdf5; color: #047857; }
+
+    .tag-doc {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-right: 4px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    /* БЫСТРЫЕ КНОПКИ ТИПОВ ДОКУМЕНТОВ В МОДАЛКЕ */
+    .doc-prefix-bar {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin: 3px 0 4px 0;
+    }
+    .doc-prefix-btn {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brand);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .doc-prefix-btn:hover {
+      background: var(--brand-light);
+      border-color: var(--brand-border);
+    }
+
+    /* РОВНАЯ ОДНОСТРОЧНАЯ ПАНЕЛЬ КНОПОК ВНИЗУ ОБЪЕКТА (БЕЗ ЗАЛИПАНИЯ ФОКУСА) */
+    .obj-bottom-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .btn-subtle-link {
+      background: #ffffff;
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 6px;
+      border-radius: 5px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      outline: none;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    @media (hover: hover) {
+      .btn-subtle-link:hover {
+        border-color: var(--brand);
+        color: var(--brand);
+        background: var(--brand-light);
+      }
+    }
+    .btn-subtle-link:focus {
+      outline: none;
+      background: #ffffff;
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+    .btn-subtle-link:active {
+      background: var(--surface-subtle);
+    }
+
+    /* ШАБЛОНЫ */
+    .folder-footer-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-top: 2px;
+    }
+    @media (max-width: 540px) {
+      .folder-footer-actions { grid-template-columns: repeat(2, 1fr); }
+    }
+    .btn-add-obj-subtle {
+      background: #fff;
+      border: 1px dashed var(--border);
+      padding: 6px 4px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      outline: none;
+    }
+    @media (hover: hover) {
+      .btn-add-obj-subtle:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+    }
+
+    /* АРХИВ ВНУТРИ ПАПКИ */
+    .archive-box {
+      margin-top: 4px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+    }
+    .archive-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .archive-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border);
+    }
+    .archive-row-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding: 4px 6px;
+      background: var(--surface-subtle);
+      border-radius: 4px;
+    }
+
+    /* ТОНКАЯ ПАНЕЛЬ ОТЧЕТОВ ВНИЗУ */
+    .floating-bar {
+      position: fixed;
+      bottom: 8px;
+      left: 10px;
+      right: 10px;
+      max-width: 520px;
+      margin: 0 auto;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 11px;
+      padding: 4px;
+      display: flex;
+      gap: 4px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.2);
+      z-index: 100;
+    }
+    .fab-btn {
+      flex: 1;
+      padding: 7px 4px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.09);
+      cursor: pointer;
+      white-space: nowrap;
+      text-align: center;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .fab-btn:hover { background: rgba(255, 255, 255, 0.16); }
+    .fab-btn:active { transform: scale(0.97); }
+
+    /* МОДАЛЬНЫЕ ОКНА */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 1000;
+      backdrop-filter: blur(3px);
+    }
+    @media (min-width: 600px) { .modal-overlay { align-items: center; } }
+    
+    #textPromptModalOverlay, #confirmModalOverlay {
+      z-index: 2500;
+      background: rgba(15, 23, 42, 0.55);
+    }
+
+    .modal-box {
+      background: #fff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 16px 16px 0 0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+    @media (min-width: 600px) { .modal-box { border-radius: 16px; } }
+
+    .modal-top { display: flex; justify-content: space-between; align-items: center; }
+    .modal-head-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+    .modal-x {
+      background: var(--surface-subtle);
+      border: none;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .modal-input-field {
+      width: 100%;
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+    }
+    .modal-input-field:focus { border-color: var(--brand); }
+
+    .modal-actions-row { display: flex; gap: 6px; margin-top: 4px; }
+    .btn-m-primary { flex: 1; background: var(--brand); color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .btn-m-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 10px 14px; border-radius: 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+
+    /* ШАБЛОНЫ ПРИЧИН */
+    .preset-list { display: flex; flex-direction: column; gap: 4px; max-height: 135px; overflow-y: auto; }
+    .preset-row {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding-right: 4px;
+    }
+    .preset-btn {
+      flex: 1;
+      text-align: left;
+      background: transparent;
+      border: none;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .preset-btn:hover { color: var(--brand); }
+    .preset-act-btn {
+      background: none;
+      border: none;
+      color: var(--text-subtle);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 5px;
+      border-radius: 4px;
+    }
+    .preset-act-btn:hover { background: #e2e8f0; color: var(--text-main); }
+    .preset-act-btn.del:hover { background: var(--danger-bg); color: var(--danger); }
+
+    /* ЧИПЫ СТОРОН */
+    .party-chips-ribbon {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 2px 0;
+    }
+    .party-chip, .edit-party-chip {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .party-chip.selected, .edit-party-chip.selected {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+    }
+
+    .toast-msg {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: none;
+      z-index: 3000;
+    }
+
+    .footer-subtle-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 22px;
+    }
+    .footer-rev-tag {
+      font-size: 11px;
+      color: var(--text-subtle);
+      font-weight: 500;
+    }
+    .report-period {display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--text-muted)}
+    .report-period label {display:flex;gap:5px;align-items:center}
+    .report-period input {max-width:125px;min-height:36px;border:1px solid var(--border);border-radius:6px;padding:4px;background:#fff;color:var(--text-main)}
+    .sync-details {font-size:11px;color:var(--text-muted);margin-top:5px;min-height:12px}
+    .detail-inline {display:flex;gap:8px;align-items:center;font-size:12px}
+    .detail-inline select {flex:1}
+    .audit-log {font-size:12px;overflow-y:auto;max-height:55vh;display:flex;flex-direction:column;gap:8px}
+    .audit-log > div {padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface-subtle)}
+    .step-unit button,.step-unit a,.obj-bottom-bar button,.folder-footer-actions button {min-height:32px}
+    .step-check {cursor:pointer;min-width:20px;min-height:20px}
+    .step-check:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible {outline:2px solid var(--brand);outline-offset:2px}
+    .step-document-link {font-size:11px;color:#1d4ed8;text-decoration:underline}
+    .step-owner {font-size:11px;color:#64748b}
+    .step-unit .step-top-bar {min-height:28px}
+    .btn-remark-clear {min-height:28px}
+    #undoBtn:disabled {opacity:.4;cursor:not-allowed}
+    @media(max-width:480px){.report-period{gap:5px}.report-period input{max-width:116px}}
+  </style>
+<style id="design-v3-overrides">
+/* Design revision 3.2 — fixes to presentation and AI availability; data schema unchanged */
+:root{--bg:#f5f7fb;--surface:#fff;--surface-subtle:#f7f9fc;--border:#e8edf4;--text-main:#18253c;--text-muted:#687991;--radius-card:16px;--radius-sm:10px;--amber:#bb741d;--amber-bg:#fff7e9;--amber-border:#f8dcaa}
+body{background:var(--bg);font-size:14px;letter-spacing:0;padding:15px 12px 125px}
+.app-container{max-width:980px}
+.dashboard-panel{padding:22px 24px 17px;border:1px solid #e7ecf3;box-shadow:0 4px 20px rgba(30,49,79,.035);margin-bottom:20px}
+.dash-header{margin-bottom:18px}
+.dash-title{font-size:21px;font-weight:750;letter-spacing:-.6px;gap:10px}
+.brand-mark{display:inline-flex;align-items:center;justify-content:center;background:#2563eb;color:#fff;width:33px;height:33px;border-radius:10px;font-size:22px;font-weight:400}
+.brand-subtitle{font-weight:650}
+.btn-ai-compact{border-radius:10px;padding:10px 15px;box-shadow:none;font-size:12px;background:#f1eaff;color:#6931cc;border:1px solid #e5d9ff}
+.btn-icon-refresh{height:36px;width:36px;background:#fff;border:1px solid var(--border);border-radius:10px}
+.metrics-ribbon{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:16px}
+.kpi-cell{padding:14px 15px;min-height:81px;border:1px solid #e7ecf2;border-radius:11px;background:#fff}
+.kpi-cell.clickable:hover{border-color:#bccddd;box-shadow:0 3px 12px rgba(29,53,86,.06)}
+.kpi-cell.danger{background:#fff;border-color:#f2d3d7;color:#b92841}
+.kpi-cell.amber{background:#fff;border-color:#f2e2ca;color:#a86c22}
+.kpi-cell.green{background:#fff;border-color:#d1e9db;color:#18835c}
+.kpi-cell.active-filter{box-shadow:0 0 0 2px currentColor,inset 0 0 0 2px #fff!important;background:#fff}
+.kpi-title{font-size:10.5px;letter-spacing:.3px;font-weight:720;opacity:1;line-height:1.3}
+.kpi-val{font-size:27px;letter-spacing:-.9px;font-weight:760;margin-top:7px;line-height:1}
+.kpi-indicator{font-size:14px;opacity:.45}
+.format-switch{background:#f0f4f9;padding:4px;gap:5px;border-radius:11px}
+.format-btn{padding:10px 12px;border-radius:8px;font-size:12.5px}
+.format-btn.active{box-shadow:0 2px 7px rgba(50,68,97,.08)}
+.report-period{margin-top:13px;gap:11px;font-size:11.5px}
+.report-period input{background:#fff;border:1px solid #e2e8f0;border-radius:8px;min-height:32px}
+.sync-details{font-size:11px;color:#718096}
+.section-bar{margin:0 0 10px;padding:0 4px}
+.section-bar-title{font-size:12px;color:#37445a;letter-spacing:.5px}
+.section-bar-second{font-weight:550;color:#8190a5}
+.btn-add-proc-compact{background:#fff;border:1px solid #d7e2f2;border-radius:9px;min-height:34px;padding:7px 13px}
+.registry-card{border:1px solid #e8edf3;border-radius:15px;box-shadow:0 4px 14px rgba(20,40,80,.022);overflow:visible}
+.folder-row{border-bottom:1px solid #e9edf3}
+.folder-header{padding:15px 17px;background:#fff;border-radius:15px 15px 0 0}
+.folder-left{font-size:14.5px;gap:10px}
+.folder-chevron{font-size:10px;color:#90a0b6}
+.counter-badge{padding:2px 8px;border:0;background:#eff2f7;color:#6c7b90}
+.counter-badge.badge-danger{background:#fff0f0;color:#b92942;border:0}
+.counter-badge.badge-amber{background:#fff3e2;color:#a97120;border:0}
+.folder-content{padding:9px 13px 14px;gap:9px;background:#fafbfd;border-top:1px solid #eef1f5}
+.item-card{border:1px solid #e4eaf1;border-radius:12px;background:#fff;padding:13px 15px 11px;gap:9px;box-shadow:0 2px 7px rgba(20,40,80,.015)}
+.item-card.is-complete{background:#fff;border-color:#d8eade}
+.item-header{min-height:29px;gap:10px}
+.item-title{font-size:14px;font-weight:730;letter-spacing:-.15px}
+.item-chevron{font-size:10px;color:#8e9aae}
+.progress-pill{background:#f3f6fa;border:0;border-radius:7px;font-size:11px;padding:5px 8px;color:#5e718b}
+.progress-pill.green{background:#edf9f1;color:#147c54;border:0}
+.progress-pill.pill-danger{background:#fff0f2;border:1px solid #f2c8d0;color:#b83248}
+.progress-pill.pill-amber{background:#fff6e8;border:1px solid #f3d8ac;color:#a87124}
+.progress-mini-bar{width:28px;height:5px;background:#dfe7f1}
+.progress-mini-fill{background:#527aa9}
+.progress-mini-fill.is-danger{background:#cf4056}
+.progress-mini-fill.is-amber{background:#d2953d}
+.progress-pill.green .progress-mini-fill{background:#19845d}
+.btn-row-menu,.btn-item-more{min-width:30px;min-height:30px;font-size:19px;border-radius:8px;color:#8696a9}
+.object-overview{padding:1px 0 8px;display:flex;flex-direction:column;gap:5px}
+.overview-main{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.overview-stage{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;min-width:0}
+.overview-label{color:#91a0b3;font-size:11px;white-space:nowrap}
+.overview-name{font-size:12.5px;color:#364a65;font-weight:650;overflow-wrap:anywhere}
+.summary-status{font-size:11px;white-space:nowrap;font-weight:700;border-radius:6px;padding:4px 8px}
+.summary-blocked{color:#b83248;background:#fff0f1}
+.summary-overdue{color:#ad7025;background:#fff5e5}
+.summary-done{color:#167950;background:#eaf8ef}
+.summary-waiting{color:#715f99;background:#f4efff}
+.summary-active{color:#376c9b;background:#edf5ff}
+.overview-progress{display:flex;align-items:center;gap:8px;color:#8392a7;font-size:10.5px;flex-wrap:wrap}
+/* Progress meter is displayed only once, in the object header. */
+.overview-due{padding-left:6px;color:#77879b}
+.overview-issues{color:#b83248;margin-left:auto;font-size:10.5px}
+.item-body{padding:11px 0 0;border-top:1px solid #eef1f6;gap:9px}
+.conveyor-strip{gap:5px;padding:1px 0 4px}
+.conv-node{background:#f4f6fa;border:0;border-radius:6px;color:#7c8ba0;font-size:11px;padding:5px 9px}
+.conv-node.c-done{background:#eaf7ee;border:0;color:#21825c}
+.conv-node.c-blocked{background:#fff0f1;border:0;color:#b9324b}
+.conv-node.c-overdue{background:#fff6e7;border:0;color:#ac762c}
+.conv-node.c-current{background:#edf4ff;border:0;color:#2b68ab}
+.conv-arrow{color:#aebbd0}
+.step-unit,.step-unit.blocked,.step-unit.done{border-radius:9px;padding:10px 12px;gap:8px;background:#fff;border:1px solid #e9edf3;border-left:3px solid #d9e2ef}
+.step-unit.blocked{border-left-color:#cc3853}
+.step-unit.done{background:#fcfefd;border-left-color:#35a577}
+.step-text{font-size:13px;font-weight:650;line-height:1.42}
+.step-unit.done .step-text{color:#7a9286}
+.step-left-part{align-items:center;gap:10px}
+.step-check{width:18px;height:18px;min-height:18px;min-width:18px}
+.step-top-bar{align-items:center}
+.step-chips-bar{padding-left:28px;gap:7px}
+.chip-btn{font-size:11px;border-radius:6px;padding:5px 8px}
+.chip-btn.overdue{background:#fff3e4;border:1px solid #f3d7ae;color:#a96a20}
+.chip-btn.risk-active{background:#fff0f1;border:1px solid #f0c9d0;color:#b7354b}
+.chip-btn.ghost{background:#fff;color:#7d8b9f;border:1px dashed #d8e0eb;opacity:1}
+.chip-btn.date-normal{border:1px solid #e8edf3;color:#6b7c92;background:#fff}
+.plan-date{font-size:11px;color:#76869b;background:#f4f6f9;padding:5px 7px;border-radius:6px}
+.step-remarks-thread{gap:5px;margin:0 0 0 28px;padding-top:1px}
+.step-remark-item,.step-remark-item.is-active-block,.step-remark-item.is-resolved{border-radius:8px;padding:9px 11px;background:#f8fafd;border:0;color:#687a91;font-size:11.5px;align-items:center}
+.step-remark-item.is-active-block{background:#fff8f8;border-left:2px solid #d5445a;color:#8d3f4b}
+.remark-label{display:block;font-weight:750;color:#b5324a;font-size:10px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.remark-date{font-size:10px;color:#8b98a8;margin-right:5px}
+.history-toggle{border:0;background:transparent;color:#477ab0;text-align:left;padding:5px 1px;font-size:11.5px;font-weight:680;cursor:pointer;width:max-content}
+.history-toggle:hover{text-decoration:underline}
+.history-older[hidden]{display:none!important}
+.history-older{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.btn-remark-clear{color:#af3750;text-decoration:none;border:1px solid #f2d1d7;border-radius:6px;padding:4px 8px;min-height:28px}
+.tag-doc{background:#eff4fb;border:0;color:#567696;font-size:10px}
+.tag-party{border-radius:4px;font-size:10px}
+.obj-bottom-bar{margin-top:0}
+.btn-subtle-link{min-height:36px!important;border:1px dashed #e0e7ef;border-radius:8px;font-size:11.5px;color:#69809a;background:#fff}
+.folder-footer-actions{margin-top:8px}
+.btn-add-obj-subtle{border:1px dashed #d9e3ee;border-radius:8px;min-height:34px;font-size:11px;background:#fff}
+.floating-bar{max-width:440px;bottom:12px;padding:5px;background:#17243b;box-shadow:0 8px 28px rgba(13,28,52,.2);border-radius:14px}
+.fab-btn{padding:11px 7px;border-radius:9px;font-size:12px}
+.footer-subtle-wrap{margin-top:22px}
+@media(max-width:700px){.dashboard-panel{padding:16px}.metrics-ribbon{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi-cell{min-height:78px}.dash-title{font-size:18px}.item-card{padding:11px}.folder-content{padding:8px}.overview-stage{gap:4px}.object-overview{padding-left:0}}
+@media(max-width:420px){body{padding:7px 7px 110px}.dashboard-panel{padding:12px 11px}.brand-subtitle{display:none}.dash-title{font-size:17px}.brand-mark{width:29px;height:29px}.btn-ai-compact{padding:8px 10px}.kpi-cell{padding:11px;min-height:73px}.kpi-val{font-size:24px}.kpi-title{font-size:9.5px}.folder-left{font-size:13px}.item-title{font-size:13px}.overview-main{align-items:flex-start}.overview-stage{flex-direction:column;gap:2px}.overview-label{font-size:10px}.overview-name{font-size:12px}.summary-status{font-size:10px}.step-chips-bar{padding-left:0}.step-remarks-thread{margin-left:0}.object-overview{padding-left:0}.item-header{gap:3px}.progress-pill{font-size:10px}.report-period{gap:5px}}
+
+/* 3.2 usability refinements */
+.item-header{min-height:34px}
+.item-title-wrap{min-width:0}
+.summary-status-inline{font-size:10px;font-weight:700;border-radius:6px;padding:4px 7px;white-space:nowrap}
+.step-owner-compact{display:inline-flex;align-items:center;gap:4px;max-width:210px;border:0;background:#f5f7fb;color:#62758e;font-size:11px;border-radius:6px;padding:5px 8px;cursor:pointer}
+.step-owner-compact:hover{color:#2563eb;background:#edf4ff}
+.step-owner-compact span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.step-chips-bar{align-items:center}
+.obj-dropdown-item:focus-visible,.step-owner-compact:focus-visible,.btn-item-more:focus-visible,.btn-row-menu:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+.ai-mode-card{background:#f6f8fc;border-radius:9px;border:1px solid #e5ebf3;padding:10px;margin-top:7px}
+.ai-helper{font-size:11px;color:#687991;margin-top:6px;line-height:1.45}
+.ai-warning{color:#9e5a17;background:#fff8ea;border:1px solid #f4dfba;border-radius:7px;padding:8px;font-size:11px;line-height:1.45;margin-top:8px}
+@media(max-width:420px){.summary-status-inline{font-size:9.5px}.step-owner-compact{max-width:165px}}
+</style>
+<style id="v4-mobile-online">
+/* Mobile-first V4: keep the worklist above the fold, and use only two primary metrics. */
+.kpi-expand-btn{display:none;width:100%;padding:7px 10px;border:none;background:#f1f5f9;border-radius:8px;color:#52708f;font-size:12px;font-weight:700;margin:1px 0 12px;cursor:pointer}
+.report-details{margin-top:9px;border-top:1px solid #e9eef5;padding-top:8px}
+.report-details summary{cursor:pointer;font-size:12px;font-weight:650;color:#5b718c;list-style-position:inside}
+.report-details .report-period{margin-top:9px;display:flex;flex-wrap:wrap}
+.migration-banner{padding:14px 17px;border:1px solid #fed7aa;background:#fff7ed;border-radius:13px;margin-bottom:15px;font-size:13px}
+.migration-banner p{color:#6b7280;margin:8px 0}
+.migration-actions{display:flex;gap:8px;flex-wrap:wrap}
+.cloud-version-list{display:flex;flex-direction:column;gap:7px;max-height:53vh;overflow:auto}
+.cloud-version-row{border:1px solid #e2e8f0;border-radius:8px;padding:9px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+.cloud-version-row span{flex:1;overflow-wrap:anywhere}
+.subtle-hint{color:#64748b;font-size:12px;line-height:1.5}
+#onlineLock{position:fixed;inset:0;background:rgba(248,250,252,.96);z-index:5000;display:flex;justify-content:center;align-items:center;padding:18px}
+.lock-panel{background:#fff;border:1px solid #dbe4ee;box-shadow:0 14px 50px rgba(15,23,42,.08);max-width:440px;width:100%;border-radius:18px;padding:27px 24px;text-align:center;display:flex;gap:15px;flex-direction:column;align-items:center}
+.lock-panel h2{font-size:21px}
+.lock-panel p{font-size:14px;line-height:1.6}
+.lock-icon{font-size:32px}
+body:not(.online-ready) .registry-card,body:not(.online-ready) .btn-add-proc-compact{pointer-events:none;opacity:.6}
+@media(max-width:700px){
+  .metrics-ribbon{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:8px}
+  .metrics-ribbon .kpi-cell:nth-child(n+3){display:none}
+  .dashboard-panel.kpi-expanded .metrics-ribbon .kpi-cell:nth-child(n+3){display:flex}
+  .kpi-expand-btn{display:block}
+  .kpi-cell{min-height:63px!important;padding:9px 11px!important}
+  .kpi-title{font-size:10px!important}
+  .kpi-val{font-size:21px!important}
+  .dashboard-panel{padding:11px!important;margin-bottom:10px!important}
+  .dashboard-panel .format-switch{margin-bottom:4px}
+  .app-container{max-width:100%}
+  .dash-title{font-size:15px!important}
+  .report-period label{font-size:12px}
+  .folder-content{padding:6px!important}
+  .item-card{padding:9px!important}
+}
+</style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ДАШБОРД -->
+    <div class="dashboard-panel">
+      <div class="dash-header">
+        <div class="dash-title">
+          <span class="brand-mark">◈</span> <span>Мониторинг <span class="brand-subtitle">проектов</span></span>
+        </div>
+        <div class="dash-controls">
+          <button class="btn-icon-refresh" onclick="manualSync()" title="Синхронизировать и свернуть все">🔄</button>
+          <button class="btn-ai-compact" onclick="openAiModal()">✧ AI-отчёт</button>
+        </div>
+      </div>
+
+      <div class="metrics-ribbon">
+        <div class="kpi-cell danger clickable" id="kpiBlockersBox" onclick="toggleBlockersFilter('blockers')" title="Показать объекты с замечаниями">
+          <span class="kpi-title">
+            <span>Активные замечания</span>
+            <span class="kpi-indicator">↗</span>
+          </span>
+          <span class="kpi-val" id="mBlockers">0</span>
+        </div>
+        <div class="kpi-cell" id="kpiOverdueBox" onclick="toggleBlockersFilter('overdue')" title="Показать просроченные объекты">
+          <span class="kpi-title">Просрочено этапов</span>
+          <span class="kpi-val" id="mOverdue">0</span>
+        </div>
+        <div class="kpi-cell green">
+          <span class="kpi-title">Этапов выполнено</span>
+          <span class="kpi-val" id="mDone">0</span>
+        </div>
+        <div class="kpi-cell">
+          <span class="kpi-title">Этапов в работе</span>
+          <span class="kpi-val" id="mPlan">0</span>
+        </div>
+        <div class="kpi-cell">
+          <span class="kpi-title">В ожидании</span>
+          <span class="kpi-val" id="mWaiting">0</span>
+        </div>
+        <div class="kpi-cell">
+          <span class="kpi-title">Объектов всего</span>
+          <span class="kpi-val" id="mTotal">0</span>
+        </div>
+      </div>
+      <button type="button" class="kpi-expand-btn" onclick="document.querySelector('.dashboard-panel').classList.toggle('kpi-expanded')">Все показатели <span aria-hidden="true">⌄</span></button>
+
+      <div class="format-switch">
+        <button class="format-btn active" id="modeExecutive" onclick="setReportMode('executive')">
+          Фокус в работе
+        </button>
+        <button class="format-btn" id="modeFull" onclick="setReportMode('full')">
+          Полный реестр
+        </button>
+      </div>
+      <details class="report-details"><summary>Отчёт за период · план недели</summary>
+      <div class="report-period" aria-label="Период отчёта">
+        <label>Отчёт с <input type="date" id="reportFrom" onchange="validateReportPeriod()"></label>
+        <label>по <input type="date" id="reportTo" onchange="validateReportPeriod()"></label>
+        <button type="button" class="chip-btn date-normal" onclick="copyWeeklyPlan()">План недели</button>
+      </div>
+      </details>
+      <div class="sync-details" id="syncDetails" role="status" aria-live="polite"></div>
+    </div>
+
+    <section id="legacyMigrateBanner" class="migration-banner" style="display:none" aria-label="Перенос старых данных">
+      <strong>Обнаружены старые записи</strong>
+      <p id="legacyMigrateText"></p><div id="legacyMigrateButtons" class="migration-actions"></div>
+    </section>
+
+    <!-- БАННЕР АКТИВНОГО ФИЛЬТРА ЗАДЕРЖЕК -->
+    <div class="filter-active-banner" id="filterBanner">
+      <span>Показаны только объекты с замечаниями и просрочкой</span>
+      <button class="btn-reset-filter" onclick="toggleBlockersFilter('all')">Показать все ✕</button>
+    </div>
+
+    <!-- КОМПАКТНАЯ ШАПКА РЕЕСТРА -->
+    <div class="section-bar">
+      <span class="section-bar-title">Направления <span class="section-bar-second">и участки</span></span>
+      <button class="btn-add-proc-compact" onclick="this.blur(); openAddProcessModal()">+ Направление</button>
+    </div>
+
+    <!-- ЕДИНЫЙ РЕЕСТР ПРОЦЕССОВ -->
+    <div class="registry-card" id="processesRoot"></div>
+
+    <!-- СЛУЖЕБНЫЙ ПОДВАЛ -->
+    <div class="footer-subtle-wrap">
+      <button type="button" class="chip-btn date-normal" onclick="showCloudHistory()">↶ История облачных версий</button>
+      <div style="display:flex; gap:8px;">
+        <button class="chip-btn date-normal" onclick="this.blur(); downloadBackupFile()">📥 Скачать файл бэкапа</button>
+        <button class="chip-btn date-normal" onclick="this.blur(); triggerImportFile()">📤 Загрузить файл</button>
+      </div>
+      <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleFileImport(event)">
+      <div class="footer-rev-tag" id="syncTag" role="status" aria-live="polite">● Загрузка данных...</div>
+      <button type="button" class="chip-btn ghost" id="retrySyncBtn" onclick="pushCloudBackground()" style="display:none">↻ Повторить синхронизацию</button>
+      <button type="button" class="chip-btn date-normal" onclick="undoLastChange()" id="undoBtn" disabled>↶ Отменить последнее действие</button>
+      <button type="button" class="chip-btn ghost" onclick="showAuditLog()">История изменений</button>
+    </div>
+  </div>
+
+  <!-- КОМПАКТНАЯ ПАНЕЛЬ ОТЧЕТОВ -->
+  <div class="floating-bar">
+    <button class="fab-btn" onclick="copyReport()">Текст</button>
+    <button class="fab-btn" onclick="exportToExcel()">Excel</button>
+    <button class="fab-btn" onclick="shareToTelegram()">В Telegram ↗</button>
+  </div>
+
+    <div class="modal-overlay" id="cloudVersionsModal" onclick="closeCloudHistory(event)">
+      <div class="modal-box" onclick="event.stopPropagation()"><div class="modal-top">
+        <div class="modal-head-title">Облачные версии · восстановление</div>
+        <button type="button" class="modal-x" onclick="closeCloudHistory()">✕</button>
+      </div><p class="subtle-hint">Каждое восстановление создаёт новую версию. Доступны последние 100 сохранений.</p>
+      <div id="cloudVersionsList" class="cloud-version-list"></div></div>
+    </div>
+    <div class="modal-overlay" id="onlineConflictModal">
+      <div class="modal-box"><div class="modal-top"><div class="modal-head-title">⚠ Изменения на двух устройствах</div></div>
+        <p id="conflictSummary" class="subtle-hint"></p>
+        <button type="button" class="btn-m-primary" onclick="downloadConflictVersions()">Скачать обе версии</button>
+        <button type="button" class="btn-m-primary" onclick="resolveOnlineConflict('local')">Оставить изменения этого устройства</button>
+        <button type="button" class="btn-m-primary" style="background:#64748b" onclick="resolveOnlineConflict('cloud')">Принять облачную версию</button>
+        <p class="subtle-hint">Окно нельзя закрыть без решения: одна из версий может отличаться. Облачная история хранит предыдущие версии.</p>
+      </div>
+    </div>
+    <div id="onlineLock" role="alertdialog" aria-modal="true" aria-labelledby="onlineLockMessage" style="display:none">
+      <div class="lock-panel"><div class="lock-icon">☁</div><h2>Мой онлайн-блокнот</h2><p id="onlineLockMessage">Подключение к облаку…</p>
+        <button class="btn-m-primary" type="button" onclick="loadData()">Повторить подключение</button>
+        <p class="subtle-hint">Ваша старая база и локальные копии не удаляются.</p>
+      </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО AI -->
+  <div class="modal-overlay" id="aiModalOverlay" onclick="closeAiModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div class="modal-head-title" style="color:var(--ai);">✨ AI-Генератор отчета</div>
+        <button class="modal-x" onclick="closeAiModal()">✕</button>
+      </div>
+
+      <div>
+        <label for="aiModeSelect" style="font-size:11px;font-weight:700;color:var(--text-muted)">Способ подключения AI</label>
+        <select id="aiModeSelect" class="modal-input-field" style="margin-top:5px" onchange="onAiModeChange()">
+          <option value="proxy">Защищённый сервер — рекомендуется</option>
+          <option value="direct">Личный ключ Gemini — без сервера</option>
+        </select>
+        <div id="aiProxySettings" class="ai-mode-card">
+          <label for="geminiProxyUrlInput" style="font-size:11px;font-weight:700">Адрес вашего AI-сервера (HTTPS)</label>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <input type="url" id="geminiProxyUrlInput" class="modal-input-field" placeholder="https://ваш-сервер.kz/api/report">
+            <button type="button" class="btn-m-primary" style="padding:7px 14px;flex:0 0 auto" onclick="saveAiProxyUrl()">ОК</button>
+          </div>
+          <p class="ai-helper">Ключ Gemini хранится на вашем сервере; запросы подтверждаются Telegram.</p>
+        </div>
+        <div id="aiDirectSettings" class="ai-mode-card" hidden>
+          <label for="geminiApiKeyInput" style="font-size:11px;font-weight:700">Ваш Gemini API-ключ</label>
+          <input type="password" id="geminiApiKeyInput" class="modal-input-field" autocomplete="off" spellcheck="false" placeholder="Введите личный API-ключ" style="margin-top:4px">
+          <label for="geminiModelInput" style="font-size:11px;display:block;margin-top:8px">Модель Gemini</label>
+          <input type="text" id="geminiModelInput" class="modal-input-field" value="gemini-2.5-flash" maxlength="60" spellcheck="false">
+          <p class="ai-helper">Ключ хранится в памяти страницы до перезагрузки и отправляется только на Google Gemini API при нажатии «Сгенерировать».</p>
+          <p class="ai-warning">Важно: клиентский режим менее защищён. Не используйте его для общего публичного сайта. Ключ может быть доступен через браузер и расширения; для корпоративных данных предпочтителен сервер.</p>
+        </div>
+        <label style="display:flex;gap:8px;font-size:12px;margin-top:10px;align-items:flex-start"><input type="checkbox" id="aiConsent" style="margin-top:2px"> Разрешаю отправить содержимое текущего отчёта выбранному AI-провайдеру</label>
+      </div>
+
+      <button class="btn-m-primary" style="background:var(--ai);" onclick="runAiAnalytics()">
+        Сгенерировать сводку
+      </button>
+
+      <div style="background:var(--surface-subtle); border:1px solid var(--border); padding:10px; border-radius:6px; font-size:12.5px; line-height:1.45; max-height:220px; overflow-y:auto; white-space:pre-wrap;" id="aiOutput-analytics">
+        Результат появится здесь...
+      </div>
+
+      <button class="btn-m-primary" style="background:#059669;" onclick="copyAiOutput('aiOutput-analytics')">
+        Скопировать результат
+      </button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ДАТЫ -->
+  <div class="modal-overlay" id="dateModalOverlay" onclick="closeDateModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div class="modal-head-title">📅 Выбор срока</div>
+        <button class="modal-x" onclick="closeDateModal()">✕</button>
+      </div>
+      <div style="font-size:12px; color:var(--text-muted);" id="dateModalStepTitle">Этап...</div>
+
+      <input type="date" id="modalDatePickerInput" class="modal-input-field">
+
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:4px;">
+        <button type="button" class="preset-btn" style="text-align:center; background:var(--surface-subtle); border-radius:6px;" onclick="setModalDateOffset(0)">Сегодня</button>
+        <button type="button" class="preset-btn" style="text-align:center; background:var(--surface-subtle); border-radius:6px;" onclick="setModalDateOffset(1)">Завтра</button>
+        <button type="button" class="preset-btn" style="text-align:center; background:var(--surface-subtle); border-radius:6px;" onclick="setModalDateOffset(3)">+3 дня</button>
+        <button type="button" class="preset-btn" style="text-align:center; background:var(--surface-subtle); border-radius:6px;" onclick="setModalDateOffset(7)">+7 дней</button>
+        <button type="button" class="preset-btn" style="text-align:center; background:var(--surface-subtle); border-radius:6px;" onclick="setModalDateOffset(15)">+15 дней</button>
+        <button type="button" class="preset-btn" style="text-align:center; background:var(--surface-subtle); border-radius:6px;" onclick="setModalDateOffset(30)">+1 мес</button>
+      </div>
+
+      <div class="modal-actions-row">
+        <button class="btn-m-primary" onclick="saveDateFromModal()">Сохранить</button>
+        <button class="btn-m-danger" onclick="clearDateFromModal()">Без даты</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ХРОНОЛОГИИ ЗАМЕЧАНИЙ (С ДОКУМЕНТОМ И НОМЕРАМИ) -->
+  <div class="modal-overlay" id="riskModalOverlay" onclick="closeRiskModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div class="modal-head-title" style="color:var(--danger);">🚨 Хронология замечаний</div>
+        <button class="modal-x" onclick="closeRiskModal()">✕</button>
+      </div>
+      <div style="font-size:12px; color:var(--text-muted);" id="riskModalStepTitle">Этап...</div>
+      <div class="detail-inline"><label for="riskWaiting">Статус:</label><select id="riskWaiting" class="modal-input-field"><option value="active">В работе</option><option value="waiting">Ожидаем ответ / действие</option></select></div>
+
+      <!-- ИСТОРИЯ -->
+      <div style="display:flex; flex-direction:column; gap:4px; max-height:130px; overflow-y:auto; background:var(--surface-subtle); padding:6px; border-radius:6px; border:1px solid var(--border);" id="modalHistoryLogBox"></div>
+
+      <!-- ОТВЕТСТВЕННАЯ СТОРОНА -->
+      <div>
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Ответственная сторона:</label>
+        <div class="party-chips-ribbon">
+          <button type="button" class="party-chip selected" onclick="selectPartyChip(this, 'Подрядчик CPP')">Подрядчик CPP</button>
+          <button type="button" class="party-chip" onclick="selectPartyChip(this, 'Субподряд КМГИ')">Субподряд КМГИ</button>
+          <button type="button" class="party-chip" onclick="selectPartyChip(this, 'Заказчик KMG Petrochem')">Заказчик KMG Petrochem</button>
+          <button type="button" class="party-chip" onclick="selectPartyChip(this, 'Акимат / МИО')">Акимат / МИО</button>
+          <button type="button" class="party-chip" onclick="selectPartyChip(this, 'НАО / Кадастр')">НАО / Кадастр</button>
+        </div>
+      </div>
+
+      <!-- ШАБЛОНЫ ПРИЧИН -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Быстрые шаблоны причин:</label>
+          <button type="button" style="background:none; border:none; color:var(--brand); font-size:11px; font-weight:700; cursor:pointer;" onclick="promptAddRiskPreset()">+ Свой шаблон</button>
+        </div>
+        <div class="preset-list" id="modalPresetsList"></div>
+      </div>
+
+      <!-- ДОКУМЕНТ / СЗ / НОМЕР ПИСЬМА -->
+      <div>
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted);">📄 Документ / СЗ / № письма:</label>
+        <div class="doc-prefix-bar">
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('customDocInput', 'СЗ № ')">+ СЗ №</button>
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('customDocInput', 'Исх. № ')">+ Исх. №</button>
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('customDocInput', 'Вх. № ')">+ Вх. №</button>
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('customDocInput', 'Протокол № ')">+ Протокол №</button>
+        </div>
+        <input type="text" id="customDocInput" class="modal-input-field" placeholder="Например: СЗ №45 от 14.10 на имя Жукенова..." onkeydown="if(event.key==='Enter') appendRiskFromModal()">
+      </div>
+
+      <!-- СУТЬ ЗАМЕЧАНИЯ -->
+      <div>
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Текст замечания / причина:</label>
+        <input type="text" id="customRiskInput" class="modal-input-field" placeholder="Нажмите на шаблон или введите причину..." onkeydown="if(event.key==='Enter') appendRiskFromModal()">
+      </div>
+
+      <div class="modal-actions-row">
+        <button class="btn-m-primary" onclick="appendRiskFromModal()">➕ Зафиксировать</button>
+        <button class="btn-m-danger" id="riskClearBtn" onclick="clearRiskFromModal()">Снять блокер</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ТЕКСТА И ЗАМЕЧАНИЙ (С ДОКУМЕНТОМ И СТОРОНОЙ) -->
+  <div class="modal-overlay" id="textPromptModalOverlay" onclick="closeTextModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div class="modal-head-title" id="textModalTitle">Редактирование</div>
+        <button class="modal-x" onclick="closeTextModal()">✕</button>
+      </div>
+
+      <div id="editModalPartyBox" style="display:none;">
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Ответственная сторона:</label>
+        <div class="party-chips-ribbon" style="margin-top:4px; margin-bottom:8px;">
+          <button type="button" class="edit-party-chip" onclick="selectEditModalParty(this, 'Подрядчик CPP')">Подрядчик CPP</button>
+          <button type="button" class="edit-party-chip" onclick="selectEditModalParty(this, 'Субподряд КМГИ')">Субподряд КМГИ</button>
+          <button type="button" class="edit-party-chip" onclick="selectEditModalParty(this, 'Заказчик KMG Petrochem')">Заказчик KMG Petrochem</button>
+          <button type="button" class="edit-party-chip" onclick="selectEditModalParty(this, 'Акимат / МИО')">Акимат / МИО</button>
+          <button type="button" class="edit-party-chip" onclick="selectEditModalParty(this, 'НАО / Кадастр')">НАО / Кадастр</button>
+        </div>
+
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted);">📄 Документ / СЗ / № письма:</label>
+        <div class="doc-prefix-bar">
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('editModalDocInput', 'СЗ № ')">+ СЗ №</button>
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('editModalDocInput', 'Исх. № ')">+ Исх. №</button>
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('editModalDocInput', 'Вх. № ')">+ Вх. №</button>
+          <button type="button" class="doc-prefix-btn" onclick="insertDocPrefix('editModalDocInput', 'Протокол № ')">+ Протокол №</button>
+        </div>
+        <input type="text" id="editModalDocInput" class="modal-input-field" style="margin-bottom:6px;" placeholder="Например: СЗ №45 от 14.10...">
+        <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Текст причины / замечания:</label>
+      </div>
+
+      <input type="text" id="textModalInput" class="modal-input-field" placeholder="Введите текст..." onkeydown="if(event.key==='Enter') submitTextModal()">
+      <div class="modal-actions-row">
+        <button class="btn-m-primary" onclick="submitTextModal()">Сохранить</button>
+        <button class="btn-m-danger" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;" onclick="closeTextModal()">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ОТВЕТСТВЕННЫЕ И ДОКУМЕНТЫ -->
+  <div class="modal-overlay" id="detailsModalOverlay" onclick="closeDetailsModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top"><div class="modal-head-title">Данные этапа</div><button class="modal-x" onclick="closeDetailsModal()">✕</button></div>
+      <label for="stepOwnerInput">Ответственный / организация</label>
+      <input id="stepOwnerInput" class="modal-input-field" maxlength="160" placeholder="НАО / Кадастр, исполнитель...">
+      <label for="stepUrlInput">Ссылка на документ (https://)</label>
+      <input id="stepUrlInput" class="modal-input-field" type="url" placeholder="https://...">
+      <label for="stepWorkflowStatus">Статус работы</label>
+      <select id="stepWorkflowStatus" class="modal-input-field"><option value="active">В работе</option><option value="waiting">Ожидаем ответ / действие</option></select>
+      <div class="modal-actions-row"><button class="btn-m-primary" onclick="saveStepDetails()">Сохранить</button><button class="btn-m-danger" onclick="closeDetailsModal()">Отмена</button></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="auditModalOverlay" onclick="closeAuditModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-top"><div class="modal-head-title">История изменений</div><button class="modal-x" onclick="closeAuditModal()">✕</button></div>
+      <div class="audit-log" id="auditLogBox"></div>
+    </div>
+  </div>
+  <!-- ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ -->
+  <div class="modal-overlay" id="confirmModalOverlay" onclick="closeConfirmModal(event)">
+    <div class="modal-box" style="max-width:380px;" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <div class="modal-head-title" style="color:var(--danger);">Удаление</div>
+        <button class="modal-x" onclick="closeConfirmModal()">✕</button>
+      </div>
+      <div id="confirmModalText" style="font-size:13.5px; color:var(--text-main); white-space:pre-wrap;">Подтвердите удаление</div>
+      <div class="modal-actions-row">
+        <button class="btn-m-danger" style="flex:1; background:var(--danger); color:#fff; border:none;" onclick="confirmModalYes()">Да, удалить</button>
+        <button class="btn-m-danger" style="background:#f1f5f9; color:#475569; border-color:#cbd5e1;" onclick="closeConfirmModal()">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-msg" id="toastMsg">Готово!</div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    const STORAGE_KEY = 'daily_report_vault_v18';
+    const GEMINI_KEY_STORAGE = 'gemini_user_api_key';
+    const CHUNK_SIZE = 900;
+    const SNAPSHOT_SCHEMA = 2; // Bundled application release 2.0
+    const LOCAL_HISTORY_KEY = STORAGE_KEY + '_snapshots';
+    const DEVICE_KEY = STORAGE_KEY + '_device';
+    const CLOUD_MANIFEST_KEY = 'mv2_manifest';
+    const CLOUD_SLOT_PREFIXES = ['mv2a_', 'mv2b_'];
+    const MAX_RETRIES = 3;
+
+    if (tg) {
+      try {
+        tg.ready();
+        tg.expand();
+      } catch(e) {}
+    }
+
+    let reportMode = 'executive';
+    let filterOnlyIssues = false;
+    let issueFilterMode = 'all';
+    let pinnedStepsMap = {};
+    let expandedAllStepsObjMap = {};
+    let expandedHistoryStepMap = {};
+    let activeModalTarget = { procId: null, objId: null, stepId: null };
+    let currentRevision = 0;
+    let currentSnapshotId = '';
+    let syncedSnapshot = null;
+    let lastSyncError = '';
+    let undoStack = [];
+    let auditLog = [];
+    let lastActionName = 'Изменение данных';
+    let pendingLocalSave = false;
+    let deviceId = ''; // Initialized after Model module is defined
+    let lastCloudPointer = null;
+    let retryCount = 0;
+    let cloudSyncInProgress = false;
+    let isSaving = false;
+    let pendingCloudSave = false;
+    let cloudSyncTimer = null;
+    let selectedPartyTag = 'Подрядчик CPP';
+    let editModalPartyTag = '';
+    let textModalCallback = null;
+    let confirmModalCallback = null;
+
+    const DEFAULT_RISK_PRESETS = [
+      "Оплата не идет у подрядчика",
+      "На согласовании в акимате / МИО",
+      "Замечания НАО / Гипрозем (накладка)",
+      "Спор со смежниками по границам",
+      "Ожидание подписания постановления",
+      "Задержка полевого выезда / съемки"
+    ];
+
+    function getRiskPresets() {
+      try {
+        const raw = localStorage.getItem('daily_risk_presets_v2');
+        if (raw) return JSON.parse(raw);
+      } catch(e) {}
+      return [...DEFAULT_RISK_PRESETS];
+    }
+
+    function saveRiskPresets(arr) {
+      try {
+        localStorage.setItem('daily_risk_presets_v2', JSON.stringify(arr));
+      } catch(e) {}
+    }
+
+    const WORKFLOW_TEMPLATES = {
+      land: [
+        "Акт сверки НАО",
+        "Экспликация Гипрозем",
+        "Утверждение ЗУП МИО",
+        "Постановление акима",
+        "Акт на землю, регистрация"
+      ],
+      losses: [
+        "Расчет потерь и убытков",
+        "Согласование с землепользователем",
+        "Протокол комиссии МИО",
+        "Перечисление / Оплата потерь"
+      ],
+      szz: [
+        "Проект СЗЗ / Экспертиза",
+        "Санитарно-эпидемиологическое заключение",
+        "Согласование в МИО / Архитектура",
+        "Внесение в дежурный кадастровый план"
+      ]
+    };
+
+    function getTodayISO() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getTodayStr() {
+      const d = new Date();
+      return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+    }
+
+    function getTimestampStr() {
+      const d = new Date();
+      const day = String(d.getDate()).padStart(2, '0');
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const y = d.getFullYear();
+      const h = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return `${day}.${m}.${y} ${h}:${min}`;
+    }
+
+    function isoToDisplay(isoStr) {
+      if (!isoStr) return '';
+      const p = isoStr.split('-');
+      return p.length === 3 ? `до ${p[2]}.${p[1]}.${p[0]}` : isoStr;
+    }
+
+    function parseRuDateParts(dateStr) {
+      if (!dateStr) return null;
+      const clean = String(dateStr).replace('до ', '').trim();
+      const parts = clean.split('.');
+      if (parts.length < 2) return null;
+      const d = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10);
+      const y = parts[2] ? parseInt(parts[2], 10) : new Date().getFullYear();
+      if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+      return { d, m, y };
+    }
+
+    function displayToISO(dispStr) {
+      const p = parseRuDateParts(dispStr);
+      if (!p) return '';
+      return `${p.y}-${String(p.m).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
+    }
+
+    function isStepOverdue(dateStr, isDone) {
+      if (isDone || !dateStr) return false;
+      const p = parseRuDateParts(dateStr);
+      if (!p) return false;
+      const target = new Date(p.y, p.m - 1, p.d);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      target.setHours(0,0,0,0);
+      return Math.round((target - today) / 86400000) < 0;
+    }
+
+    function analyzeDeadline(dateStr, isDone) {
+      if (isDone) return { cls: 'done', text: dateStr || '✔ Готово' };
+      if (!dateStr) return { cls: 'ghost', text: '+ Срок' };
+
+      const p = parseRuDateParts(dateStr);
+      if (!p) return { cls: 'date-normal', text: dateStr };
+
+      const target = new Date(p.y, p.m - 1, p.d);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      target.setHours(0,0,0,0);
+
+      const diff = Math.round((target - today) / 86400000);
+      if (diff < 0) return { cls: 'overdue', text: `⏰ Просрочено (${Math.abs(diff)} дн.)` };
+      if (diff === 0) return { cls: 'urgent', text: `🟠 Сегодня` };
+      if (diff === 1) return { cls: 'urgent', text: `🟡 Завтра` };
+      if (diff <= 3) return { cls: 'urgent', text: `🟡 Через ${diff} дн.` };
+      return { cls: 'date-normal', text: `📅 ${dateStr}` };
+    }
+
+    function formatDeadlineChip(step, meta) {
+      if (!step?.date) return '+ Срок';
+      const date = String(step.date).replace(/^до\s+/i,'');
+      if (step.done) return 'Срок: '+date;
+      if (meta.cls==='overdue') {
+        const m=String(meta.text).match(/\d+/);
+        return 'до '+date+' · +'+(m?m[0]:'?')+' дн.';
+      }
+      if (meta.cls==='urgent') return 'до '+date+' · '+String(meta.text).replace(/[🟠🟡⏰]/gu,'').trim();
+      return 'до '+date;
+    }
+
+    function shortenStepName(name) {
+      if (!name) return '';
+      const s = name.trim();
+      const lower = s.toLowerCase();
+      if (lower.includes('земкомисс')) return 'ЗК';
+      if (lower.includes('акт сверки') || lower.includes('нао')) return 'НАО';
+      if (lower.includes('экспликац') || lower.includes('гипрозем')) return 'Гипрозем';
+      if (lower.includes('зуп')) return 'ЗУП';
+      if (lower.includes('постановлен')) return 'Постан.';
+      if (lower.includes('акт на земл') || lower.includes('регистрац')) return 'Госакт';
+      if (lower.includes('расчет потер')) return 'Расчет';
+      if (lower.includes('землепользоват')) return 'Соглас.';
+      if (lower.includes('протокол')) return 'Протокол';
+      if (lower.includes('перечислен') || lower.includes('оплата')) return 'Оплата';
+      if (s.length <= 10) return s;
+      return s.slice(0, 9) + '…';
+    }
+
+    /* ОЧИСТКА ТЕКСТА И АВТОУДАЛЕНИЕ ДУБЛЕЙ "№ №" */
+    function sanitizeRemark(text) {
+      if (!text) return '';
+      let s = String(text);
+      if (s.includes('tag-party') || s.includes('lass="')) {
+        s = s.replace(/<[^>]*>/g, '').replace(/(Petrochem\s*){2,}/g, '');
+      }
+      s = s.trim().replace(/\s+/g, ' ');
+      while (s.includes('№ №')) {
+        s = s.replace('№ №', '№');
+      }
+      while (s.includes('№№')) {
+        s = s.replace('№№', '№');
+      }
+      return s.trim();
+    }
+
+    function insertDocPrefix(inputId, prefixStr) {
+      const inp = document.getElementById(inputId);
+      if (!inp) return;
+      let cur = inp.value.trim();
+      if (!cur) {
+        inp.value = prefixStr;
+      } else {
+        if (cur.startsWith('№')) {
+          cur = cur.slice(1).trim();
+        }
+        if (!cur.toLowerCase().startsWith(prefixStr.trim().toLowerCase())) {
+          inp.value = sanitizeRemark(`${prefixStr}${cur}`) + ' ';
+        }
+      }
+      inp.focus();
+    }
+
+    function extractPartyAndText(rawText, explicitDoc = '') {
+      let str = sanitizeRemark(rawText);
+      let party = '';
+      let doc = sanitizeRemark(explicitDoc || '');
+
+      const openB = String.fromCharCode(91); // '['
+      const closeB = String.fromCharCode(93); // ']'
+
+      if (str.startsWith(openB)) {
+        const closeIdx = str.indexOf(closeB);
+        if (closeIdx > 1 && closeIdx < 45) {
+          party = str.slice(1, closeIdx).trim();
+          str = str.slice(closeIdx + 1).trim();
+        }
+      }
+
+      if (str.startsWith(openB)) {
+        const closeIdx2 = str.indexOf(closeB);
+        if (closeIdx2 > 1 && closeIdx2 < 65) {
+          const secondTag = str.slice(1, closeIdx2).trim();
+          if (secondTag.startsWith('📄') || secondTag.toLowerCase().includes('сз') || secondTag.toLowerCase().includes('исх')) {
+            if (!doc) doc = sanitizeRemark(secondTag.replace(/^📄\s*/, ''));
+            str = str.slice(closeIdx2 + 1).trim();
+          }
+        }
+      }
+
+      return { party, doc, text: str };
+    }
+
+    function formatPartyTag(rawText, explicitDoc = '') {
+      if (!rawText && !explicitDoc) return '';
+      const parsed = extractPartyAndText(rawText, explicitDoc);
+      let html = '';
+
+      if (parsed.party) {
+        let cls = '';
+        let shortName = parsed.party;
+        const lower = parsed.party.toLowerCase();
+
+        if (lower.includes('cpp') || lower.includes('подрядчик')) {
+          cls = 'cpp';
+          shortName = 'Подрядчик CPP';
+        } else if (lower.includes('кмги') || lower.includes('субподряд') || lower.includes('инжиниринг')) {
+          cls = 'kmgi';
+          shortName = 'Субподряд КМГИ';
+        } else if (lower.includes('petrochem') || lower.includes('заказчик')) {
+          cls = 'kmgp';
+          shortName = 'KMG Petrochem';
+        } else if (lower.includes('акимат') || lower.includes('мио')) {
+          cls = 'mio';
+          shortName = 'Акимат / МИО';
+        } else if (lower.includes('нао') || lower.includes('кадастр') || lower.includes('гипрозем')) {
+          cls = 'nao';
+          shortName = 'НАО / Кадастр';
+        }
+        html += `<span class="tag-party ${cls}">${escapeHtml(shortName)}</span>`;
+      }
+
+      if (parsed.doc) {
+        html += `<span class="tag-doc">📄 ${escapeHtml(parsed.doc)}</span>`;
+      }
+
+      return html + escapeHtml(parsed.text);
+    }
+
+    // Model / validation module. Older completed steps deliberately retain unknown completion dates.
+    const Model = (() => {
+      const clone = x => x === undefined ? undefined : JSON.parse(JSON.stringify(x));
+      const same = (a,b) => {
+        if (Object.is(a,b)) return true;
+        if (a===null || b===null || typeof a!==typeof b) return false;
+        if (Array.isArray(a) || Array.isArray(b)) {
+          return Array.isArray(a) && Array.isArray(b) && a.length===b.length && a.every((v,i)=>same(v,b[i]));
+        }
+        if (typeof a==='object') {
+          const ak=Object.keys(a).filter(k=>a[k]!==undefined).sort();
+          const bk=Object.keys(b).filter(k=>b[k]!==undefined).sort();
+          return ak.length===bk.length && ak.every((k,i)=>k===bk[i] && same(a[k],b[k]));
+        }
+        return false;
+      };
+      const isPlain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+      function isDate(v) {
+        if (typeof v !== 'string') return false;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+        const d = new Date(v + 'T12:00:00');
+        return !Number.isNaN(d.getTime()) && d.toISOString().slice(0,10) === v;
+      }
+      function validUrl(v) {
+        if (!v) return '';
+        try { const url = new URL(v); return ['https:', 'http:'].includes(url.protocol) ? url.href : ''; }
+        catch(e) { return ''; }
+      }
+      function validateData(data) {
+        if (!Array.isArray(data) || data.length > 250) throw new Error('Слишком много направлений или неверный формат');
+        let count = 0;
+        const checkId = id => {
+          if (!(typeof id === 'number' && Number.isSafeInteger(id) || typeof id === 'string' && /^[a-zA-Z0-9_-]{5,100}$/.test(id))) throw new Error('Неверный ID записи');
+        };
+        const noDuplicateSiblings = arr => {
+          const ids=arr.map(x=>String(x.id));
+          if(new Set(ids).size!==ids.length)throw new Error('Дублирующийся ID в списке');
+        };
+        noDuplicateSiblings(data);
+        const checkText = (value,limit=2000) => { if(typeof value!=='string'||value.length>limit)throw new Error('Некорректное текстовое поле'); };
+        for(const proc of data) {
+          if(!isPlain(proc)||!Array.isArray(proc.objects)||proc.objects.length>2000)throw new Error('Неверное направление');
+          checkId(proc.id);checkText(proc.title,300);
+          noDuplicateSiblings(proc.objects);
+          for(const obj of proc.objects){
+            if(!isPlain(obj)||!Array.isArray(obj.steps)||obj.steps.length>2000)throw new Error('Неверный объект');
+            checkId(obj.id);checkText(obj.title,300);
+            noDuplicateSiblings(obj.steps);
+            for(const st of obj.steps){
+              if(++count>60000||!isPlain(st))throw new Error('Слишком много этапов');
+              checkId(st.id);checkText(st.text,1000);
+              if(st.date!==undefined&&typeof st.date!=='string')throw new Error('Неверный срок');
+              if(st.history!==undefined&&!Array.isArray(st.history))throw new Error('Неверная история');
+              if((st.history||[]).length>1000)throw new Error('История слишком велика');
+              for(const h of st.history||[]){
+                if(!isPlain(h))throw new Error('Неверная запись истории');
+                checkText(h.text||'',3000);checkText(h.doc||'',1200);
+              }
+            }
+          }
+        }
+        return true;
+      }
+      function createId() {
+        if(window.crypto?.randomUUID) return window.crypto.randomUUID().replace(/-/g,'');
+        const arr = new Uint32Array(4); if(window.crypto?.getRandomValues)window.crypto.getRandomValues(arr);
+        else throw new Error('Нужен защищённый контекст для создания идентификаторов');
+        return Array.from(arr,v=>v.toString(16).padStart(8,'0')).join('');
+      }
+      function normalize(data){
+        validateData(data);
+        const stepIds=new Set();
+        const legacyId=(st,h,idx)=>{
+          let hash=2166136261;const str=[st.id,idx,h.date,h.text,h.doc].join('|');
+          for(let i=0;i<str.length;i++){hash^=str.charCodeAt(i);hash=Math.imul(hash,16777619);}
+          return 'legacyh_'+(hash>>>0).toString(16)+'_'+idx;
+        };
+        return data.map(proc=>({ ...proc, collapsed: true, showArchive:false,
+          objects:proc.objects.map(obj=>({...obj,collapsed:true,archived:!!obj.archived,
+            steps:obj.steps.map(st=>{
+              const hist = (st.history||[]).map((h,idx)=>({
+                ...h,id:h.id||legacyId(st,h,idx),date:String(h.date||'Ранее').slice(0,100),
+                text:sanitizeRemark(h.text||''),doc:sanitizeRemark(h.doc||''),
+                active:h.active===true,closedAt:h.closedAt||null
+              })).filter(h=>h.text||h.doc);
+              const blocker=st.blocker?sanitizeRemark(st.blocker):null;
+              if(blocker&&!hist.some(h=>h.active)) {
+                const last=hist.findLast(h=>h.text===blocker);
+                if(last && st.history?.some(h=>h.active!==undefined))last.active=true;
+                else if(last && st.history?.every(h=>h.active===undefined))last.active=true;
+                else hist.push({id:createId(),date:st.updatedAt||'Ранее',text:blocker,doc:sanitizeRemark(st.doc||''),active:true,closedAt:null});
+              }
+              if(!blocker)hist.forEach(h=>{h.active=false;});
+              let id=st.id;
+              if(stepIds.has(String(id))){id=createId();}
+              stepIds.add(String(id));
+              return {...st,id,text:sanitizeRemark(st.text||'Этап'),doc:sanitizeRemark(st.doc||''),
+                blocker,history:hist,done:!!st.done,completedAt:st.done && isDate(st.completedAt) ? st.completedAt : null,
+                owner:String(st.owner||'').slice(0,160),documentUrl:validUrl(st.documentUrl),
+                workflowStatus: st.workflowStatus==='waiting'?'waiting':'active'
+              };
+            })
+          }))
+        }));
+      }
+      // 3-way merge: preserve independent changes and recover same-field conflicts in history.
+      function merge(base,local,remote) {
+        let conflicts=[];
+        const mergeValue=(b,l,r,path)=>{
+          if(same(l,r))return clone(l);
+          if(same(l,b))return clone(r);
+          if(same(r,b))return clone(l);
+          conflicts.push(path);
+          return clone(l);
+        };
+        const arrayMerge=(b,l,r,path,childProp)=>{
+          const bm=new Map((b||[]).map(x=>[String(x.id),x]));
+          const lm=new Map((l||[]).map(x=>[String(x.id),x]));
+          const rm=new Map((r||[]).map(x=>[String(x.id),x]));
+          const ids=[...new Set([...lm.keys(),...rm.keys(),...bm.keys()])];
+          return ids.map(id=>{
+            const bv=bm.get(id),lv=lm.get(id),rv=rm.get(id);
+            if(!lv&&!rv)return null;
+            if(!bv){if(!lv)return clone(rv);if(!rv)return clone(lv);return entityMerge({},lv,rv,path+'/'+id,childProp);}
+            if(!lv){if(same(rv,bv))return null;conflicts.push(path+'/'+id+' удаление/редактирование');return clone(rv);}
+            if(!rv){if(same(lv,bv))return null;conflicts.push(path+'/'+id+' редактирование/удаление');return clone(lv);}
+            return entityMerge(bv,lv,rv,path+'/'+id,childProp);
+          }).filter(Boolean);
+        };
+        const entityMerge=(b,l,r,path,childProp)=>{
+          const result={};
+          const keys=new Set([...Object.keys(b||{}),...Object.keys(l||{}),...Object.keys(r||{})]);
+          for(const key of keys){
+            if(key==='collapsed'||key==='showArchive'){result[key]=l[key];continue;}
+            if(key===childProp){const next=key==='objects'?'steps':key==='steps'?'history':null;
+              result[key]=arrayMerge(b[key],l[key],r[key],path+'/'+key,next);continue;
+            }
+            result[key]=mergeValue(b[key],l[key],r[key],path+'/'+key);
+          }
+          return result;
+        };
+        const merged=arrayMerge(base||[],local||[],remote||[],'data','objects');
+        return {data:merged,conflicts};
+      }
+      return {clone,same,isDate,validUrl,validateData,normalize,merge,createId};
+    })();
+    function createId(){return Model.createId();}
+    try {deviceId=localStorage.getItem(DEVICE_KEY)||createId();localStorage.setItem(DEVICE_KEY,deviceId);}catch(e){deviceId=createId();}
+    let state = [];
+    function parseRaw(raw) {
+      if(!raw)return null;
+      try {
+        const p=JSON.parse(raw);
+        if(Array.isArray(p)){Model.validateData(p);return {rev:0,ts:0,id:'legacy',data:p,audit:[]};}
+        if(p && Array.isArray(p.data)){
+          Model.validateData(p.data);
+          return {rev:Number(p.rev)||0,ts:Number(p.updatedAt)||0,id:String(p.snapshotId||'legacy'),data:p.data,audit:Array.isArray(p.audit)?p.audit:[]};
+        }
+      }catch(e){console.warn('Недопустимое сохранение',e);}
+      return null;
+    }
+    // Cloud storage adapter: two independent slots and a manifest pointing at a fully verified slot.
+    const LegacyCloud = (()=>{
+      const set=(key,val)=>new Promise(resolve=>{
+        if(!tg?.CloudStorage)return resolve(false);
+        try{tg.CloudStorage.setItem(key,val,err=>resolve(!err));}catch(e){resolve(false);}
+      });
+      const get=key=>new Promise(resolve=>{
+        if(!tg?.CloudStorage)return resolve(null);
+        try{tg.CloudStorage.getItem(key,(err,val)=>resolve(err?null:(val||'')));}catch(e){resolve(null);}
+      });
+      const checksum=str=>{let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(16);};
+      async function readSlot(slot,count,hash){
+        if(!Number.isSafeInteger(count)||count<1||count>400)return null;
+        let json='';
+        for(let i=0;i<count;i++){const part=await get(CLOUD_SLOT_PREFIXES[slot]+i);if(part===null)return null;json+=part;}
+        if(hash && checksum(json)!==hash)return null;
+        return parseRaw(json);
+      }
+      async function read(){
+        if(!tg?.CloudStorage)return {status:'unavailable'};
+        const manifestRaw=await get(CLOUD_MANIFEST_KEY);
+        if(manifestRaw){
+          try{
+            const m=JSON.parse(manifestRaw);
+            const first=await readSlot(m.slot,m.count,m.hash);
+            if(first)return {status:'ok',snapshot:first,manifest:m};
+            // Recover from previous complete slot, if pointer refers to damaged data.
+            if(m.previous){const old=await readSlot(m.previous.slot,m.previous.count,m.previous.hash);
+              if(old)return {status:'recovered',snapshot:old,manifest:m.previous};}
+            return {status:'error',error:'Повреждён облачный снимок. Локальные данные сохранены.'};
+          }catch(e){return {status:'error',error:'Неверный облачный манифест'};}
+        }
+        // Import v18 data once without overwriting it.
+        const count=Number(await get('c_count'));
+        if(Number.isSafeInteger(count)&&count>0&&count<=400){let full='';
+          for(let i=0;i<count;i++){const part=await get('c_'+i);if(part===null)return {status:'error'};full+=part;}
+          const old=parseRaw(full);if(old)return {status:'legacy',snapshot:old,manifest:null};
+        }
+        const old=parseRaw(await get(STORAGE_KEY));
+        return old?{status:'legacy',snapshot:old,manifest:null}:{status:'empty'};
+      }
+      async function write(payload,previousManifest){
+        if(!tg?.CloudStorage)return {ok:false,error:'Нет Telegram CloudStorage'};
+        const json=JSON.stringify(payload);
+        const chunks=[];for(let i=0;i<json.length;i+=CHUNK_SIZE)chunks.push(json.slice(i,i+CHUNK_SIZE));
+        if(!chunks.length||chunks.length>400)return {ok:false,error:'Размер данных превышает лимит облака'};
+        const slot=previousManifest?.slot===0?1:0;
+        const prefix=CLOUD_SLOT_PREFIXES[slot];
+        for(let i=0;i<chunks.length;i++) if(!await set(prefix+i,chunks[i]))return {ok:false,error:'Ошибка записи фрагмента '+(i+1)};
+        const hash=checksum(json);
+        if(!await readSlot(slot,chunks.length,hash))return {ok:false,error:'Проверка записанных фрагментов не прошла'};
+        const manifest={slot,count:chunks.length,hash,id:payload.snapshotId,rev:payload.rev,updatedAt:payload.updatedAt,
+          previous:previousManifest?{slot:previousManifest.slot,count:previousManifest.count,hash:previousManifest.hash,id:previousManifest.id,rev:previousManifest.rev}:null};
+        if(!await set(CLOUD_MANIFEST_KEY,JSON.stringify(manifest)))return {ok:false,error:'Не удалось закрепить облачную версию'};
+        const confirm=await get(CLOUD_MANIFEST_KEY);
+        if(confirm!==JSON.stringify(manifest))return {ok:false,error:'Обнаружено параллельное сохранение'};
+        return {ok:true,manifest};
+      }
+      return {read,write,available:()=>!!tg?.CloudStorage};
+    })();
+    // Online V4. Telegram CloudStorage is read-only here, for one-time legacy migration.
+    function makeRequestUUID(){
+      const id=createId().replace(/-/g,'');
+      return id.slice(0,8)+'-'+id.slice(8,12)+'-4'+id.slice(13,16)+'-a'+id.slice(17,20)+'-'+id.slice(20,32);
+    }
+    const ONLINE_CACHE_KEY='projects_online_v4_pending';
+    const ONLINE_BASE_KEY='projects_online_v4_base';
+    const ONLINE_MAX_REQUEST_MS=20000;
+    const onlineEndpoint=String(window.NOTEBOOK_CONFIG?.supabaseUrl||'').trim().replace(/\/$/,'')+'/functions/v1/notebook';
+    const onlineConfigured=/^https:\/\/[a-z0-9-]+\.supabase\.co\/functions\/v1\/notebook$/i.test(onlineEndpoint);
+    let serverRevision=0;
+    let serverBase=[];
+    let lastValidData=[];
+    let readyForEditing=false;
+    let onlineSaving=false;
+    let onlinePending=false;
+    let onlineTimer=null;
+    let retryDelay=1200;
+    let currentAction='Изменение';
+    let requestInFlight=null;
+    let conflictRemote=null;
+    let migrationCandidates={};
+    let lastPollAt=0;
+    let isFetching=false;
+
+    const OnlineAPI=(()=>{
+      async function request(body){
+        if(!onlineConfigured)throw new Error('Укажите адрес Supabase в config.js');
+        if(!tg?.initData)throw new Error('Откройте блокнот через Telegram-бота');
+        const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),ONLINE_MAX_REQUEST_MS);
+        try{
+          const resp=await fetch(onlineEndpoint,{method:'POST',cache:'no-store',signal:ctrl.signal,
+            headers:{'Content-Type':'application/json','X-Telegram-Init-Data':tg.initData},body:JSON.stringify(body)});
+          let data;try{data=await resp.json();}catch{throw new Error('Неправильный ответ сервера');}
+          if(!resp.ok && resp.status!==409)throw new Error(data?.error||'Сервер ответил '+resp.status);
+          if(!data || typeof data!=='object')throw new Error('Неправильный ответ сервера');
+          return {status:resp.status,...data};
+        }catch(e){if(e.name==='AbortError')throw new Error('Превышено время ожидания сервера');throw e;}
+        finally{clearTimeout(timer);}
+      }
+      return {
+        load:()=>request({action:'load'}),
+        save:(data,expectedRevision,requestId,label)=>request({action:'save',data,expectedRevision,requestId,label,deviceId}),
+        history:()=>request({action:'history'}),
+        restore:(sourceRevision,expectedRevision)=>request({action:'restore',sourceRevision,expectedRevision,requestId:makeRequestUUID(),deviceId})
+      };
+    })();
+    function getLocalPayload(){
+      try{return parseRaw(localStorage.getItem(ONLINE_CACHE_KEY)||'');}catch{return null;}
+    }
+    function legacyLocal(){
+      try{return parseRaw(localStorage.getItem(STORAGE_KEY)||'') || parseRaw(localStorage.getItem('manager_projects_permanent_data')||'');}catch{return null;}
+    }
+    function persistLocal(){
+      const payload={schema:SNAPSHOT_SCHEMA,snapshotId:currentSnapshotId,rev:serverRevision,
+        updatedAt:Date.now(),deviceId,data:Model.clone(state),audit:auditLog.slice(-250),
+        baseRevision:serverRevision,baseData:serverBase,pending:onlinePending,
+        pendingAction:currentAction,attempt:requestInFlight};
+      try{localStorage.setItem(ONLINE_CACHE_KEY,JSON.stringify(payload));return true;}
+      catch(e){lastSyncError='Недостаточно места для резервной локальной копии';
+        syncStatus('⚠ Не удалось сохранить локальную копию',lastSyncError,true);return false;}
+    }
+    function archiveSnapshot(snapshot,reason){
+      if(!snapshot)return;
+      try{
+        const old=JSON.parse(localStorage.getItem(LOCAL_HISTORY_KEY)||'[]');
+        old.unshift({reason,createdAt:new Date().toISOString(),snapshot});
+        localStorage.setItem(LOCAL_HISTORY_KEY,JSON.stringify(old.slice(0,5)));
+      }catch(e){console.warn('Резервная локальная копия не создана',e);}
+    }
+    function syncStatus(label,detail='',failed=false){
+      const tag=document.getElementById('syncTag');if(tag)tag.textContent=label;
+      const msg=document.getElementById('syncDetails');if(msg)msg.textContent=[label,detail].filter(Boolean).join(' · ');
+      const retry=document.getElementById('retrySyncBtn');if(retry)retry.style.display=failed?'inline-block':'none';
+    }
+    function updateSyncTag(text){const el=document.getElementById('syncTag');if(el)el.textContent=text;}
+    function lockApp(reason){
+      readyForEditing=false;
+      document.body.classList.remove('online-ready');
+      const lock=document.getElementById('onlineLock');
+      if(lock){lock.style.display='flex';document.getElementById('onlineLockMessage').textContent=reason;}
+    }
+    function unlockApp(){
+      readyForEditing=true;
+      document.body.classList.add('online-ready');
+      const lock=document.getElementById('onlineLock');if(lock)lock.style.display='none';
+    }
+
+    function normalizeAndKeepView(data){
+      const out=Model.normalize(data);
+      const procMap=new Map(state.map(p=>[String(p.id),p]));
+      for(const p of out){
+        const old=procMap.get(String(p.id));if(!old)continue;
+        p.collapsed=old.collapsed;p.showArchive=old.showArchive;
+        const objs=new Map((old.objects||[]).map(o=>[String(o.id),o]));
+        for(const o of p.objects){const prev=objs.get(String(o.id));if(prev)o.collapsed=prev.collapsed;}
+      }
+      return out;
+    }
+    function setServerState(result){
+      Model.validateData(result.data);
+      serverRevision=Number(result.revision)||0;
+      currentRevision=serverRevision;
+      serverBase=Model.clone(result.data);
+      currentSnapshotId='cloud-'+serverRevision;
+    }
+    function canReplaceState(){
+      return !Array.from(document.querySelectorAll('.modal-overlay')).some(x=>x.style.display==='flex')
+        && !conflictRemote;
+    }
+    function refreshAudit(events){
+      if(!Array.isArray(events))return;
+      auditLog=events.map(x=>({id:x.id,at:x.at,device:x.device,action:x.action}));
+    }
+    async function loadData(){
+      lockApp('Соединение с личным облачным блокнотом…');
+      const cached=getLocalPayload();
+      if(cached){try{Model.validateData(cached.data);state=Model.normalize(cached.data);render();}catch(e){console.warn(e);}}
+      if(!onlineConfigured){syncStatus('⚠ Не настроено','Укажите SUPABASE URL в config.js',true);lockApp('Приложение ещё не подключено к Supabase. Укажите адрес проекта в config.js.');return;}
+      if(!tg?.initData){syncStatus('⚠ Требуется Telegram','Откройте приложение из меню вашего бота',true);lockApp('Для доступа к личным записям откройте блокнот через вашего Telegram-бота.');return;}
+      try{
+        const result=await OnlineAPI.load();
+        setServerState(result);refreshAudit(result.events);
+        if(cached?.pending){
+          const cacheObj=JSON.parse(localStorage.getItem(ONLINE_CACHE_KEY)||'{}');
+          const base=cacheObj.baseData||[];
+          const merged=Model.merge(base,cached.data,result.data);
+          if(merged.conflicts.length){
+            state=Model.normalize(cached.data);lastValidData=Model.clone(state);
+            onlinePending=true;currentAction=cacheObj.pendingAction||'Восстановление несохранённых записей';
+            conflictRemote={...result,merged:merged.data};
+            persistLocal();render();unlockApp();showOnlineConflict(merged.conflicts);
+          }else{
+            state=Model.normalize(merged.data);lastValidData=Model.clone(state);
+            onlinePending=!Model.same(state,Model.normalize(result.data));
+            currentAction=cacheObj.pendingAction||'Восстановление несохранённых записей';
+            requestInFlight=cacheObj.attempt||null;
+            persistLocal();render();unlockApp();
+            if(onlinePending)queueCloudSave(100);
+            else syncStatus('✓ Облако синхронизировано','Версия '+serverRevision);
+          }
+        }else{
+          state=normalizeAndKeepView(result.data);lastValidData=Model.clone(state);
+          onlinePending=false;requestInFlight=null;persistLocal();render();unlockApp();
+          syncStatus('✓ Онлайн · всё сохранено','Версия '+serverRevision);
+        }
+        if(result.revision===0 && !(cached?.pending)) await offerLegacyMigration();
+        setInterval(()=>{if(document.visibilityState==='visible')syncWithCloud();},15000);
+      }catch(e){
+        syncStatus('⚠ Соединение не установлено',e.message,true);
+        lockApp('Не удалось подключиться к облаку: '+e.message+' Данные не перезаписаны. Повторите подключение.');
+      }
+    }
+    async function offerLegacyMigration(){
+      migrationCandidates={};
+      const local=legacyLocal();
+      if(local?.data?.length)migrationCandidates.local=local;
+      if(tg?.CloudStorage){
+        try{
+          const r=await LegacyCloud.read();
+          if((r.status==='ok'||r.status==='recovered'||r.status==='legacy')&&r.snapshot?.data?.length)
+            migrationCandidates.telegram=r.snapshot;
+        }catch(e){console.warn('Старые данные Telegram недоступны',e);}
+      }
+      const bar=document.getElementById('legacyMigrateBanner');
+      if(!bar)return;
+      const sources=Object.keys(migrationCandidates);
+      if(!sources.length)return;
+      const counts=s=>migrationCandidates[s]?.data?.reduce((n,p)=>n+(p.objects||[]).length,0)||0;
+      document.getElementById('legacyMigrateText').textContent=
+        'Найдены прежние записи. Выберите источник переноса (существующие копии останутся нетронутыми).';
+      const b=document.getElementById('legacyMigrateButtons');b.textContent='';
+      for(const source of sources){
+        const el=document.createElement('button');el.className='btn-m-primary';
+        el.style.flex='unset';el.textContent=(source==='local'?'Перенести с устройства':'Перенести из Telegram')+' · '+counts(source)+' объектов';
+        el.addEventListener('click',()=>migrateLegacy(source));b.appendChild(el);
+      }
+      const skip=document.createElement('button');skip.className='chip-btn date-normal';skip.textContent='Позже';
+      skip.addEventListener('click',()=>bar.style.display='none');b.appendChild(skip);
+      bar.style.display='block';
+    }
+    function migrateLegacy(source){
+      const old=migrationCandidates[source];if(!old)return;
+      askConfirm('Перенести старые данные в новую облачную базу? Старое хранилище останется без изменений. Перед переносом скачайте исходную копию на устройство.',()=>{
+        Backups.download({...old,type:'projects-monitoring-legacy-backup'},'before_cloud_migration');
+        state=Model.normalize(old.data);lastValidData=[];
+        currentAction='Перенос старых данных '+source;
+        document.getElementById('legacyMigrateBanner').style.display='none';
+        saveData(currentAction);
+      });
+    }
+    async function syncWithCloud(forceToast=false){
+      if(!readyForEditing || isFetching || conflictRemote)return;
+      if(onlinePending){queueCloudSave(50);return;}
+      if(!canReplaceState())return;
+      isFetching=true;
+      try{
+        const r=await OnlineAPI.load();
+        if(Number(r.revision)>serverRevision){
+          if(onlinePending)return;
+          setServerState(r);refreshAudit(r.events);
+          state=normalizeAndKeepView(r.data);lastValidData=Model.clone(state);
+          persistLocal();render();syncStatus('✓ Обновлено с другого устройства','Версия '+serverRevision);
+        }else if(forceToast)showToast('Облачная версия актуальна');
+      }catch(e){syncStatus('⚠ Не удалось проверить облако',e.message,true);}
+      finally{isFetching=false;lastPollAt=Date.now();}
+    }
+    async function manualSync(){
+      if(!readyForEditing){await loadData();return;}
+      if(onlinePending){await pushCloudBackground();return;}
+      await syncWithCloud(true);
+    }
+    function queueCloudSave(delay=450){
+      if(onlineTimer)clearTimeout(onlineTimer);
+      if(readyForEditing&&!conflictRemote)onlineTimer=setTimeout(()=>{onlineTimer=null;pushCloudBackground();},delay);
+    }
+    function snapshotBeforeChange(name){
+      undoStack.push({name,data:Model.clone(lastValidData)});
+      if(undoStack.length>15)undoStack.shift();
+      const el=document.getElementById('undoBtn');if(el)el.disabled=false;
+    }
+    function saveData(actionName,skipUndo=false){
+      if(!readyForEditing){showToast('Нет доступа к облаку. Сначала подключитесь.');state=Model.clone(lastValidData);render();return;}
+      const action=String(actionName||'Изменение записи').slice(0,200);
+      try{Model.validateData(state);}catch(e){
+        state=Model.clone(lastValidData);render();showToast('Изменение отменено: '+e.message);return;
+      }
+      if(Model.same(state,lastValidData))return;
+      if(!skipUndo)snapshotBeforeChange(action);
+      lastValidData=Model.clone(state);
+      currentAction=action;
+      onlinePending=true;
+      auditLog.push({id:createId(),at:new Date().toISOString(),device:deviceId,action:action+' (ожидает сохранения)'});
+      auditLog=auditLog.slice(-250);
+      if(!persistLocal()){
+        // Do not pretend edits are safe; keep state available for explicit manual retry/export.
+        showToast('Не удалось сохранить резервную копию на устройстве');
+      }
+      render();syncStatus('⏳ Отправка в облако','Изменения ещё не подтверждены сервером');
+      queueCloudSave();
+    }
+    function showOnlineConflict(paths){
+      const box=document.getElementById('onlineConflictModal');
+      document.getElementById('conflictSummary').textContent='На втором устройстве изменены те же данные. Найдено конфликтов: '+paths.length+'. Выберите, какую версию сохранить. Обе версии можно скачать перед решением.';
+      box.style.display='flex';
+      syncStatus('⚠ Конфликт изменений','Сохранение приостановлено — требуется ваш выбор',true);
+    }
+    function closeOnlineConflict(){document.getElementById('onlineConflictModal').style.display='none';}
+    function downloadConflictVersions(){
+      if(!conflictRemote)return;
+      Backups.download({...Backups.build(),data:Model.clone(state)},'conflict_this_device');
+      Backups.download({...Backups.build(),data:Model.clone(conflictRemote.data)},'conflict_cloud');
+    }
+    function resolveOnlineConflict(choice){
+      if(!conflictRemote)return;
+      const remote=conflictRemote;
+      if(choice==='cloud'){
+        archiveSnapshot({snapshotId:createId(),data:Model.clone(state),rev:serverRevision},'Отклонённый локальный вариант');
+        setServerState(remote);state=normalizeAndKeepView(remote.data);lastValidData=Model.clone(state);
+        onlinePending=false;requestInFlight=null;conflictRemote=null;
+        persistLocal();closeOnlineConflict();render();syncStatus('✓ Принята облачная версия','Версия '+serverRevision);return;
+      }
+      // Explicit local choice keeps NON-conflicting cloud changes and local values
+      // ONLY for fields that truly collided in the 3-way merge.
+      if(remote.merged){
+        archiveSnapshot({snapshotId:createId(),data:Model.clone(state)},'Локальная копия до разрешения конфликта');
+        state=normalizeAndKeepView(remote.merged);
+        lastValidData=Model.clone(state);
+      }
+      serverRevision=Number(remote.revision);serverBase=Model.clone(remote.data);
+      currentRevision=serverRevision;requestInFlight=null;conflictRemote=null;
+      onlinePending=true;persistLocal();closeOnlineConflict();render();queueCloudSave(20);
+    }
+    async function pushCloudBackground(){
+      if(!readyForEditing||!onlinePending||conflictRemote)return;
+      if(onlineSaving){return;}
+      onlineSaving=true;
+      let retryAfter=200;
+      try{
+        const submitting=Model.clone(state);
+        const currentBase=Model.clone(serverBase);
+        const attempt=requestInFlight && Model.same(requestInFlight.data,submitting) && requestInFlight.baseRevision===serverRevision
+          ?requestInFlight:{requestId:makeRequestUUID(),baseRevision:serverRevision,data:submitting,label:currentAction};
+        requestInFlight=attempt;
+        persistLocal();
+        syncStatus('⏳ Сохранение в облако','Ожидается подтверждение сервера');
+        const r=await OnlineAPI.save(attempt.data,attempt.baseRevision,attempt.requestId,attempt.label);
+        if(r.conflict){
+          // Preserve draft; explicit intervention for overlapping edits.
+          Model.validateData(r.data);
+          const merged=Model.merge(currentBase,state,r.data);
+          if(merged.conflicts.length){
+            archiveSnapshot({snapshotId:createId(),data:Model.clone(state),rev:serverRevision},'Локальный конфликт');
+            conflictRemote={...r,merged:merged.data};requestInFlight=null;persistLocal();showOnlineConflict(merged.conflicts);
+          }else{
+            serverRevision=Number(r.revision);serverBase=Model.clone(r.data);
+            state=Model.normalize(merged.data);lastValidData=Model.clone(state);
+            requestInFlight=null;onlinePending=!Model.same(state,Model.normalize(r.data));
+            persistLocal();render();if(onlinePending)queueCloudSave(200);
+            else syncStatus('✓ Актуальная облачная версия','Версия '+serverRevision);
+          }
+          return;
+        }
+        if(!r.ok)throw new Error(r.error||'Не удалось записать данные');
+        Model.validateData(r.data);
+        // Successful write can be followed by another user's write. Reconcile using the returned server state.
+        serverRevision=Number(r.revision);
+        serverBase=Model.clone(r.data);
+        currentRevision=serverRevision;
+        requestInFlight=null;retryDelay=1200;
+        if(!Model.same(state,attempt.data)){
+          // Another local edit was made while first write was in flight.
+          const merged=Model.merge(attempt.data,state,r.data);
+          if(merged.conflicts.length){conflictRemote=r;showOnlineConflict(merged.conflicts);return;}
+          state=Model.normalize(merged.data);lastValidData=Model.clone(state);
+          onlinePending=!Model.same(state,Model.normalize(r.data));
+        }else{
+          state=normalizeAndKeepView(r.data);lastValidData=Model.clone(state);
+          onlinePending=false;
+        }
+        auditLog=auditLog.filter(x=>!String(x.action).endsWith(' (ожидает сохранения)'));
+        auditLog.push({id:createId(),at:new Date().toISOString(),device:deviceId,action:attempt.label});
+        persistLocal();render();
+        if(onlinePending)queueCloudSave(180);
+        else syncStatus('✓ Онлайн · всё сохранено','Версия '+serverRevision);
+      }catch(e){
+        syncStatus('⚠ Не сохранено в облако',e.message+' · локальная копия сохранена',true);
+        retryDelay=Math.min(retryDelay*2,30000);
+        retryAfter=retryDelay;
+        console.error('Online sync error',e);
+      }finally{
+        onlineSaving=false;
+        if(onlinePending&&!conflictRemote&&!onlineTimer)queueCloudSave(retryAfter);
+      }
+    }
+    async function showCloudHistory(){
+      if(!readyForEditing)return showToast('Нет доступа к облаку');
+      try{
+        const r=await OnlineAPI.history();
+        const root=document.getElementById('cloudVersionsList');root.textContent='';
+        const list=r.versions||[];
+        if(!list.length)root.textContent='Истории версий пока нет';
+        for(const v of list){
+          const row=document.createElement('div');row.className='cloud-version-row';
+          const label=document.createElement('span');
+          label.textContent='Версия '+v.revision+' · '+new Date(v.saved_at).toLocaleString('ru-RU')+' · '+v.action;
+          const b=document.createElement('button');b.className='chip-btn date-normal';b.textContent='Восстановить';
+          b.onclick=()=>restoreCloudVersion(v.revision);
+          row.append(label,b);root.append(row);
+        }
+        document.getElementById('cloudVersionsModal').style.display='flex';
+      }catch(e){showToast('Ошибка списка версий: '+e.message);}
+    }
+    function closeCloudHistory(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('cloudVersionsModal').style.display='none';}
+    function restoreCloudVersion(revision){
+      if(onlinePending){showToast('Сначала сохраните или разрешите текущие изменения');return;}
+      askConfirm('Вернуть облачную версию '+revision+'? Текущее состояние останется в истории, будет создана новая версия.',async()=>{
+        try{
+          const result=await OnlineAPI.restore(revision,serverRevision);
+          if(result.conflict){showToast('Облачная версия изменилась. Обновите приложение.');return;}
+          setServerState(result);state=normalizeAndKeepView(result.data);lastValidData=Model.clone(state);
+          onlinePending=false;requestInFlight=null;persistLocal();render();closeCloudHistory();
+          syncStatus('✓ Восстановлена версия '+revision,'Новое состояние сохранено в облаке');
+        }catch(e){showToast('Ошибка восстановления: '+e.message);}
+      });
+    }
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible')syncWithCloud();
+    });
+
+    document.addEventListener('click',()=>{document.querySelectorAll('.obj-dropdown-menu').forEach(m=>m.classList.remove('open'));});
+    function undoLastChange(){
+      if(!undoStack.length)return;
+      const last=undoStack.pop();
+      const undone=getLocalPayload();archiveSnapshot(undone,'Перед отменой');
+      state=Model.normalize(last.data);
+      const b=document.getElementById('undoBtn');if(b)b.disabled=!undoStack.length;
+      saveData('Отмена: '+last.name,true);
+      showToast('Предыдущее состояние восстановлено');
+    }
+    function showAuditLog(){
+      const box=document.getElementById('auditLogBox');box.textContent='';
+      for(const x of auditLog.slice().reverse()){
+        const row=document.createElement('div');row.textContent=`${new Date(x.at).toLocaleString('ru-RU')} — ${x.action}`;
+        box.appendChild(row);
+      }
+      if(!auditLog.length)box.textContent='Пока нет зафиксированных изменений';
+      document.getElementById('auditModalOverlay').style.display='flex';
+    }
+    function closeAuditModal(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('auditModalOverlay').style.display='none';}
+
+
+        function collapseAllItems() {
+      filterOnlyIssues = false;
+      issueFilterMode = 'all';
+      pinnedStepsMap = {};
+      expandedAllStepsObjMap = {};
+      state.forEach(p => {
+        p.collapsed = true;
+        p.showArchive = false;
+        (p.objects || []).forEach(o => {
+          o.collapsed = true;
+        });
+      });
+    }
+
+    function normalizeStateHistory(arr){return Model.normalize(arr);}
+
+        function setReportMode(m) {
+      reportMode = m;
+      expandedAllStepsObjMap = {};
+      document.getElementById('modeExecutive').classList.toggle('active', m === 'executive');
+      document.getElementById('modeFull').classList.toggle('active', m === 'full');
+      render();
+      showToast(m === 'executive' ? "⚡ Режим: Фокус в работе" : "📋 Режим: Полный реестр");
+    }
+
+    function toggleHistoryVisibility(stepId) {
+      expandedHistoryStepMap[stepId] = !expandedHistoryStepMap[stepId];
+      const body=document.getElementById('history-older-'+stepId);
+      const button=document.getElementById('history-toggle-'+stepId);
+      if(body) body.hidden=!expandedHistoryStepMap[stepId];
+      if(button) button.textContent=(expandedHistoryStepMap[stepId]?'Скрыть историю':'История замечаний')+' ('+ (body?.dataset.count||'0') +')';
+    }
+
+    function toggleObjShowAllSteps(objId) {
+      expandedAllStepsObjMap[objId] = !expandedAllStepsObjMap[objId];
+      render();
+    }
+
+    function toggleConveyorPin(objId, stepId) {
+      if (pinnedStepsMap[objId] === stepId) {
+        delete pinnedStepsMap[objId];
+      } else {
+        pinnedStepsMap[objId] = stepId;
+      }
+      render();
+    }
+
+    function toggleBlockersFilter(mode='blockers') {
+      issueFilterMode = issueFilterMode===mode ? 'all' : mode;
+      filterOnlyIssues=issueFilterMode!=='all';
+      render();
+      showToast(issueFilterMode==='blockers'?'Объекты с замечаниями':issueFilterMode==='overdue'?'Объекты с просрочкой':'Показаны все проекты');
+    }
+
+    function askConfirm(message, onYes) {
+      document.querySelectorAll('.obj-dropdown-menu.open').forEach(m=>m.classList.remove('open'));
+      document.getElementById('confirmModalText').textContent = message;
+      confirmModalCallback = onYes;
+      document.getElementById('confirmModalOverlay').style.display = 'flex';
+    }
+
+    function closeConfirmModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('confirmModalOverlay').style.display = 'none';
+      confirmModalCallback = null;
+    }
+
+    function confirmModalYes() {
+      if (confirmModalCallback) confirmModalCallback();
+      closeConfirmModal();
+    }
+
+    function showTextModal(title, initialValue, onSave, withRemarkFields = false, initialParty = '', initialDoc = '') {
+      document.querySelectorAll('.obj-dropdown-menu.open').forEach(m=>m.classList.remove('open'));
+      document.getElementById('textModalTitle').textContent = title;
+      const inp = document.getElementById('textModalInput');
+      inp.value = initialValue || '';
+      textModalCallback = onSave;
+
+      const partyBox = document.getElementById('editModalPartyBox');
+      const docInp = document.getElementById('editModalDocInput');
+
+      if (withRemarkFields) {
+        partyBox.style.display = 'block';
+        if (docInp) docInp.value = initialDoc || '';
+        editModalPartyTag = initialParty || selectedPartyTag || 'Подрядчик CPP';
+        document.querySelectorAll('.edit-party-chip').forEach(btn => {
+          const isMatch = btn.textContent.toLowerCase().includes(editModalPartyTag.toLowerCase()) ||
+                          editModalPartyTag.toLowerCase().includes(btn.textContent.toLowerCase());
+          btn.classList.toggle('selected', isMatch);
+        });
+      } else {
+        partyBox.style.display = 'none';
+        if (docInp) docInp.value = '';
+      }
+
+      document.getElementById('textPromptModalOverlay').style.display = 'flex';
+      setTimeout(() => inp.focus(), 60);
+    }
+
+    function selectEditModalParty(btn, partyName) {
+      editModalPartyTag = partyName;
+      document.querySelectorAll('.edit-party-chip').forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
+    function closeTextModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('textPromptModalOverlay').style.display = 'none';
+      textModalCallback = null;
+    }
+
+    function submitTextModal() {
+      const val = document.getElementById('textModalInput').value.trim();
+      const docVal = document.getElementById('editModalDocInput')?.value.trim() || '';
+      if (textModalCallback && (val || docVal)) {
+        textModalCallback(val, editModalPartyTag, docVal);
+      }
+      closeTextModal();
+    }
+
+    function openAddProcessModal() {
+      showTextModal("➕ Новое направление", "", (val) => {
+        state.push({
+          id: createId(),
+          title: sanitizeRemark(val),
+          collapsed: false,
+          showArchive: false,
+          objects: []
+        });
+        saveData();
+        showToast("Направление добавлено");
+      });
+    }
+
+    function moveProcess(procId, direction) {
+      const idx = state.findIndex(p => p.id === procId);
+      if (idx < 0) return;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= state.length) return;
+
+      const item = state.splice(idx, 1)[0];
+      state.splice(newIdx, 0, item);
+      saveData();
+    }
+
+    function editProcessTitle(procId) {
+      const p = state.find(x => x.id === procId);
+      if (!p) return;
+      showTextModal("✏️ Название направления", p.title, (newTitle) => {
+        p.title = newTitle;
+        saveData();
+        showToast("Обновлено");
+      });
+    }
+
+    function deleteProcess(procId) {
+      const p = state.find(x => x.id === procId);
+      if (!p) return;
+      askConfirm(`Удалить направление «${p.title}» со всеми объектами?`, () => {
+        state = state.filter(x => x.id !== procId);
+        saveData();
+        showToast("Направление удалено");
+      });
+    }
+
+    function toggleProcessCollapse(procId) {
+      const p = state.find(x => x.id === procId);
+      if (p) {
+        p.collapsed = !p.collapsed;
+        render();
+      }
+    }
+
+    function toggleObjectCollapse(procId, objId) {
+      const p = state.find(x => x.id === procId);
+      if (!p) return;
+      const obj = p.objects.find(o => o.id === objId);
+      if (!obj) return;
+      obj.collapsed = !obj.collapsed;
+      render();
+    }
+
+    function toggleMenuGeneric(e, menuId) {
+      e.stopPropagation();
+      const menu = document.getElementById(menuId);
+      const allMenus = document.querySelectorAll('.obj-dropdown-menu');
+      allMenus.forEach(m => { if (m !== menu) m.classList.remove('open'); });
+      if (menu) menu.classList.toggle('open');
+    }
+
+    function moveObject(procId, objId, direction) {
+      const p = state.find(x => x.id === procId);
+      if (!p) return;
+      const idx = p.objects.findIndex(o => o.id === objId);
+      if (idx < 0) return;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= p.objects.length) return;
+
+      const item = p.objects.splice(idx, 1)[0];
+      p.objects.splice(newIdx, 0, item);
+      saveData();
+    }
+
+    function deleteObject(procId, objId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      if (!p || !obj) return;
+
+      askConfirm(`Удалить объект «${obj.title}»?`, () => {
+        p.objects = p.objects.filter(o => o.id !== objId);
+        saveData();
+        showToast("Объект удален");
+      });
+    }
+
+    function editObjectTitle(procId, objId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      if (!obj) return;
+
+      showTextModal("✏️ Название объекта / участка", obj.title, (newTitle) => {
+        obj.title = newTitle;
+        saveData();
+        showToast("Обновлено");
+      });
+    }
+
+    function cloneObject(procId, objId) {
+      const p = state.find(x => x.id === procId);
+      const src = p?.objects.find(o => o.id === objId);
+      if (!p || !src) return;
+
+      showTextModal("📋 Копирование объекта", src.title + " (Копия)", (newTitle) => {
+        const nowTs = getTimestampStr();
+        p.objects.push({
+          id: createId(),
+          title: newTitle,
+          archived: false,
+          collapsed: false,
+          steps: (src.steps || []).map((s, i) => ({
+            id: createId(),
+            text: s.text,
+            date: s.date,
+            done: false,
+            blocker: null,
+            history: [],
+            updatedAt: nowTs
+          }))
+        });
+        saveData();
+        showToast("Скопировано");
+      });
+    }
+
+    function moveStep(procId, objId, stepId, direction) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      if (!obj || !obj.steps) return;
+      const idx = obj.steps.findIndex(s => s.id === stepId);
+      if (idx < 0) return;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= obj.steps.length) return;
+
+      const item = obj.steps.splice(idx, 1)[0];
+      obj.steps.splice(newIdx, 0, item);
+      saveData();
+    }
+
+    function openEditStepModal(procId, objId, stepId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (!step) return;
+
+      showTextModal("✏️ Описание этапа", step.text, (newText) => {
+        step.text = newText;
+        step.updatedAt = getTimestampStr();
+        saveData();
+        showToast("Этап обновлен");
+      });
+    }
+
+    function openDateModal(procId, objId, stepId) {
+      activeModalTarget = { procId, objId, stepId };
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (!step) return;
+
+      document.getElementById('dateModalStepTitle').textContent = `${obj.title} → ${step.text}`;
+      document.getElementById('modalDatePickerInput').value = displayToISO(step.date) || getTodayISO();
+      document.getElementById('dateModalOverlay').style.display = 'flex';
+    }
+
+    function closeDateModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('dateModalOverlay').style.display = 'none';
+    }
+
+    function setModalDateOffset(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      document.getElementById('modalDatePickerInput').value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function saveDateFromModal() {
+      const { procId, objId, stepId } = activeModalTarget;
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (!step) return;
+
+      const iso = document.getElementById('modalDatePickerInput').value;
+      step.date = iso ? isoToDisplay(iso) : '';
+      step.updatedAt = getTimestampStr();
+      closeDateModal();
+      saveData();
+    }
+
+    function clearDateFromModal() {
+      const { procId, objId, stepId } = activeModalTarget;
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (!step) return;
+
+      step.date = '';
+      step.updatedAt = getTimestampStr();
+      closeDateModal();
+      saveData();
+    }
+
+    function renderModalHistoryList(step) {
+      const box = document.getElementById('modalHistoryLogBox');
+      box.innerHTML = '';
+      const list = step.history || [];
+
+      if (list.length === 0) {
+        box.innerHTML = `<div style="font-size:11.5px; color:#94a3b8; text-align:center; padding:6px;">Замечаний не зафиксировано</div>`;
+        return;
+      }
+
+      list.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#fff; padding:6px 8px; border-radius:6px; font-size:12px; border:1px solid #e2e8f0; gap:6px;";
+        row.innerHTML = `
+          <span style="flex:1; cursor:pointer;" onclick="editHistoryItem(${idx})" title="Нажмите для редактирования">
+            <b>[${escapeHtml(item.date)}] ${item.active?'🚨 Активно':'✔ Закрыто'}:</b> ${formatPartyTag(item.text, item.doc)}
+          </span>
+          <button type="button" class="preset-act-btn" onclick="editHistoryItem(${idx})" title="Редактировать">✏️</button>
+          <button type="button" class="preset-act-btn del" onclick="deleteHistoryItem(${idx})" title="Удалить">✕</button>
+        `;
+        box.appendChild(row);
+      });
+    }
+
+    function editHistoryItem(idx) {
+      const { procId, objId, stepId } = activeModalTarget;
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (!step || !step.history || !step.history[idx]) return;
+
+      const parsed = extractPartyAndText(step.history[idx].text, step.history[idx].doc);
+
+      showTextModal(
+        "✏️ Изменить замечание и документ",
+        parsed.text,
+        (newText, chosenParty, newDoc) => {
+          const cleanedText = sanitizeRemark(newText);
+          const cleanedDoc = sanitizeRemark(newDoc);
+          if (cleanedText || cleanedDoc) {
+            const openB = String.fromCharCode(91);
+            const closeB = String.fromCharCode(93);
+            const prefix = chosenParty ? `${openB}${chosenParty}${closeB} ` : '';
+            const finalStr = `${prefix}${cleanedText || 'Документ в работе'}`;
+
+            step.history[idx].text = finalStr;
+            step.history[idx].doc = cleanedDoc;
+
+            if (step.history[idx].active && step.blocker) {
+              step.blocker = finalStr;
+              step.doc = cleanedDoc;
+            }
+            step.updatedAt = getTimestampStr();
+            renderModalHistoryList(step);
+            saveData();
+            showToast("Замечание обновлено!");
+          }
+        },
+        true,
+        parsed.party || selectedPartyTag,
+        parsed.doc || ''
+      );
+    }
+
+    function deleteHistoryItem(idx) {
+      const { procId, objId, stepId } = activeModalTarget;
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (!step || !step.history) return;
+
+      step.history.splice(idx, 1);
+      const stillActive = step.history.filter(h => h.active);
+      const lastActive = stillActive[stillActive.length-1];
+      step.blocker = lastActive ? lastActive.text : null;
+      if(lastActive)step.doc=lastActive.doc||'';
+      // Closed history entries must never reactivate a blocker.
+      step.updatedAt = getTimestampStr();
+      renderModalHistoryList(step);
+      document.getElementById('riskClearBtn').style.display = step.blocker ? 'block' : 'none';
+      saveData();
+    }
+
+    function selectPartyChip(btn, partyName) {
+      selectedPartyTag = partyName;
+      document.querySelectorAll('.party-chip').forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
+    function renderPresetsList() {
+      const container = document.getElementById('modalPresetsList');
+      if (!container) return;
+      container.innerHTML = '';
+      const list = getRiskPresets();
+
+      list.forEach((presetText, idx) => {
+        const row = document.createElement('div');
+        row.className = 'preset-row';
+        row.innerHTML = `
+          <button type="button" class="preset-btn" onclick="applyPresetByIndex(${idx})">${escapeHtml(presetText)}</button>
+          <button type="button" class="preset-act-btn" onclick="editRiskPreset(${idx})" title="Изменить шаблон">✏️</button>
+          <button type="button" class="preset-act-btn del" onclick="deleteRiskPreset(${idx})" title="Удалить шаблон">✕</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function applyPresetByIndex(idx) {
+      const list = getRiskPresets();
+      const inp = document.getElementById('customRiskInput');
+      if (inp && list[idx]) {
+        inp.value = list[idx];
+        inp.focus();
+      }
+    }
+
+    function editRiskPreset(idx) {
+      const list = getRiskPresets();
+      if (!list[idx]) return;
+      showTextModal("✏️ Изменить шаблон причины", list[idx], (newVal) => {
+        const cleaned = sanitizeRemark(newVal);
+        if (cleaned) {
+          list[idx] = cleaned;
+          saveRiskPresets(list);
+          renderPresetsList();
+          showToast("Шаблон обновлен");
+        }
+      });
+    }
+
+    function promptAddRiskPreset() {
+      showTextModal("➕ Новый шаблон причины", "", (val) => {
+        const cleaned = sanitizeRemark(val);
+        if (cleaned) {
+          const list = getRiskPresets();
+          list.push(cleaned);
+          saveRiskPresets(list);
+          renderPresetsList();
+          showToast("Шаблон сохранен");
+        }
+      });
+    }
+
+    function deleteRiskPreset(idx) {
+      const list = getRiskPresets();
+      list.splice(idx, 1);
+      saveRiskPresets(list);
+      renderPresetsList();
+    }
+
+    function getStepAtTarget(){
+      const {procId,objId,stepId}=activeModalTarget;
+      return state.find(p=>p.id===procId)?.objects.find(o=>o.id===objId)?.steps.find(s=>s.id===stepId);
+    }
+    function openStepDetails(procId,objId,stepId){
+      activeModalTarget={procId,objId,stepId};
+      const step=getStepAtTarget();if(!step)return;
+      document.getElementById('stepOwnerInput').value=step.owner||'';
+      document.getElementById('stepUrlInput').value=step.documentUrl||'';
+      document.getElementById('stepWorkflowStatus').value=step.workflowStatus||'active';
+      document.getElementById('detailsModalOverlay').style.display='flex';
+    }
+    function closeDetailsModal(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('detailsModalOverlay').style.display='none';}
+    function saveStepDetails(){
+      const step=getStepAtTarget();if(!step)return;
+      const rawUrl=document.getElementById('stepUrlInput').value.trim();
+      const url=Model.validUrl(rawUrl);
+      if(rawUrl&&!url){showToast('Ссылка должна начинаться с https:// или http://');return;}
+      step.owner=document.getElementById('stepOwnerInput').value.trim().slice(0,160);
+      step.documentUrl=url;
+      step.workflowStatus=document.getElementById('stepWorkflowStatus').value==='waiting'?'waiting':'active';
+      step.updatedAt=getTimestampStr();
+      closeDetailsModal();saveData('Ответственный, документ или статус этапа');
+    }
+    function openRiskModal(procId, objId, stepId) {
+      activeModalTarget = { procId, objId, stepId };
+      const step=getStepAtTarget();
+      const obj=state.find(p=>p.id===procId)?.objects.find(o=>o.id===objId);
+      if(!step||!obj)return;
+      if(!step.history)step.history=[];
+      if(step.blocker && !step.history.some(h=>h.active)) {
+        step.history.push({id:createId(),date:step.updatedAt||'Ранее',text:sanitizeRemark(step.blocker),doc:sanitizeRemark(step.doc||''),active:true,closedAt:null});
+      }
+      document.getElementById('riskModalStepTitle').textContent=`${obj.title} → ${step.text}`;
+      document.getElementById('customRiskInput').value='';
+      document.getElementById('customDocInput').value='';
+      renderModalHistoryList(step);renderPresetsList();
+      document.getElementById('riskClearBtn').style.display=step.blocker?'block':'none';
+      document.getElementById('riskWaiting').value=step.workflowStatus||'active';
+      document.getElementById('riskWaiting').onchange=()=>{step.workflowStatus=document.getElementById('riskWaiting').value;saveData('Статус ожидания изменён');};
+      document.getElementById('riskModalOverlay').style.display='flex';
+    }
+
+
+        function closeRiskModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('riskModalOverlay').style.display = 'none';
+    }
+
+    function appendRiskFromModal() {
+      const { procId, objId, stepId } = activeModalTarget;
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (!step) return;
+
+      const rawVal = sanitizeRemark(document.getElementById('customRiskInput').value);
+      const docVal = sanitizeRemark(document.getElementById('customDocInput').value);
+
+      if (!rawVal && !docVal) {
+        showToast("Введите причину или номер документа");
+        return;
+      }
+
+      const openB = String.fromCharCode(91);
+      const closeB = String.fromCharCode(93);
+      const partyPrefix = selectedPartyTag ? `${openB}${selectedPartyTag}${closeB} ` : '';
+      const fullEntry = `${partyPrefix}${rawVal || 'Документ в работе'}`;
+
+      if (!step.history) step.history = [];
+      const timestamp = getTimestampStr();
+
+      (step.history||[]).forEach(h=>{if(h.active){h.active=false;h.closedAt=new Date().toISOString();}});
+      step.history.push({ id:createId(),date: timestamp, text: fullEntry, doc: docVal, active:true,closedAt:null });
+      step.blocker = fullEntry;
+      if (docVal) step.doc = docVal;
+      step.updatedAt = timestamp;
+
+      closeRiskModal();
+      saveData();
+      showToast("Запись сохранена в журнал");
+    }
+
+    function clearBlocker(procId, objId, stepId) {
+      const p = state.find(x => x.id == procId);
+      const obj = p?.objects.find(o => o.id == objId);
+      const step = obj?.steps.find(s => s.id == stepId);
+      if (!step) return;
+
+      step.blocker = null;
+      (step.history||[]).forEach(h=>{if(h.active){h.active=false;h.closedAt=new Date().toISOString();}});
+      step.updatedAt = getTimestampStr();
+      saveData('Замечание закрыто');
+      showToast("Блокер снят");
+    }
+
+    function clearRiskFromModal() {
+      const { procId, objId, stepId } = activeModalTarget;
+      clearBlocker(procId, objId, stepId);
+      closeRiskModal();
+    }
+
+    function toggleStep(procId, objId, stepId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      const step = obj?.steps.find(s => s.id === stepId);
+      if (step) {
+        step.done = !step.done;
+        if (step.done) {
+          step.completedAt = getTodayISO();
+          step.blocker = null;
+          (step.history||[]).forEach(h => {if(h.active){h.active=false;h.closedAt=new Date().toISOString();}});
+        } else step.completedAt = null;
+        step.updatedAt = getTimestampStr();
+        saveData(step.done?'Этап выполнен':'Этап возвращён в работу');
+      }
+    }
+
+    function deleteStep(procId, objId, stepId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      if (!obj) return;
+
+      askConfirm("Удалить этот этап?", () => {
+        obj.steps = obj.steps.filter(s => s.id !== stepId);
+        saveData();
+        showToast("Этап удален");
+      });
+    }
+
+    function createObjectWithTemplate(procId, tplKey) {
+      const p = state.find(x => x.id === procId);
+      if (!p) return;
+
+      const titlePlaceholder = tplKey === 'empty' ? "Новый объект" : 
+                               tplKey === 'losses' ? "Участок (сельхозпотери)" :
+                               tplKey === 'szz' ? "Объект (СЗЗ)" : "Новый участок";
+
+      showTextModal("➕ Название объекта / участка", titlePlaceholder, (name) => {
+        const nowTs = getTimestampStr();
+        const templateSteps = WORKFLOW_TEMPLATES[tplKey] || [];
+
+        p.objects.push({
+          id: createId(),
+          title: sanitizeRemark(name),
+          archived: false,
+          collapsed: false,
+          steps: templateSteps.map((text, idx) => ({
+            id: createId(),
+            text: text,
+            doc: "",
+            date: "",
+            done: false,
+            blocker: null,
+            history: [],
+            updatedAt: nowTs
+          }))
+        });
+
+        saveData();
+        showToast("Объект создан");
+      });
+    }
+
+    function addCustomStep(procId, objId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      if (!obj) return;
+
+      showTextModal("➕ Добавить этап / задачу", "", (txt) => {
+        const cleaned = sanitizeRemark(txt);
+        if (cleaned) {
+          if (!obj.steps) obj.steps = [];
+          const newId = createId();
+          obj.steps.push({
+            id: newId,
+            text: cleaned,
+            doc: "",
+            date: "",
+            done: false,
+            blocker: null,
+            history: [],
+            updatedAt: getTimestampStr()
+          });
+          pinnedStepsMap[obj.id] = newId;
+          saveData();
+          showToast("Этап добавлен");
+        }
+      });
+    }
+
+    function archiveObject(procId, objId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      if (obj) {
+        obj.archived = true;
+        saveData();
+        showToast("Перемещено в архив");
+      }
+    }
+
+    function restoreObject(procId, objId) {
+      const p = state.find(x => x.id === procId);
+      const obj = p?.objects.find(o => o.id === objId);
+      if (obj) {
+        obj.archived = false;
+        saveData();
+        showToast("Объект возвращен в работу");
+      }
+    }
+
+    function toggleArchiveView(procId) {
+      const p = state.find(x => x.id === procId);
+      if (p) {
+        p.showArchive = !p.showArchive;
+        render();
+      }
+    }
+
+    // Backup / restore module: validate before import, and save a downloadable pre-import backup.
+    const Backups=(()=>{
+      function build(){return {schema:SNAPSHOT_SCHEMA,type:'projects-monitoring-backup',exportedAt:new Date().toISOString(),
+        rev:currentRevision,snapshotId:currentSnapshotId,data:Model.clone(state),audit:Model.clone(auditLog),presets:getRiskPresets()};}
+      function download(payload,prefix='backup_projects'){
+        try{
+          const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+          const href=URL.createObjectURL(blob);
+          const a=document.createElement('a');a.href=href;a.download=`${prefix}_${getTodayISO()}.json`;
+          document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),30000);
+          return true;
+        }catch(e){console.error(e);showToast('Ошибка создания резервной копии');return false;}
+      }
+      function previewFile(e){
+        const file=e.target.files?.[0];e.target.value='';if(!file)return;
+        if(file.size>8*1024*1024){showToast('Файл слишком большой (макс. 8 МБ)');return;}
+        const reader=new FileReader();
+        reader.onerror=()=>showToast('Не удалось прочитать файл');
+        reader.onload=evt=>{
+          try{
+            const parsed=JSON.parse(evt.target.result);
+            const data=Array.isArray(parsed)?parsed:parsed.data;
+            Model.validateData(data);
+            const normalized=Model.normalize(data);
+            const objects=normalized.reduce((sum,p)=>sum+p.objects.length,0);
+            const steps=normalized.reduce((sum,p)=>sum+p.objects.reduce((v,o)=>v+o.steps.length,0),0);
+            const exportInfo=parsed.exportedAt?`\nСоздан: ${String(parsed.exportedAt).slice(0,19)}`:'\nДата резервной копии неизвестна';
+            askConfirm(`Импорт: ${normalized.length} направлений, ${objects} объектов, ${steps} этапов.${exportInfo}\nТекущая база будет заменена. Перед этим скачается её копия. Продолжить?`,()=>{
+              const previous=build();
+              if(!download(previous,'before_import')){showToast('Импорт отменён: не создана резервная копия');return;}
+              archiveSnapshot(getLocalPayload(),'Перед импортом');
+              state=normalized;
+              if(Array.isArray(parsed.presets)){
+                const clean=parsed.presets.filter(x=>typeof x==='string'&&x.length<=300).slice(0,100);
+                if(clean.length)saveRiskPresets(clean);
+              }
+              auditLog=Array.isArray(parsed.audit)?parsed.audit.slice(-250):auditLog;
+              saveData('Восстановление из файла');
+              showToast('База восстановлена; резервная копия предыдущей базы скачана');
+            });
+          }catch(err){console.warn('Недопустимый JSON',err);showToast('Импорт отменён: '+err.message);}
+        };
+        reader.readAsText(file,'UTF-8');
+      }
+      return {build,download,previewFile};
+    })();
+    function downloadBackupFile(){if(Backups.download(Backups.build()))showToast('Резервная копия скачана');}
+    function triggerImportFile(){document.getElementById('backupFileInput').click();}
+    function handleFileImport(e){Backups.previewFile(e);}
+
+
+        function render() {
+      try {
+        const root = document.getElementById('processesRoot');
+        if (!root) return;
+        root.innerHTML = '';
+
+        let totalDone = 0;
+        let totalPlan = 0;
+        let totalActiveObjs = 0;
+        let totalBlockers = 0;
+        let totalOverdue = 0;
+        let totalWaiting = 0;
+
+        state.forEach(proc => {
+          const activeObjects = (proc.objects || []).filter(o => !o.archived);
+          activeObjects.forEach(o => {
+            totalActiveObjs++;
+            (o.steps || []).forEach(s => {
+              if (s.done) totalDone++;
+              else {
+                if (s.blocker) totalBlockers++;
+                else if (s.workflowStatus==='waiting')totalWaiting++;
+                else totalPlan++;
+                if(isStepOverdue(s.date,s.done))totalOverdue++;
+              }
+            });
+          });
+        });
+
+        const filterBanner = document.getElementById('filterBanner');
+        if (filterBanner){
+          filterBanner.classList.toggle('show', filterOnlyIssues);
+          const label=filterBanner.querySelector('span');
+          if(label)label.textContent=issueFilterMode==='overdue'?'Показаны объекты с просрочкой':'Показаны объекты с активными замечаниями';
+        }
+
+        state.forEach((proc, procIdx) => {
+          const allActiveObjects = (proc.objects || []).filter(o => !o.archived);
+          const archivedObjects = (proc.objects || []).filter(o => o.archived);
+
+          // Считаем статус папки для цветовой подсветки кружка с цифрой
+          let procBlockersCount = 0;
+          let procOverdueCount = 0;
+          let procTotalSteps = 0;
+          let procDoneSteps = 0;
+
+          allActiveObjects.forEach(o => {
+            (o.steps || []).forEach(s => {
+              procTotalSteps++;
+              if (s.done) {
+                procDoneSteps++;
+              } else {
+                if (s.blocker) procBlockersCount++;
+                if (isStepOverdue(s.date, s.done)) procOverdueCount++;
+              }
+            });
+          });
+
+          const isProcAllDone = procTotalSteps > 0 && procDoneSteps === procTotalSteps;
+          const folderBadgeClass = procBlockersCount > 0
+            ? 'badge-danger'
+            : (procOverdueCount > 0 ? 'badge-amber' : (isProcAllDone ? 'badge-green' : ''));
+
+          const visibleObjects = filterOnlyIssues
+            ? allActiveObjects.filter(o => (o.steps || []).some(s => !s.done && (issueFilterMode==='blockers' ? !!s.blocker : isStepOverdue(s.date,s.done))))
+            : allActiveObjects;
+
+          if (filterOnlyIssues && visibleObjects.length === 0) return;
+
+          const row = document.createElement('div');
+          const isCollapsed = filterOnlyIssues ? false : (proc.collapsed !== undefined ? !!proc.collapsed : true);
+          row.className = `folder-row`;
+
+          row.innerHTML = `
+            <div class="folder-header" onclick="toggleProcessCollapse(${jsId(proc.id)})">
+              <div class="folder-left">
+                <span class="folder-chevron ${isCollapsed ? 'collapsed' : ''}">▼</span>
+                <span class="folder-title-text">${escapeHtml(proc.title)}</span>
+                <span class="counter-badge ${folderBadgeClass}">${allActiveObjects.length}</span>
+              </div>
+              <div class="folder-right-tools" onclick="event.stopPropagation()">
+                <button class="btn-row-menu" onclick="toggleMenuGeneric(event, 'fmenu-${proc.id}')" title="Опции">···</button>
+                <div class="obj-dropdown-menu" id="fmenu-${proc.id}">
+                  <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editProcessTitle(${jsId(proc.id)})">✏️ Переименовать</button>
+                  ${procIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveProcess(${jsId(proc.id)}, -1)">⬆️ Вверх</button>` : ''}
+                  ${procIdx < state.length - 1 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveProcess(${jsId(proc.id)}, 1)">⬇️ Вниз</button>` : ''}
+                  <button type="button" class="obj-dropdown-item del-action" onclick="event.stopPropagation(); deleteProcess(${jsId(proc.id)})">✕ Удалить направление</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="folder-content ${isCollapsed ? 'hidden' : ''}">
+              ${visibleObjects.map((obj) => {
+                const objIdx = allActiveObjects.findIndex(x => x.id === obj.id);
+                const stepsArr = obj.steps || [];
+                const dCount = stepsArr.filter(s => s.done).length;
+                const tCount = stepsArr.length;
+                const percent = tCount > 0 ? Math.round((dCount / tCount) * 100) : 0;
+                const isAllDone = tCount > 0 && dCount === tCount;
+                const isObjCollapsed = filterOnlyIssues ? false : (obj.collapsed !== undefined ? !!obj.collapsed : true);
+
+                const objBlockers = stepsArr.filter(s => !s.done && s.blocker).length;
+                const objOverdues = stepsArr.filter(s => !s.done && isStepOverdue(s.date, s.done)).length;
+
+                const pillStateClass = isAllDone ? 'green' : (objBlockers > 0 ? 'pill-danger' : (objOverdues > 0 ? 'pill-amber' : ''));
+                const barFillClass = objBlockers > 0 ? 'is-danger' : (objOverdues > 0 ? 'is-amber' : '');
+
+                const firstUnfinished = stepsArr.find(s => !s.done);
+                const currentActiveStepId = firstUnfinished ? firstUnfinished.id : null;
+                const currentStep = stepsArr.find(s => !s.done && s.blocker) || firstUnfinished;
+                const currentDue = currentStep && currentStep.date ? String(currentStep.date).replace(/^до\s+/, '') : '';
+                const currentStatus = isAllDone ? 'Завершено' : objBlockers ? 'Замечание' : objOverdues ? 'Просрочка' : currentStep?.workflowStatus === 'waiting' ? 'Ожидание' : 'В работе';
+                const currentStatusCls = isAllDone ? 'summary-done' : objBlockers ? 'summary-blocked' : objOverdues ? 'summary-overdue' : currentStep?.workflowStatus === 'waiting' ? 'summary-waiting' : 'summary-active';
+                const pinnedStepId = pinnedStepsMap[obj.id] || null;
+                const isLocalShowAll = !!expandedAllStepsObjMap[obj.id];
+
+                const stepsToRender = (reportMode === 'executive' && !isAllDone && !isLocalShowAll)
+                  ? stepsArr.filter(s => (!s.done && (s.blocker || isStepOverdue(s.date, s.done))) || s.id === currentActiveStepId || s.id === pinnedStepId)
+                  : stepsArr;
+
+                const hiddenStepsCount = stepsArr.length - stepsToRender.length;
+
+                return `
+                  <div class="item-card ${isAllDone ? 'is-complete' : ''}">
+                    <div class="item-header" onclick="toggleObjectCollapse(${jsId(proc.id)},${jsId(obj.id)})" role="button" tabindex="0" aria-expanded="${!isObjCollapsed}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleObjectCollapse(${jsId(proc.id)},${jsId(obj.id)});}">
+                      <div class="item-title-wrap">
+                        <span class="item-chevron ${isObjCollapsed ? 'collapsed' : ''}" aria-hidden="true">▼</span>
+                        <span class="item-title">${escapeHtml(obj.title)}</span>
+                      </div>
+
+                      <div class="item-meta-right" onclick="event.stopPropagation()">
+                        ${isObjCollapsed && (isAllDone || objBlockers || objOverdues || currentStep?.workflowStatus === 'waiting') ? `<span class="summary-status-inline ${currentStatusCls}">${currentStatus}</span>` : ''}
+                        ${tCount > 0 ? `
+                          <div class="progress-pill ${pillStateClass}">
+                            <div class="progress-mini-bar">
+                              <div class="progress-mini-fill ${barFillClass}" style="width: ${percent}%;"></div>
+                            </div>
+                            <span>${dCount}/${tCount}</span>
+                          </div>
+                        ` : `
+                          <span class="progress-pill" style="opacity:0.6;">0 задач</span>
+                        `}
+
+                        <button class="btn-item-more" onclick="toggleMenuGeneric(event, 'omenu-${obj.id}')" title="Меню">···</button>
+                        <div class="obj-dropdown-menu" id="omenu-${obj.id}">
+                          <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editObjectTitle(${jsId(proc.id)},${jsId(obj.id)})">✏️ Переименовать</button>
+                          <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); cloneObject(${jsId(proc.id)},${jsId(obj.id)})">📋 Копировать</button>
+                          ${objIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveObject(${jsId(proc.id)}, ${jsId(obj.id)}, -1)">⬆️ Вверх</button>` : ''}
+                          ${objIdx < allActiveObjects.length - 1 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveObject(${jsId(proc.id)}, ${jsId(obj.id)}, 1)">⬇️ Вниз</button>` : ''}
+                          <button type="button" class="obj-dropdown-item del-action" onclick="event.stopPropagation(); deleteObject(${jsId(proc.id)},${jsId(obj.id)})">✕ Удалить</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="item-body ${isObjCollapsed ? 'hidden' : ''}">
+                      <!-- КОМПАКТНЫЙ КОНВЕЙЕР -->
+                      ${stepsArr.length > 1 ? `
+                        <div class="conveyor-strip" aria-label="Маршрут этапов объекта" title="Нажмите на этап для просмотра">
+                          ${stepsArr.map((st, idx) => {
+                            const stOverdue = isStepOverdue(st.date, st.done);
+                            const nodeCls = st.done ? 'c-done' : (st.blocker ? 'c-blocked' : (stOverdue ? 'c-overdue' : (st.id === currentActiveStepId ? 'c-current' : '')));
+                            const pinCls = (pinnedStepId === st.id) ? 'c-pinned' : '';
+                            const iconPrefix = st.done ? '✔ ' : (st.blocker ? '🚨 ' : (stOverdue ? '⏰ ' : (st.id === currentActiveStepId ? '▶ ' : '')));
+                            return `
+                              <span class="conv-node ${nodeCls}${pinCls}" onclick="toggleConveyorPin(${jsId(obj.id)},${jsId(st.id)})">
+                                ${iconPrefix}${escapeHtml(shortenStepName(st.text))}
+                              </span>
+                              ${idx < stepsArr.length - 1 ? `<span class="conv-arrow">➔</span>` : ''}
+                            `;
+                          }).join('')}
+                        </div>
+                      ` : ''}
+
+                      ${isAllDone ? `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#ecfdf5; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:700; color:#059669;">
+                          <span>🎉 Все этапы закрыты</span>
+                          <button class="chip-btn date-normal" style="background:#059669; color:#fff; border:none;" onclick="archiveObject(${jsId(proc.id)}, ${jsId(obj.id)})">В архив</button>
+                        </div>
+                      ` : ''}
+
+                      <div style="display:flex; flex-direction:column; gap:5px;">
+                        ${stepsToRender.map((s) => {
+                          const sIdx = stepsArr.findIndex(x => x.id === s.id);
+                          const hasBlock = !s.done && !!s.blocker;
+                          const dateMeta = analyzeDeadline(s.date, s.done);
+                          const hist = s.history || [];
+
+                          return `
+                            <div class="step-unit ${s.done ? 'done' : ''} ${hasBlock ? 'blocked' : ''}">
+                              <!-- СТРОКА 1: ГАЛОЧКА + НАЗВАНИЕ СЛЕВА, ТРОЕТОЧИЕ СПРАВА -->
+                              <div class="step-top-bar">
+                                <div class="step-left-part">
+                                  <input type="checkbox" id="chk-${s.id}" class="step-check" aria-label="Выполнено: ${escapeHtml(s.text)}" ${s.done ? 'checked' : ''} onchange="toggleStep(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
+                                  <label class="step-text" for="chk-${s.id}">${escapeHtml(s.text)}</label>
+                                </div>
+
+                                <div style="position:relative; flex-shrink:0;" onclick="event.stopPropagation()">
+                                  <button type="button" class="step-del-btn" onclick="toggleMenuGeneric(event, 'smenu-${s.id}')" title="Опции этапа">···</button>
+                                  <div class="obj-dropdown-menu" id="smenu-${s.id}">
+                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); openEditStepModal(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">✏️ Переименовать</button>
+                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); openStepDetails(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">👤 Ответственный / документ</button>
+                                    ${sIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveStep(${jsId(proc.id)}, ${jsId(obj.id)},${jsId(s.id)}, -1)">⬆️ Вверх</button>` : ''}
+                                    ${sIdx < stepsArr.length - 1 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveStep(${jsId(proc.id)}, ${jsId(obj.id)},${jsId(s.id)}, 1)">⬇️ Вниз</button>` : ''}
+                                    <button type="button" class="obj-dropdown-item del-action" onclick="event.stopPropagation(); deleteStep(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">✕ Удалить</button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!-- СТРОКА 2: ЧИПЫ СРОКА И ЗАМЕЧАНИЯ -->
+                              <div class="step-chips-bar">
+                                <button type="button" class="chip-btn ${dateMeta.cls}" onclick="this.blur(); openDateModal(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
+                                  ${escapeHtml(formatDeadlineChip(s,dateMeta))}
+                                </button>
+                                ${s.owner ? `<button type="button" class="step-owner-compact" onclick="openStepDetails(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Изменить ответственного: ${escapeHtml(s.owner)}">👤 <span>${escapeHtml(s.owner)}</span></button>` : ''}
+                                ${!s.done && s.workflowStatus==='waiting' ? '<span class="chip-btn urgent" aria-label="Ожидание">⏳ Ожидание</span>' : ''}
+                                ${s.documentUrl ? `<a class="step-document-link" href="${escapeHtml(Model.validUrl(s.documentUrl))}" target="_blank" rel="noopener noreferrer">Документ ↗</a>` : ''}
+                                ${s.done && s.completedAt ? `<span class="step-owner">Закрыто: ${escapeHtml(s.completedAt)}</span>` : ''}
+                                ${!s.done ? `
+                                  <button type="button" class="chip-btn ${hasBlock ? 'risk-active' : (hist.length > 0 ? 'risk-notes' : 'ghost')}" onclick="this.blur(); openRiskModal(${jsId(proc.id)}, ${jsId(obj.id)},${jsId(s.id)})">
+                                    ${hasBlock ? 'Замечание · активно' : (hist.length > 0 ? 'Замечания (' + hist.length + ')' : '+ Замечание')}
+                                  </button>
+                                ` : ''}
+                              </div>
+
+                              ${hist.length > 0 ? `
+                                <div class="step-remarks-thread">
+                                  ${hist.filter(hItem=>hasBlock && hItem.active).map(hItem => `
+                                    <div class="step-remark-item is-active-block">
+                                      <span class="remark-text" onclick="openRiskModal(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
+                                        <span class="remark-label">Текущее замечание</span>
+                                        <span class="remark-date">${escapeHtml(hItem.date)}</span> ${formatPartyTag(hItem.text,hItem.doc)}
+                                      </span>
+                                      <button class="btn-remark-clear" onclick="event.stopPropagation();clearBlocker(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Снять</button>
+                                    </div>`).join('')}
+                                  ${hist.filter(h=>!h.active || !hasBlock).length > 0 ? `
+                                    <button type="button" class="history-toggle" id="history-toggle-${s.id}" onclick="toggleHistoryVisibility(${jsId(s.id)})">${expandedHistoryStepMap[s.id]?'Скрыть историю':'История замечаний'} (${hist.filter(h=>!h.active || !hasBlock).length})</button>
+                                    <div class="history-older" id="history-older-${s.id}" data-count="${hist.filter(h=>!h.active || !hasBlock).length}" ${expandedHistoryStepMap[s.id]?'':'hidden'}>
+                                      ${hist.filter(h=>!h.active || !hasBlock).map(hItem=>`
+                                        <div class="step-remark-item is-resolved">
+                                          <span class="remark-text" onclick="openRiskModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})"><span class="remark-date">${escapeHtml(hItem.date)}</span> ${formatPartyTag(hItem.text,hItem.doc)}</span>
+                                        </div>`).join('')}
+                                    </div>` : ''}
+                                </div>
+                              ` : ''}
+                            </div>
+                          `;
+                        }).join('')}
+                      </div>
+
+                      <!-- РОВНЫЕ КНОПКИ В ОДНУ СТРОКУ БЕЗ ЗАЛИПАНИЯ РАМКИ -->
+                      <div class="obj-bottom-bar">
+                        ${(hiddenStepsCount > 0 || isLocalShowAll) && reportMode === 'executive' && !isAllDone ? `
+                          <button type="button" class="btn-subtle-link" onclick="this.blur(); toggleObjShowAllSteps(${jsId(obj.id)})">
+                            ${isLocalShowAll ? '▲ Свернуть пустые' : `👁 Все этапы (+${hiddenStepsCount})`}
+                          </button>
+                        ` : ''}
+                        <button type="button" class="btn-subtle-link" onclick="this.blur(); addCustomStep(${jsId(proc.id)},${jsId(obj.id)})">
+                          + Добавить задачу
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+
+              ${!filterOnlyIssues ? `
+                <div class="folder-footer-actions">
+                  <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'land')">⚡ Сервитут (5)</button>
+                  <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'losses')">🌾 Потери (4)</button>
+                  <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'szz')">📐 СЗЗ (4)</button>
+                  <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'empty')">+ Пустой</button>
+                </div>
+              ` : ''}
+
+              ${archivedObjects.length > 0 && !filterOnlyIssues ? `
+                <div class="archive-box">
+                  <div class="archive-header" onclick="toggleArchiveView(${jsId(proc.id)})">
+                    <span>🗄 Архив закрытых (${archivedObjects.length})</span>
+                    <span>${proc.showArchive ? '▲ Скрыть' : '▼ Показать'}</span>
+                  </div>
+                  ${proc.showArchive ? `
+                    <div class="archive-list">
+                      ${archivedObjects.map(ao => `
+                        <div class="archive-row-item">
+                          <span style="font-weight:700; color:var(--done);">✔ ${escapeHtml(ao.title)}</span>
+                          <button class="chip-btn date-normal" onclick="restoreObject(${jsId(proc.id)},${jsId(ao.id)})">↩ Вернуть</button>
+                        </div>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+            </div>
+          `;
+
+          root.appendChild(row);
+        });
+
+        const bBox = document.getElementById('kpiBlockersBox');
+        if (bBox) {
+          bBox.className = `kpi-cell clickable ${totalBlockers > 0 ? 'danger' : ''} ${issueFilterMode==='blockers' ? 'active-filter' : ''}`;
+        }
+
+        document.getElementById('mBlockers').textContent = totalBlockers;
+        const overdueBox=document.getElementById('kpiOverdueBox');
+        if(overdueBox)overdueBox.className=`kpi-cell clickable ${totalOverdue>0?'amber':''} ${issueFilterMode==='overdue'?'active-filter':''}`;
+        document.getElementById('mOverdue').textContent=totalOverdue;
+        document.getElementById('mWaiting').textContent=totalWaiting;
+        document.getElementById('mDone').textContent = totalDone;
+        document.getElementById('mPlan').textContent = totalPlan;
+        document.getElementById('mTotal').textContent = totalActiveObjs;
+      } catch(err) {
+        console.error("Render fatal error:", err);
+      }
+    }
+
+    // Reporting module. Period-specific completed milestones require real completion dates.
+    const Reports = (()=>{
+      const fmt = iso=>iso ? iso.split('-').reverse().join('.') : 'дата не установлена';
+      function getPeriod(){
+        const today=getTodayISO();
+        const from=document.getElementById('reportFrom')?.value||today;
+        const to=document.getElementById('reportTo')?.value||today;
+        return from<=to?{from,to}:{from:to,to:from};
+      }
+      function validatePeriod(){
+        const {from,to}=getPeriod();
+        document.getElementById('reportFrom').value=from;
+        document.getElementById('reportTo').value=to;
+      }
+      function collect(includeArchived=false){
+        const rows=[];
+        for(const proc of state)for(const obj of proc.objects||[]){
+          if(obj.archived && !includeArchived)continue;
+          for(const step of obj.steps||[])rows.push({proc,obj,step});
+        }
+        return rows;
+      }
+      function status(step){
+        if(step.done)return 'Выполнено';
+        if(step.blocker)return 'Замечание';
+        if(isStepOverdue(step.date,step.done))return 'Просрочено';
+        if(step.workflowStatus==='waiting')return 'Ожидание';
+        return 'В работе';
+      }
+      function weeklyPlan(){
+        const d=new Date();d.setHours(12,0,0,0);
+        const monday=new Date(d);monday.setDate(d.getDate()+((8-d.getDay())%7||7));
+        const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+        const iso=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+        const from=iso(monday),to=iso(sunday);
+        let txt=`📅 ПЛАН НА СЛЕДУЮЩУЮ НЕДЕЛЮ (${fmt(from)}–${fmt(to)})\n\n`;
+        const rows=collect().filter(x=>!x.step.done);
+        const urgent=rows.filter(x=>x.step.blocker||isStepOverdue(x.step.date,false));
+        const scheduled=rows.filter(x=>{
+          const due=displayToISO(x.step.date);return due&&due>=from&&due<=to;
+        });
+        const focus=rows.filter(x=>!urgent.includes(x)&&!scheduled.includes(x)&&x.step.workflowStatus!=='waiting');
+        const waiting=rows.filter(x=>x.step.workflowStatus==='waiting'&&!x.step.blocker);
+        const section=(name,list)=>{
+          txt+=name+':\n';
+          if(!list.length){txt+='• Нет задач\n\n';return;}
+          for(const {proc,obj,step} of list)txt+=`• ${proc.title} / ${obj.title}: ${step.text}${step.date?' ['+step.date+']':''}${step.owner?' — '+step.owner:''}\n`;
+          txt+='\n';
+        };
+        section('🚨 Перенесённые и проблемные',urgent);
+        section('📌 Срок на следующей неделе',scheduled.filter(x=>!urgent.includes(x)));
+        section('⏳ Ожидаем решения',waiting.filter(x=>!scheduled.includes(x)&&!urgent.includes(x)));
+        section('▶ Прочие незавершённые работы',focus.filter(x=>!scheduled.includes(x)).slice(0,30));
+        return txt.trim();
+      }
+      function generate(){
+        const {from,to}=getPeriod(),rows=collect();
+        if(reportMode==='executive'){
+          let txt=`📊 ОТЧЁТ ЗА ПЕРИОД ${fmt(from)}–${fmt(to)}\n\n`;
+          const completed=collect(true).filter(x=>x.step.done && x.step.completedAt && x.step.completedAt>=from&&x.step.completedAt<=to);
+          const unknown=collect(true).filter(x=>x.step.done&&!x.step.completedAt);
+          const blockers=rows.filter(x=>!x.step.done&&x.step.blocker);
+          const late=rows.filter(x=>isStepOverdue(x.step.date,x.step.done));
+          txt+=`✅ ВЫПОЛНЕНО ЗА ПЕРИОД (${completed.length}):\n`;
+          if(!completed.length)txt+='• Подтверждённых выполнений за период нет\n';
+          for(const {proc,obj,step} of completed)txt+=`• ${obj.title} (${proc.title}): ${step.text} — ${fmt(step.completedAt)}\n`;
+          if(unknown.length)txt+=`\nℹ️ Ранее отмечено выполненным без даты: ${unknown.length} (не включено в итоги периода)\n`;
+          txt+=`\n🚨 ТЕКУЩИЕ ЗАМЕЧАНИЯ (НА МОМЕНТ ОТЧЁТА) (${blockers.length}):\n`;
+          if(!blockers.length)txt+='• Нет активных замечаний\n';
+          for(const {proc,obj,step} of blockers){
+            txt+=`• ${obj.title} (${proc.title}): ${step.text}${step.owner?' / '+step.owner:''}\n`;
+            for(const h of step.history||[])if(h.active)txt+=`  └ ${sanitizeRemark(h.text)}${h.doc?' ['+sanitizeRemark(h.doc)+']':''}\n`;
+          }
+          txt+=`\n⏰ ПРОСРОЧЕНО СЕЙЧАС (${late.length}):\n`;
+          if(!late.length)txt+='• Нет просрочек\n';
+          for(const {obj,step} of late)txt+=`• ${obj.title}: ${step.text} [${step.date}]\n`;
+          const waiting=rows.filter(x=>!x.step.done&&x.step.workflowStatus==='waiting'&&!x.step.blocker);
+          txt+=`\n⌛ ОЖИДАНИЕ (${waiting.length}):\n`;
+          if(!waiting.length)txt+='• Нет этапов в ожидании\n';
+          for(const {obj,step} of waiting)txt+=`• ${obj.title}: ${step.text}${step.owner?' / '+step.owner:''}\n`;
+          const focus=rows.filter(x=>!x.step.done&&!x.step.blocker&&x.step.workflowStatus!=='waiting');
+          txt+=`\n▶ В РАБОТЕ (${focus.length}):\n`;
+          for(const {obj,step} of focus)txt+=`• ${obj.title}: ${step.text}${step.date?' ['+step.date+']':''}\n`;
+          return txt.trim();
+        }
+        let txt=`📋 ПОЛНЫЙ РЕЕСТР — ТЕКУЩЕЕ СОСТОЯНИЕ | ${getTodayStr()}\n\n`;
+        for(const proc of state){
+          txt+=`📂 ${proc.title}\n`;
+          for(const obj of proc.objects||[]){
+            if(obj.archived)continue;
+            const done=(obj.steps||[]).filter(x=>x.done).length;
+            txt+=`📌 ${obj.title} [${done}/${(obj.steps||[]).length}]\n`;
+            for(const step of obj.steps||[]){
+              txt+=`  • ${step.text} — ${status(step)}${step.date?' ['+step.date+']':''}${step.completedAt?' (выполнено '+fmt(step.completedAt)+')':''}${step.owner?' / '+step.owner:''}\n`;
+              if(step.documentUrl)txt+=`    Документ: ${step.documentUrl}\n`;
+              if(step.blocker)txt+=`    Замечание: ${step.blocker}\n`;
+            }
+          }
+          txt+='\n';
+        }
+        return txt.trim();
+      }
+      return {generate,weeklyPlan,getPeriod,validatePeriod,status};
+    })();
+    function generateTelegramReport(){return Reports.generate();}
+    function validateReportPeriod(){Reports.validatePeriod();}
+    async function safeCopy(text){
+      try{await navigator.clipboard.writeText(text);showToast('Скопировано');return true;}
+      catch(e){showToast('Нет доступа к буферу. Откройте страницу через HTTPS');return false;}
+    }
+    function copyReport(){safeCopy(generateTelegramReport());}
+    function copyWeeklyPlan(){safeCopy(Reports.weeklyPlan());}
+    function shareToTelegram(){
+      const text=generateTelegramReport();
+      const url=`https://t.me/share/url?text=${encodeURIComponent(text)}`;
+      if(tg?.openTelegramLink)tg.openTelegramLink(url);else window.open(url,'_blank','noopener');
+    }
+    function exportToExcel(){
+      const rows=[];let tsv='Направление\tОбъект\tПрогресс\tЭтап\tОтветственный\tДокумент URL\tСрок\tВыполнено\tСтатус\tИстория\n';
+      const sanitizeCell=v=>{const t=String(v??'');return /^[=+@\-\t\r]/.test(t)?"'"+t:t;};
+      for(const proc of state)for(const obj of proc.objects||[]){
+        const total=(obj.steps||[]).length;const done=(obj.steps||[]).filter(x=>x.done).length;
+        for(const step of obj.steps||[]){
+          const history=(step.history||[]).map(h=>`[${h.date}] ${h.text} (${h.active?'открыто':'закрыто'})`).join(' → ');
+          const row={Направление:proc.title,Объект:obj.title,Прогресс:total?`${Math.round(done/total*100)}%`:'0%',Этап:step.text,
+            Ответственный:step.owner||'',Документ:step.documentUrl||step.doc||'',Срок:step.date||'', 'Дата выполнения':step.completedAt||'',
+            Статус:Reports.status(step),Хронология:history};
+          const safeRow=Object.fromEntries(Object.entries(row).map(([k,v])=>[k,sanitizeCell(v)]));
+          rows.push(safeRow);tsv+=Object.values(safeRow).map(v=>String(v).replace(/[\t\r\n]+/g,' ')).join('\t')+'\n';
+        }
+      }
+      if(!rows.length){showToast('Нет данных для экспорта');return;}
+      if(typeof XLSX==='undefined'){safeCopy(tsv);showToast('Excel недоступен: скопирована таблица');return;}
+      try{
+        const ws=XLSX.utils.json_to_sheet(rows);
+        const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Мониторинг');
+        XLSX.writeFile(wb,`Мониторинг_${getTodayISO()}.xlsx`);
+        showToast('Excel скачан');
+      }catch(e){console.error(e);safeCopy(tsv);}
+    }
+
+
+        // AI modes: authenticated proxy (recommended), or explicit per-session personal key.
+    // The direct mode never persists an API key and sends only on explicit consent.
+    const AiClient=(()=>{
+      const KEY='projects_ai_proxy_url';
+      const MODE_KEY='projects_ai_mode';
+      const MODEL_KEY='projects_ai_model';
+      const url=()=>localStorage.getItem(KEY)||'';
+      let directKey='';
+      function currentMode(){return document.getElementById('aiModeSelect').value==='direct'?'direct':'proxy';}
+      function onModeChange(){
+        const direct=currentMode()==='direct';
+        document.getElementById('aiProxySettings').hidden=direct;
+        document.getElementById('aiDirectSettings').hidden=!direct;
+      }
+      function open(){
+        document.getElementById('geminiProxyUrlInput').value=url();
+        document.getElementById('aiModeSelect').value=(localStorage.getItem(MODE_KEY)==='direct'||(!localStorage.getItem(MODE_KEY)&&!url()))?'direct':'proxy';
+        document.getElementById('geminiApiKeyInput').value=directKey;
+        document.getElementById('geminiModelInput').value=localStorage.getItem(MODEL_KEY)||'gemini-2.5-flash';
+        document.getElementById('aiConsent').checked=false;
+        onModeChange();
+        document.getElementById('aiModalOverlay').style.display='flex';
+      }
+      function save(){
+        const raw=document.getElementById('geminiProxyUrlInput').value.trim();
+        if(!raw){localStorage.removeItem(KEY);showToast('Адрес AI-сервера удалён');return;}
+        try {const u=new URL(raw);if(u.protocol!=='https:')throw Error();}
+        catch(e){showToast('Нужен действительный адрес HTTPS');return;}
+        localStorage.setItem(KEY,raw);showToast('Адрес AI-сервера сохранён');
+      }
+      async function run(){
+        const out=document.getElementById('aiOutput-analytics');
+        const mode=currentMode();
+        if(!document.getElementById('aiConsent').checked){out.textContent='Подтвердите отправку содержимого отчёта';return;}
+        const report=generateTelegramReport();
+        const headers={'Content-Type':'application/json'};
+        let target,body;
+        if(mode==='proxy'){
+          if(!url()){out.textContent='Введите адрес защищённого AI-сервера';return;}
+          if(!tg?.initData){out.textContent='Для доступа к AI-серверу откройте приложение через Telegram';return;}
+          target=url();
+          headers['X-Telegram-Init-Data']=tg.initData;
+          body={report};
+        }else{
+          const supplied=document.getElementById('geminiApiKeyInput').value.trim();
+          if(!supplied){out.textContent='Введите личный API-ключ Gemini';return;}
+          directKey=supplied; // in memory only; previous persisted keys are not automatically reused.
+          const model=document.getElementById('geminiModelInput').value.trim();
+          if(!/^gemini-[a-zA-Z0-9._-]{1,55}$/.test(model)){out.textContent='Неверное имя модели Gemini';return;}
+          localStorage.setItem(MODEL_KEY,model);
+          target='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
+          headers['x-goog-api-key']=directKey;
+          body={contents:[{parts:[{text:'Ты — эксперт PMO. Подготовь краткую управленческую сводку с выполненными этапами, ближайшими задачами, сроками и активными замечаниями. Не придумывай факты.\n\n'+report}]}]};
+        }
+        localStorage.setItem(MODE_KEY,mode);
+        out.textContent='Формируется сводка...';
+        const controller=new AbortController();
+        const timer=setTimeout(()=>controller.abort(),30000);
+        try{
+          const response=await fetch(target,{method:'POST',headers,body:JSON.stringify(body),signal:controller.signal});
+          let data;
+          try{data=await response.json();}catch(e){throw new Error('Не удалось прочитать ответ AI');}
+          if(!response.ok)throw new Error(String(data?.error?.message||data?.error||'HTTP '+response.status).slice(0,450));
+          const result=mode==='direct' ? (data?.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('\n') : data?.text;
+          out.textContent=String(result||'AI вернул пустой ответ').slice(0,20000);
+        }catch(e){out.textContent='Ошибка AI: '+(e.name==='AbortError'?'превышено время ожидания':e.message);}
+        finally{clearTimeout(timer);}
+      }
+      return {open,save,run,onModeChange};
+    })();
+    function openAiModal(){AiClient.open();}
+    function closeAiModal(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('aiModalOverlay').style.display='none';}
+    function saveAiProxyUrl(){AiClient.save();}
+    function onAiModeChange(){AiClient.onModeChange();}
+    function runAiAnalytics(){AiClient.run();}
+
+
+        function copyAiOutput(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      if (text) navigator.clipboard.writeText(text).then(() => showToast("Скопировано!"));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastMsg');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2200);
+    }
+
+    // Create an HTML-attribute-safe JavaScript literal for an ID. IDs may be
+    // legacy numbers or randomly generated strings. Never inject raw IDs into
+    // onclick/onchange JS: a string ID otherwise becomes invalid JavaScript.
+    function jsId(id) { return escapeHtml(JSON.stringify(id)); }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, '&quot;');
+    }
+
+    document.getElementById('reportFrom').value=getTodayISO();
+    document.getElementById('reportTo').value=getTodayISO();
+    loadData();
+  </script>
+</body>
+</html>
