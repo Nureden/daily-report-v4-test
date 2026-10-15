@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов — дизайн 3.0</title>
+  <title>Мониторинг проектов 4.1 — Онлайн</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1283,6 +1283,52 @@ body:not(.online-ready) .registry-card,body:not(.online-ready) .btn-add-proc-com
   .item-card{padding:9px!important}
 }
 </style>
+<style id="v41-mobile-refinement">
+/* V4.1 mobile layout: compact header, quickly reachable worklist and non-obstructive reporting. */
+button.kpi-cell{font:inherit;text-align:left;width:100%;appearance:none;-webkit-appearance:none}
+button.kpi-cell:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+.report-actions{display:flex;gap:4px;flex:1;min-width:0}
+.report-actions .fab-btn{flex:1}
+.mobile-reports-trigger{display:none}
+@media(max-width:700px){
+  body{padding:8px 9px calc(90px + env(safe-area-inset-bottom,0px));}
+  .dashboard-panel{padding:12px 12px 10px!important;border-radius:14px;margin-bottom:9px!important}
+  .dash-header{margin-bottom:9px}
+  .dash-title{font-size:16px!important;letter-spacing:-.25px}
+  .brand-mark{width:30px;height:30px;border-radius:8px;font-size:18px}
+  .dash-controls{gap:6px}
+  .btn-ai-compact{min-height:34px;padding:7px 9px}
+  .btn-icon-refresh{width:34px;height:34px}
+  .metrics-ribbon{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:6px}
+  .kpi-cell{min-height:59px!important;padding:8px 10px!important;border-radius:10px}
+  .kpi-title{font-size:10px!important;letter-spacing:0;line-height:1.25}
+  .kpi-val{font-size:23px!important;margin-top:3px}
+  .kpi-expand-btn{width:auto;margin:0 0 7px auto;padding:3px 2px;min-height:24px;background:transparent;color:#47678e;text-align:right;font-size:11.5px;font-weight:650}
+  .format-switch{padding:3px;margin-bottom:6px!important;gap:3px}
+  .format-btn{min-height:32px;padding:5px;font-size:12px}
+  .report-details{margin-top:0;padding-top:5px}
+  .report-details summary{font-size:11px;min-height:22px}
+  .sync-details{margin-top:3px;min-height:13px;font-size:10.5px}
+  .section-bar{margin-top:5px;margin-bottom:8px}
+  .section-bar-title{font-size:12px}
+  .btn-add-proc-compact{min-height:37px}
+  .folder-header{min-height:46px}
+  .object-overview{display:none!important}
+  .floating-bar{position:fixed;left:auto;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));width:auto;max-width:calc(100vw - 24px);margin:0;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;z-index:100}
+  .mobile-reports-trigger{display:flex;align-items:center;justify-content:center;gap:7px;min-height:45px;padding:10px 16px;border:0;border-radius:24px;background:#17243b;color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 22px rgba(15,23,42,.22)}
+  .mobile-reports-trigger:focus-visible{outline:2px solid #2563eb;outline-offset:3px}
+  .report-actions{display:none;position:absolute;right:0;bottom:calc(100% + 10px);width:min(250px,calc(100vw - 24px));flex-direction:column;gap:5px;padding:8px;border-radius:14px;background:#17243b;box-shadow:0 12px 32px rgba(15,23,42,.25)}
+  .floating-bar.is-open .report-actions{display:flex}
+  .report-actions .fab-btn{flex:0 0 auto;min-height:45px;padding:11px 12px;text-align:left;font-size:13px;background:rgba(255,255,255,.1)}
+  .footer-subtle-wrap{margin-top:14px;padding-bottom:22px}
+}
+@media(max-width:375px){
+  .dash-title{font-size:15px!important}
+  .brand-subtitle{display:none}
+  .btn-ai-compact{font-size:11px;padding:6px 8px}
+  .kpi-title{font-size:9.5px!important}
+}
+</style>
 </head>
 <body>
 
@@ -1299,18 +1345,18 @@ body:not(.online-ready) .registry-card,body:not(.online-ready) .btn-add-proc-com
         </div>
       </div>
 
-      <div class="metrics-ribbon">
-        <div class="kpi-cell danger clickable" id="kpiBlockersBox" onclick="toggleBlockersFilter('blockers')" title="Показать объекты с замечаниями">
+      <div class="metrics-ribbon" id="metricsExtra">
+        <button type="button" class="kpi-cell danger clickable" id="kpiBlockersBox" onclick="toggleBlockersFilter('blockers')" title="Показать объекты с замечаниями">
           <span class="kpi-title">
             <span>Активные замечания</span>
             <span class="kpi-indicator">↗</span>
           </span>
           <span class="kpi-val" id="mBlockers">0</span>
-        </div>
-        <div class="kpi-cell" id="kpiOverdueBox" onclick="toggleBlockersFilter('overdue')" title="Показать просроченные объекты">
+        </button>
+        <button type="button" class="kpi-cell clickable" id="kpiOverdueBox" onclick="toggleBlockersFilter('overdue')" title="Показать просроченные объекты">
           <span class="kpi-title">Просрочено этапов</span>
           <span class="kpi-val" id="mOverdue">0</span>
-        </div>
+        </button>
         <div class="kpi-cell green">
           <span class="kpi-title">Этапов выполнено</span>
           <span class="kpi-val" id="mDone">0</span>
@@ -1328,7 +1374,7 @@ body:not(.online-ready) .registry-card,body:not(.online-ready) .btn-add-proc-com
           <span class="kpi-val" id="mTotal">0</span>
         </div>
       </div>
-      <button type="button" class="kpi-expand-btn" onclick="document.querySelector('.dashboard-panel').classList.toggle('kpi-expanded')">Все показатели <span aria-hidden="true">⌄</span></button>
+      <button type="button" class="kpi-expand-btn" id="kpiExpandBtn" aria-controls="metricsExtra" aria-expanded="false" onclick="toggleMobileKpis(this)">Ещё 4 показателя <span aria-hidden="true">⌄</span></button>
 
       <div class="format-switch">
         <button class="format-btn active" id="modeExecutive" onclick="setReportMode('executive')">
@@ -1383,11 +1429,14 @@ body:not(.online-ready) .registry-card,body:not(.online-ready) .btn-add-proc-com
     </div>
   </div>
 
-  <!-- КОМПАКТНАЯ ПАНЕЛЬ ОТЧЕТОВ -->
-  <div class="floating-bar">
-    <button class="fab-btn" onclick="copyReport()">Текст</button>
-    <button class="fab-btn" onclick="exportToExcel()">Excel</button>
-    <button class="fab-btn" onclick="shareToTelegram()">В Telegram ↗</button>
+  <!-- Экспорт на широком экране; на телефоне компактное раскрываемое меню. -->
+  <div class="floating-bar" id="reportBar">
+    <button type="button" class="mobile-reports-trigger" id="reportBarToggle" aria-controls="mobileReportActions" aria-expanded="false" onclick="toggleMobileReports(event)">▤ Отчёт <span aria-hidden="true">⌃</span></button>
+    <div class="report-actions" id="mobileReportActions">
+      <button type="button" class="fab-btn" onclick="copyReport();closeMobileReports()">Скопировать текст</button>
+      <button type="button" class="fab-btn" onclick="exportToExcel();closeMobileReports()">Экспорт Excel</button>
+      <button type="button" class="fab-btn" onclick="shareToTelegram();closeMobileReports()">В Telegram ↗</button>
+    </div>
   </div>
 
     <div class="modal-overlay" id="cloudVersionsModal" onclick="closeCloudHistory(event)">
@@ -3837,6 +3886,33 @@ body:not(.online-ready) .registry-card,body:not(.online-ready) .btn-add-proc-com
       if (!str) return '';
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, '&quot;');
     }
+
+    // Mobile-only presentation; does not change notebook state or cloud revision.
+    function toggleMobileKpis(btn){
+      const panel=document.querySelector('.dashboard-panel');
+      const expanded=panel.classList.toggle('kpi-expanded');
+      btn.setAttribute('aria-expanded',String(expanded));
+      btn.innerHTML=expanded?'Свернуть статистику <span aria-hidden="true">⌃</span>':'Ещё 4 показателя <span aria-hidden="true">⌄</span>';
+    }
+    function closeMobileReports(){
+      const bar=document.getElementById('reportBar');
+      const toggle=document.getElementById('reportBarToggle');
+      if(bar)bar.classList.remove('is-open');
+      if(toggle)toggle.setAttribute('aria-expanded','false');
+    }
+    function toggleMobileReports(event){
+      if(event)event.stopPropagation();
+      const bar=document.getElementById('reportBar');
+      const expanded=bar.classList.toggle('is-open');
+      document.getElementById('reportBarToggle').setAttribute('aria-expanded',String(expanded));
+    }
+    document.addEventListener('click',event=>{
+      const bar=document.getElementById('reportBar');
+      if(bar && !bar.contains(event.target))closeMobileReports();
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape')closeMobileReports();
+    });
 
     document.getElementById('reportFrom').value=getTodayISO();
     document.getElementById('reportTo').value=getTodayISO();
