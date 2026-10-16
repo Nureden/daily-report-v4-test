@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов 4.3 — Онлайн</title>
+  <title>Мониторинг проектов 5.0 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #f8fafc;
@@ -1433,6 +1430,168 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   *, *::before, *::after { scroll-behavior:auto!important; transition-duration:0.01ms!important; animation-duration:0.01ms!important; }
 }
 </style>
+
+<style id="v5-workbook-layout">
+/* V5: one task list, not six dashboards. Presentation only; server and storage are unchanged. */
+:root {
+  --bg:#f6f7f9; --surface:#fff; --text-main:#202329; --text-muted:#737983;
+  --border:#e7e9ed; --border-subtle:#eff0f2; --brand:#2369d8; --brand-light:#edf4ff;
+  --radius-card:16px; --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+html,body,button,input,select,textarea,* {font-family:var(--font-ui)}
+body{background:var(--bg);color:var(--text-main);padding:18px 24px 64px;font-size:15px;letter-spacing:-.013em;line-height:1.45}
+.app-container{max-width:960px;margin:auto}
+.dashboard-panel{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0 0 15px!important;margin:0 0 14px!important}
+.dash-header{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.dash-title{font-size:29px!important;font-weight:620!important;letter-spacing:-1.0px;line-height:1.2}
+.brand-mark{display:none!important}
+.dash-controls{display:flex;align-items:center;gap:8px}
+.btn-icon-refresh{height:38px;width:38px;border:0;background:#e9edf4;color:#455a78;border-radius:10px;font-size:14px}
+.btn-ai-compact{height:38px;padding:8px 12px;font-size:13px;font-weight:530;border-radius:10px;background:#eef1fa!important;color:#5663a4!important;border:0!important}
+.metrics-ribbon{display:flex!important;flex-wrap:wrap;gap:9px 25px;margin:0 0 5px!important;align-items:center}
+.metrics-ribbon .kpi-cell,.metrics-ribbon .kpi-cell.danger,.metrics-ribbon .kpi-cell.amber,.metrics-ribbon .kpi-cell.green{display:inline-flex;align-items:baseline;flex-direction:row-reverse;justify-content:flex-end;gap:7px;width:auto;min-height:0!important;padding:3px 0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;white-space:normal}
+.metrics-ribbon .kpi-cell:nth-child(n+3){display:none}
+.dashboard-panel.kpi-expanded .metrics-ribbon .kpi-cell:nth-child(n+3){display:inline-flex}
+.kpi-title{font-size:13px!important;font-weight:430!important;color:#6d7480!important;text-transform:none;letter-spacing:0;line-height:1.25}
+.kpi-val{font-size:24px!important;font-weight:650!important;margin:0!important;line-height:1.15;letter-spacing:-.7px}
+.kpi-cell.danger .kpi-val{color:#bc4050!important}
+.kpi-cell:nth-child(2) .kpi-val{color:#aa7832!important}
+.kpi-cell.green .kpi-val{color:#268163!important}
+.kpi-cell:not(.clickable) {cursor:default}
+.kpi-cell.clickable:hover{background:transparent!important;box-shadow:none!important;opacity:.8}
+.kpi-indicator{display:none}
+.kpi-expand-btn{display:inline-flex!important;width:auto!important;margin:1px 0 0!important;padding:4px 0!important;background:transparent!important;border:0!important;min-height:30px;align-items:center;font-size:13px!important;font-weight:510!important;color:#526f99!important;text-align:left}
+.kpi-expand-btn:focus-visible{outline:2px solid var(--brand)}
+.sync-details{display:block;margin:8px 0 0;font-size:12px;color:#737983}
+.section-bar{margin:0 0 8px!important;padding:0!important;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.section-bar-title{font-size:19px!important;font-weight:610!important;letter-spacing:-.5px!important;text-transform:none!important;color:#262b33!important}
+.btn-add-proc-compact{min-height:40px;padding:8px 12px;border:0!important;border-radius:10px;background:#eaf2ff!important;color:#2469d2!important;font-size:14px!important;font-weight:580!important}
+.workspace-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px}
+.format-switch{display:flex;align-items:center;gap:3px;width:auto;min-width:0;margin:0!important;padding:3px;background:#e9ecf1!important;border-radius:11px}
+.format-btn{min-width:130px;min-height:37px;padding:8px 15px;border-radius:9px;font-size:14px;font-weight:450!important;color:#687385}
+.format-btn.active{background:white!important;color:#1c2735;font-weight:580!important;box-shadow:0 1px 4px rgba(32,42,58,.08)}
+.floating-bar{display:block!important;position:relative!important;inset:auto!important;left:auto!important;right:auto!important;bottom:auto!important;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;z-index:70}
+.mobile-reports-trigger{display:inline-flex!important;min-height:40px;padding:8px 15px;border-radius:10px;border:1px solid #dfe3eb;background:#fff!important;color:#4f5e70;font-size:14px;font-weight:530;white-space:nowrap;cursor:pointer;gap:7px;align-items:center}
+.report-actions{display:none!important;position:absolute!important;right:0!important;top:calc(100% + 8px)!important;bottom:auto!important;width:min(330px,calc(100vw - 28px))!important;max-width:330px;min-width:240px;flex-direction:column!important;gap:4px;padding:9px!important;border-radius:13px!important;border:1px solid #e3e6ec!important;background:#fff!important;box-shadow:0 15px 35px rgba(26,36,55,.13)!important;z-index:400}
+.floating-bar.is-open .report-actions{display:flex!important}
+.report-actions .fab-btn{background:#f7f8fa!important;border:0!important;flex:0 0 auto;display:block;min-height:42px;padding:10px 14px;text-align:left;font-size:14px;font-weight:510;color:#2c3a4d!important;border-radius:9px}
+.report-details{margin:5px 0 0;border-top:1px solid #edf0f2;padding-top:7px}
+.report-details summary{font-size:13px;font-weight:500;min-height:34px;display:flex;align-items:center;cursor:pointer;color:#6b7280}
+.report-details .report-period{margin:5px 0 0;padding-bottom:4px;display:flex;gap:8px;flex-wrap:wrap}
+.report-period label{font-size:13px}
+.report-period input{min-width:0;max-width:155px}
+.registry-card{border:1px solid #e4e6eb!important;border-radius:17px;background:#fff;box-shadow:0 3px 18px rgba(25,38,57,.025);overflow:visible!important}
+.folder-row{border-bottom:1px solid #e7e9ed!important}
+.folder-row:last-child{border-bottom:0!important}
+.folder-header{min-height:58px;padding:10px 18px!important;background:#fff!important;gap:8px;cursor:pointer}
+.folder-row:first-child .folder-header{border-radius:17px 17px 0 0}
+.folder-left{font-size:17px!important;font-weight:500!important;letter-spacing:-.3px!important;gap:10px;line-height:1.35;min-width:0}
+.folder-title-text{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere}
+.folder-chevron,.item-chevron{font-size:11px!important;width:14px;color:#8d98a8;flex-shrink:0}
+.counter-badge,.counter-badge.badge-danger,.counter-badge.badge-amber,.counter-badge.badge-green{padding:1px 7px;border:0!important;border-radius:99px;background:#f2f3f5!important;color:#606a78;font-size:12px;font-weight:550}
+.counter-badge.badge-danger{color:#bd3d55!important;background:#fdf0f2!important}
+.folder-right-tools{flex-shrink:0}
+.btn-row-menu,.btn-item-more{min-width:40px;min-height:40px;font-size:21px;color:#8993a0;border:0!important;background:transparent!important;padding:6px 9px}
+.folder-content{display:flex;flex-direction:column;gap:0!important;background:#fff!important;border-top:1px solid #edf0f3;padding:0 18px!important}
+.item-card,.item-card.is-complete{border:0!important;border-radius:0!important;background:#fff!important;box-shadow:none!important;padding:0!important;gap:0!important;border-bottom:1px solid #edf0f3!important}
+.item-card:last-of-type{border-bottom:0!important}
+.item-header{min-height:0!important;display:flex;align-items:center;gap:9px;padding:11px 0!important}
+.item-title-wrap{min-width:0;flex:1 1 auto;align-items:center;gap:8px}
+.item-title{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere;line-height:1.36;font-size:17px!important;font-weight:400!important;letter-spacing:-.27px}
+.item-meta-right{gap:10px;flex:0 0 auto;min-width:0}
+.summary-status-inline,.summary-status-inline.summary-blocked,.summary-status-inline.summary-overdue,.summary-status-inline.summary-waiting,.summary-status-inline.summary-done{font-size:12px!important;font-weight:530!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;white-space:nowrap}
+.summary-blocked{color:#bb4054!important}.summary-overdue{color:#a97b36!important}.summary-waiting{color:#718096!important}
+.progress-pill,.progress-pill.pill-danger,.progress-pill.pill-amber,.progress-pill.green{display:inline-flex;gap:0!important;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;color:#87919d!important;font-size:13px!important;font-weight:440!important;white-space:nowrap}
+.progress-mini-bar{display:none!important}
+.item-body{padding:10px 0 14px!important;margin-left:22px;border-top:1px solid #f1f2f4!important;gap:10px}
+.conveyor-strip{padding:5px 0;gap:5px}.conv-node{background:#f5f7fa!important;border:0!important;color:#6f7b8a!important;border-radius:7px;font-size:12px!important;font-weight:490!important;padding:4px 8px}
+.conv-node.c-blocked{background:#fff2f3!important;color:#b94b5e!important}.conv-node.c-overdue{background:#fef8ed!important;color:#a77a31!important}
+.conv-arrow{color:#c8cdd5!important;font-size:11px}
+.step-unit,.step-unit.blocked,.step-unit.done{background:#fff!important;border:0!important;border-radius:0!important;border-bottom:1px solid #eceef1!important;border-left:2px solid transparent!important;padding:10px 5px 11px 12px!important;gap:7px}
+.step-unit.blocked,.step-unit.done{border-left-color:transparent!important}
+.step-text{font-size:15.5px!important;font-weight:490!important;line-height:1.4}
+.step-chips-bar{flex-wrap:wrap;gap:6px}
+.step-remark-item,.step-remark-item.is-active-block,.step-remark-item.is-resolved{background:#f8f9fb!important;border:0!important;border-left:2px solid #f2c6ca!important;border-radius:8px;padding:8px 10px;font-size:13px;font-weight:450;line-height:1.45}
+.step-remarks-thread{margin-left:20px}
+.obj-bottom-bar{border:0!important;padding:6px 0 0!important;gap:8px}
+.obj-bottom-bar button{min-height:40px;font-size:14px!important;font-weight:500!important}
+.folder-footer-actions{display:block!important;margin:0 0 8px 0!important;padding:0!important;border-top:1px solid #edf0f3}
+.folder-footer-actions summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:9px 0;color:#356cbb;font-size:14px;font-weight:530;list-style:none;user-select:none}
+.folder-footer-actions summary::-webkit-details-marker{display:none}
+.folder-footer-actions .template-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-bottom:12px}
+.btn-add-obj-subtle{min-height:42px;background:#f8f9fb;border:1px solid #e7ebf0!important;border-radius:9px;font-size:13px!important;font-weight:500!important;text-align:left;padding:10px;color:#576879}
+.archive-box{box-shadow:none!important;border:0!important;border-top:1px solid #edf0f3!important;border-radius:0!important;padding:12px 0!important}
+.obj-dropdown-menu{min-width:180px;padding:6px;border-radius:13px;box-shadow:0 10px 32px rgba(35,48,68,.16)}
+.obj-dropdown-item{min-height:38px;font-size:14px;font-weight:450;padding:9px 11px;border-radius:8px}
+.footer-subtle-wrap{margin:25px auto 0;max-width:780px;gap:10px}
+.footer-subtle-wrap .chip-btn{font-size:13px!important;font-weight:480!important;background:transparent;color:#687789;border:1px solid #e4e7eb;min-height:38px}
+.footer-rev-tag{font-size:12px;color:#8a939f}
+@media(max-width:700px){
+ body{padding:12px 14px calc(32px + env(safe-area-inset-bottom,0px));font-size:16px}
+ .dashboard-panel{padding:3px 0 9px!important;margin:0 0 12px!important}
+ .dash-header{margin-bottom:12px}
+ .dash-title{font-size:26px!important;letter-spacing:-.8px!important}
+ .btn-ai-compact{font-size:12.5px!important;padding:7px 10px;max-width:85px}
+ .btn-icon-refresh{width:36px;height:36px}
+ .metrics-ribbon{gap:8px 12px;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .metrics-ribbon .kpi-cell{min-width:0;width:auto;min-height:0!important;padding:1px 0!important;display:flex!important;flex-direction:column-reverse;align-items:flex-start;gap:0}
+ .metrics-ribbon .kpi-cell:nth-child(n+3){display:none!important}
+ .dashboard-panel.kpi-expanded .metrics-ribbon .kpi-cell:nth-child(n+3){display:flex!important}
+ .kpi-val{font-size:27px!important;line-height:1.16;margin:0 0 1px!important}
+ .kpi-title{font-size:12.7px!important;font-weight:440!important;line-height:1.2}
+ .kpi-expand-btn{min-height:28px;font-size:13px!important;margin-top:6px!important}
+ .sync-details{font-size:12px;margin:7px 0 0}
+ .section-bar{margin:0 0 10px!important;gap:8px}
+ .section-bar-title{font-size:21px!important}
+ .btn-add-proc-compact{min-height:40px;padding:8px 10px;font-size:13px!important;white-space:nowrap}
+ .workspace-controls{gap:9px;margin:0 0 10px}
+ .format-switch{flex:1 1 auto;width:auto;min-width:0;margin:0!important;padding:3px}
+ .format-btn{min-width:0;min-height:39px;padding:8px 8px;font-size:13px!important;flex:1 1 0;white-space:nowrap}
+ .floating-bar{flex:0 0 auto;width:auto!important}
+ .mobile-reports-trigger{min-height:44px;padding:9px 11px;font-size:13px;max-width:100px}
+ .report-actions{right:0!important;z-index:1000}
+ .registry-card{border:1px solid #e6e8ed!important;border-radius:15px}
+ .folder-header{min-height:54px;padding:9px 11px!important}
+ .folder-left{font-size:16.5px!important;font-weight:500!important;line-height:1.34;gap:7px;min-width:0}
+ .folder-content{padding:0 12px!important;gap:0!important;background:#fff!important}
+ .item-header{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 40px;grid-template-rows:auto auto;gap:3px 4px;padding:11px 0 10px!important;align-items:start}
+ .item-title-wrap{grid-column:1;grid-row:1;max-width:100%;min-width:0;align-items:flex-start;padding-top:3px;gap:7px}
+ .item-title{font-size:17px!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere;line-height:1.3;font-weight:400!important}
+ .item-meta-right{grid-column:1/3;grid-row:2;display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-start;align-items:center;position:relative;min-height:21px;padding-left:20px}
+ .item-meta-right .btn-item-more{position:absolute;right:0;top:-42px;min-height:40px;min-width:40px;z-index:2}
+ .item-meta-right .obj-dropdown-menu{top:0!important;right:0;max-width:min(240px,90vw)}
+ .summary-status-inline{font-size:12.5px!important}
+ .progress-pill{font-size:12.5px!important}
+ .item-body{margin:0 0 0 18px!important;padding:9px 0 13px!important}
+ .step-unit{padding:10px 0 11px 9px!important}
+ .step-text{font-size:15px!important}
+ .conv-node{font-size:12px!important}
+ .folder-footer-actions{padding:0!important}
+ .folder-footer-actions .template-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .footer-subtle-wrap{margin-top:18px}
+ .footer-subtle-wrap > div[style*="display:flex"]{flex-wrap:wrap;justify-content:center}
+ .footer-subtle-wrap .chip-btn{font-size:13px!important;min-height:40px}
+}
+@media(max-width:360px){
+ body{padding:9px 10px 25px}
+ .dash-title{font-size:23px!important}
+ .folder-left{font-size:15.7px!important}
+ .item-title{font-size:16px!important}
+ .format-btn{font-size:12.5px!important;padding:8px 4px}
+ .mobile-reports-trigger{padding:9px 9px;max-width:90px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+</style>
+
+<style id="v5-footer-details">
+.footer-maintenance{margin:18px 0 5px;text-align:center}
+.footer-maintenance > summary{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 13px;cursor:pointer;list-style:none;color:#768293;font-size:13px;font-weight:470;border-radius:10px;user-select:none}
+.footer-maintenance > summary::-webkit-details-marker{display:none}
+.footer-maintenance > summary::before{content:"⌄";font-size:13px;display:inline-block;margin-right:7px;color:#9ca6b2}
+.footer-maintenance[open] > summary::before{transform:rotate(180deg)}
+.footer-maintenance > summary:hover{background:#eceff3}
+.footer-maintenance .footer-subtle-wrap{margin:5px auto 16px}
+</style>
 </head>
 <body>
 
@@ -1441,7 +1600,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     <div class="dashboard-panel">
       <div class="dash-header">
         <div class="dash-title">
-          <span class="brand-mark">◈</span> <span>Мониторинг <span class="brand-subtitle">проектов</span></span>
+          <span class="brand-mark" aria-hidden="true">◈</span> <span>Мои проекты</span>
         </div>
         <div class="dash-controls">
           <button class="btn-icon-refresh" onclick="manualSync()" title="Синхронизировать и свернуть все">🔄</button>
@@ -1478,23 +1637,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
           <span class="kpi-val" id="mTotal">0</span>
         </div>
       </div>
-      <button type="button" class="kpi-expand-btn" id="kpiExpandBtn" aria-controls="metricsExtra" aria-expanded="false" onclick="toggleMobileKpis(this)">Ещё 4 показателя <span aria-hidden="true">⌄</span></button>
+      <button type="button" class="kpi-expand-btn" id="kpiExpandBtn" aria-controls="metricsExtra" aria-expanded="false" onclick="toggleMobileKpis(this)">Все показатели <span aria-hidden="true">⌄</span></button>
 
-      <div class="format-switch">
-        <button class="format-btn active" id="modeExecutive" onclick="setReportMode('executive')">
-          Фокус в работе
-        </button>
-        <button class="format-btn" id="modeFull" onclick="setReportMode('full')">
-          Полный реестр
-        </button>
-      </div>
-      <details class="report-details"><summary>Отчёт за период · план недели</summary>
-      <div class="report-period" aria-label="Период отчёта">
-        <label>Отчёт с <input type="date" id="reportFrom" onchange="validateReportPeriod()"></label>
-        <label>по <input type="date" id="reportTo" onchange="validateReportPeriod()"></label>
-        <button type="button" class="chip-btn date-normal" onclick="copyWeeklyPlan()">План недели</button>
-      </div>
-      </details>
       <div class="sync-details" id="syncDetails" role="status" aria-live="polite"></div>
     </div>
 
@@ -1511,25 +1655,44 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
     <!-- КОМПАКТНАЯ ШАПКА РЕЕСТРА -->
     <div class="section-bar">
-      <span class="section-bar-title">Направления <span class="section-bar-second">и участки</span></span>
+      <span class="section-bar-title">Направления</span>
       <button class="btn-add-proc-compact" onclick="this.blur(); openAddProcessModal()">+ Направление</button>
+    </div>
+
+    <div class="workspace-controls" aria-label="Вид списка и отчёты">
+      <div class="format-switch">
+        <button class="format-btn active" id="modeExecutive" onclick="setReportMode('executive')">
+          Фокус в работе
+        </button>
+        <button class="format-btn" id="modeFull" onclick="setReportMode('full')">
+          Полный реестр
+        </button>
+      </div>
+  <!-- Экспорт на широком экране; на телефоне компактное раскрываемое меню. -->
+  <div class="floating-bar" id="reportBar">
+    <button type="button" class="mobile-reports-trigger" id="reportBarToggle" aria-controls="mobileReportActions" aria-expanded="false" onclick="toggleMobileReports(event)">Отчёт <span aria-hidden="true">⌄</span></button>
+    <div class="report-actions" id="mobileReportActions">
+      <button type="button" class="fab-btn" onclick="copyReport();closeMobileReports()">Скопировать текст</button>
+      <button type="button" class="fab-btn" onclick="exportToExcel();closeMobileReports()">Экспорт Excel</button>
+      <button type="button" class="fab-btn" onclick="shareToTelegram();closeMobileReports()">В Telegram ↗</button>
+      <details class="report-details"><summary>Отчёт за период · план недели</summary>
+      <div class="report-period" aria-label="Период отчёта">
+        <label>Отчёт с <input type="date" id="reportFrom" onchange="validateReportPeriod()"></label>
+        <label>по <input type="date" id="reportTo" onchange="validateReportPeriod()"></label>
+        <button type="button" class="chip-btn date-normal" onclick="copyWeeklyPlan()">План недели</button>
+      </div>
+      </details>
+    </div>
+  </div>
+
+  
     </div>
 
     <!-- ЕДИНЫЙ РЕЕСТР ПРОЦЕССОВ -->
     <div class="registry-card" id="processesRoot"></div>
 
-  <!-- Экспорт на широком экране; на телефоне компактное раскрываемое меню. -->
-  <div class="floating-bar" id="reportBar">
-    <button type="button" class="mobile-reports-trigger" id="reportBarToggle" aria-controls="mobileReportActions" aria-expanded="false" onclick="toggleMobileReports(event)">▤ Отчёт <span aria-hidden="true">⌃</span></button>
-    <div class="report-actions" id="mobileReportActions">
-      <button type="button" class="fab-btn" onclick="copyReport();closeMobileReports()">Скопировать текст</button>
-      <button type="button" class="fab-btn" onclick="exportToExcel();closeMobileReports()">Экспорт Excel</button>
-      <button type="button" class="fab-btn" onclick="shareToTelegram();closeMobileReports()">В Telegram ↗</button>
-    </div>
-  </div>
-
-  
     <!-- СЛУЖЕБНЫЙ ПОДВАЛ -->
+    <details class="footer-maintenance"><summary>Данные и история</summary>
     <div class="footer-subtle-wrap">
       <button type="button" class="chip-btn date-normal" onclick="showCloudHistory()">↶ История облачных версий</button>
       <div style="display:flex; gap:8px;">
@@ -1542,6 +1705,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
       <button type="button" class="chip-btn date-normal" onclick="undoLastChange()" id="undoBtn" disabled>↶ Отменить последнее действие</button>
       <button type="button" class="chip-btn ghost" onclick="showAuditLog()">История изменений</button>
     </div>
+    </details>
+
   </div>
 
   <div class="modal-overlay" id="cloudVersionsModal" onclick="closeCloudHistory(event)">
@@ -3572,7 +3737,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
                             <div class="progress-mini-bar">
                               <div class="progress-mini-fill ${barFillClass}" style="width: ${percent}%;"></div>
                             </div>
-                            <span>${dCount}/${tCount}</span>
+                            <span>${dCount} из ${tCount}</span>
                           </div>
                         ` : `
                           <span class="progress-pill" style="opacity:0.6;">0 задач</span>
@@ -3701,12 +3866,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
               }).join('')}
 
               ${!filterOnlyIssues ? `
-                <div class="folder-footer-actions">
+                <details class="folder-footer-actions"><summary>＋ Добавить объект</summary><div class="template-options">
                   <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'land')">⚡ Сервитут (5)</button>
                   <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'losses')">🌾 Потери (4)</button>
                   <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'szz')">📐 СЗЗ (4)</button>
-                  <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'empty')">+ Пустой</button>
-                </div>
+                  <button class="btn-add-obj-subtle" onclick="this.blur(); createObjectWithTemplate(${jsId(proc.id)}, 'empty')">+ Пустой</button></div></details>
               ` : ''}
 
               ${archivedObjects.length > 0 && !filterOnlyIssues ? `
@@ -3997,7 +4161,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
       const panel=document.querySelector('.dashboard-panel');
       const expanded=panel.classList.toggle('kpi-expanded');
       btn.setAttribute('aria-expanded',String(expanded));
-      btn.innerHTML=expanded?'Свернуть статистику <span aria-hidden="true">⌃</span>':'Ещё 4 показателя <span aria-hidden="true">⌄</span>';
+      btn.innerHTML=expanded?'Скрыть показатели <span aria-hidden="true">⌃</span>':'Все показатели <span aria-hidden="true">⌄</span>';
     }
     function closeMobileReports(){
       const bar=document.getElementById('reportBar');
