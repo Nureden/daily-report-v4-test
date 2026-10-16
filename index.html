@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов 5.2 — Блокнот</title>
+  <title>Мониторинг проектов 5.3 — Блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1698,6 +1698,54 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
  .section-bar-title{font-size:18px!important}
  .btn-collapse-all{font-size:12px!important}
 }
+
+/* V5.3: compact task reading and one unobstructed action surface. */
+.settings-trigger{border:0;background:#edf1f7;color:#53657c;border-radius:10px;min-width:40px;min-height:40px;font-size:21px;cursor:pointer}
+.settings-trigger:focus-visible,.settings-close:focus-visible,.settings-option:focus-visible,.step-state:focus-visible,.step-date-minimal:focus-visible{outline:2px solid #3b7ad7;outline-offset:2px}
+.settings-overlay,.context-menu-portal{display:none;position:fixed;inset:0;z-index:2100;background:rgba(20,31,48,.15)}
+.settings-overlay.is-open,.context-menu-portal.is-open{display:block}
+.settings-panel,.context-menu-card{background:#fff;border:1px solid #e5e9ef;box-shadow:0 18px 60px rgba(21,30,46,.18);border-radius:17px;max-height:min(85vh,700px);overflow-y:auto;overscroll-behavior:contain}
+.settings-panel{position:fixed;top:72px;right:20px;width:min(340px,calc(100vw - 24px));padding:13px}
+.settings-head{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 11px;font-size:19px}
+.settings-close{min-width:40px;min-height:40px;border:0;border-radius:10px;background:#f4f6f9;font-size:15px;cursor:pointer}
+.settings-group-label{font-size:12px;color:#909ba7;text-transform:uppercase;letter-spacing:.04em;padding:14px 11px 5px;font-weight:600}
+.settings-option{display:block;width:100%;min-height:44px;text-align:left;padding:10px 12px;border:0;border-radius:10px;background:#fff;color:#2e3c4e;font-weight:500;font-size:16px;cursor:pointer}
+.settings-option:hover,.settings-option:focus-visible{background:#f2f5f9}
+.settings-option:disabled{opacity:.45;cursor:not-allowed}
+.settings-state{border-top:1px solid #eef0f3;margin-top:11px;padding:14px 10px 4px;display:flex;flex-direction:column;gap:8px;color:#778598;font-size:14px}
+.settings-retry{align-self:start;min-height:40px;border:0;color:#275fba;background:#eef4ff;border-radius:10px;padding:8px 13px;cursor:pointer}
+.context-menu-card{position:fixed;min-width:215px;max-width:min(300px,calc(100vw - 20px));padding:8px}
+.context-menu-card .obj-dropdown-item{width:100%;display:flex;align-items:center;justify-content:flex-start;min-height:42px;padding:10px 12px;border:0;background:#fff;border-radius:9px;font-size:15px;font-weight:500;text-decoration:none;white-space:normal;text-align:left;color:#2c3949;cursor:pointer}
+.context-menu-card .obj-dropdown-item:hover,.context-menu-card .obj-dropdown-item:focus-visible{background:#f2f5f9}
+.context-menu-card .obj-dropdown-item.del-action{color:#bf4051}
+.step-unit,.step-unit.done,.step-unit.blocked{padding:9px 7px 11px 12px!important;gap:2px!important;border-left:2px solid transparent!important}
+.step-unit.current:not(.blocked){border-left-color:#427bcd!important}
+.step-unit.blocked{border-left-color:#c95165!important}
+.step-unit.done{opacity:.76}
+.step-unit.done .step-text{text-decoration:none!important;color:#748293!important;opacity:1!important}
+.step-unit.current .step-text{font-weight:600!important;color:#26364e!important}
+.step-unit .step-top-bar{align-items:flex-start;gap:7px}
+.step-unit .step-menu-controls{flex:0 0 40px;position:relative}
+.step-unit .step-del-btn{min-width:40px;min-height:40px;border:0;background:transparent;cursor:pointer}
+.step-status-row{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap;padding-left:28px;min-width:0;font-size:14px;line-height:1.3;color:#708096}
+.step-state,.step-date-minimal{border:0;background:transparent;padding:3px 0;min-height:25px;font-size:14px;font-weight:500;line-height:1.3;text-align:left;white-space:normal}
+.step-state-active{color:#6d8196}.step-state-wait{color:#a47739}.step-state-done{color:#438468}.step-state-blocked{color:#bf455c;cursor:pointer}
+.step-date-minimal{color:#67788d;cursor:pointer}.step-date-minimal.is-late{color:#ae7b38}
+.step-completed-at{color:#8996a4;font-size:12px}
+.conv-node.c-done{color:#98a7ad!important;background:#f7f8fa!important}
+.conv-node.c-current{background:#eaf2ff!important;color:#3563a5!important;font-weight:600!important}
+.conv-node.c-blocked{background:#fff0f3!important;color:#b33f56!important}
+@media(max-width:700px){
+  .settings-overlay,.context-menu-portal{background:rgba(18,25,40,.28)}
+  .settings-panel,.context-menu-card{position:fixed!important;left:0!important;right:0!important;top:auto!important;bottom:0!important;width:100%;max-width:100%;max-height:82dvh;border:0;border-radius:20px 20px 0 0;box-shadow:0 -9px 35px rgba(18,30,50,.15);padding:15px 15px calc(14px + env(safe-area-inset-bottom))}
+  .settings-head{font-size:20px}
+  .context-menu-card::before{content:"Действия";display:block;font-size:13px;color:#788797;padding:4px 12px 10px}
+  .context-menu-card .obj-dropdown-item{min-height:48px;font-size:17px}
+  .step-unit .step-top-bar{min-width:0}
+  .step-unit .step-left-part{min-width:0}
+  .step-status-row{padding-left:28px;gap:2px 12px}
+  .step-state,.step-date-minimal{font-size:14px}
+}
 </style>
 
 
@@ -1720,6 +1768,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
         <div class="dash-controls">
           <button class="btn-icon-refresh" onclick="manualSync()" title="Обновить данные из облака" aria-label="Обновить данные из облака">🔄</button>
           <button class="btn-ai-compact" onclick="openAiModal()">✧ AI-отчёт</button>
+          <button type="button" class="settings-trigger" id="settingsTrigger" aria-label="Настройки и данные" aria-expanded="false" aria-controls="settingsOverlay" title="Настройки и данные" onclick="toggleSettings(event)">⚙</button>
         </div>
       </div>
 
@@ -1809,26 +1858,32 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
     <!-- ЕДИНЫЙ РЕЕСТР ПРОЦЕССОВ -->
     <div class="registry-card" id="processesRoot"></div>
 
-    <!-- СЛУЖЕБНЫЙ ПОДВАЛ -->
-    <nav class="footer-tools" aria-label="Данные и история">
-      <details class="footer-maintenance"><summary>Данные</summary>
-        <div class="footer-subtle-wrap">
-          <button type="button" class="chip-btn date-normal" onclick="this.blur(); downloadBackupFile()">Скачать резервную копию</button>
-          <button type="button" class="chip-btn date-normal" onclick="this.blur(); triggerImportFile()">Загрузить файл</button>
-          <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleFileImport(event)">
-          <div class="footer-rev-tag" id="syncTag" role="status" aria-live="polite">Загрузка данных...</div>
-          <button type="button" class="chip-btn ghost" id="retrySyncBtn" onclick="pushCloudBackground()" style="display:none">Повторить синхронизацию</button>
-        </div>
-      </details>
-      <details class="footer-maintenance"><summary>История</summary>
-        <div class="footer-subtle-wrap">
-          <button type="button" class="chip-btn date-normal" onclick="showCloudHistory()">Облачные версии</button>
-          <button type="button" class="chip-btn ghost" onclick="showAuditLog()">История изменений</button>
-          <button type="button" class="chip-btn date-normal" onclick="undoLastChange()" id="undoBtn" disabled>Отменить последнее действие</button>
-        </div>
-      </details>
-    </nav>
+    <!-- Служебные действия доступны из настроек в верхней панели. -->
 
+  </div>
+
+  <!-- Одно понятное меню для резервных копий, истории и состояния облака. -->
+  <div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()" aria-hidden="true">
+    <section class="settings-panel" id="settingsPanel" role="dialog" aria-modal="true" aria-label="Настройки и данные" onclick="event.stopPropagation()">
+      <div class="settings-head"><strong>Настройки</strong><button type="button" class="settings-close" aria-label="Закрыть настройки" onclick="closeSettings()">✕</button></div>
+      <div class="settings-group-label">Данные</div>
+      <button type="button" class="settings-option" onclick="closeSettings();downloadBackupFile()">Скачать резервную копию</button>
+      <button type="button" class="settings-option" onclick="closeSettings();triggerImportFile()">Загрузить файл</button>
+      <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleFileImport(event)">
+      <div class="settings-group-label">История</div>
+      <button type="button" class="settings-option" onclick="closeSettings();showAuditLog()">История изменений</button>
+      <button type="button" class="settings-option" onclick="closeSettings();showCloudHistory()">Облачные версии</button>
+      <button type="button" class="settings-option" onclick="closeSettings();undoLastChange()" id="undoBtn" disabled>Отменить последнее действие</button>
+      <div class="settings-state">
+        <span id="syncTag" role="status" aria-live="polite">Загрузка данных...</span>
+        <button type="button" class="settings-retry" id="retrySyncBtn" onclick="closeSettings();pushCloudBackground()" style="display:none">Повторить синхронизацию</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Контекстное меню: bottom sheet на телефоне, привязка к кнопке на ПК. -->
+  <div id="contextMenuPortal" class="context-menu-portal" aria-hidden="true" onclick="if(event.target===this)closeContextMenu()">
+    <div id="contextMenuCard" class="context-menu-card" role="dialog" aria-modal="true" aria-label="Действия" onclick="event.stopPropagation()"></div>
   </div>
 
   <div class="modal-overlay" id="cloudVersionsModal" onclick="closeCloudHistory(event)">
@@ -2966,7 +3021,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
       if(document.visibilityState==='visible')syncWithCloud();
     });
 
-    document.addEventListener('click',()=>{document.querySelectorAll('.obj-dropdown-menu').forEach(m=>m.classList.remove('open'));});
+    document.addEventListener('click',()=>{closeContextMenu();});
     function undoLastChange(){
       if(!undoStack.length)return;
       const last=undoStack.pop();
@@ -3171,13 +3226,94 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
       render();
     }
 
+    let contextMenuOpener = null;
+    function closeContextMenu(restoreFocus=false) {
+      const overlay=document.getElementById('contextMenuPortal');
+      const card=document.getElementById('contextMenuCard');
+      if(!overlay)return;
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden','true');
+      card.replaceChildren();
+      if(contextMenuOpener){
+        contextMenuOpener.setAttribute('aria-expanded','false');
+        if(restoreFocus&&contextMenuOpener.isConnected)contextMenuOpener.focus();
+      }
+      contextMenuOpener=null;
+      overlay.dataset.menuId='';
+    }
     function toggleMenuGeneric(e, menuId) {
       e.stopPropagation();
-      const menu = document.getElementById(menuId);
-      const allMenus = document.querySelectorAll('.obj-dropdown-menu');
-      allMenus.forEach(m => { if (m !== menu) m.classList.remove('open'); });
-      if (menu) menu.classList.toggle('open');
+      const overlay=document.getElementById('contextMenuPortal');
+      const card=document.getElementById('contextMenuCard');
+      const original=document.getElementById(menuId);
+      if(!overlay || !original)return;
+      if(overlay.classList.contains('is-open') && overlay.dataset.menuId===menuId){
+        closeContextMenu(true);return;
+      }
+      closeContextMenu();
+      closeSettings();
+      // Duplicate only the menu actions. The source stays in the registry, so
+      // rerendering an object never leaves a detached menu in the page.
+      for(const child of original.children)card.appendChild(child.cloneNode(true));
+      contextMenuOpener=e.currentTarget || e.target;
+      contextMenuOpener.setAttribute('aria-expanded','true');
+      overlay.dataset.menuId=menuId;
+      overlay.classList.add('is-open');overlay.setAttribute('aria-hidden','false');
+      if(window.innerWidth>700){
+        const rect=contextMenuOpener.getBoundingClientRect();
+        const width=Math.min(280, Math.max(190, card.scrollWidth || 215));
+        const left=Math.min(window.innerWidth-width-10,Math.max(10,rect.right-width));
+        const h=card.getBoundingClientRect().height;
+        const below=rect.bottom+6;
+        const top=below+h>window.innerHeight-12 ? Math.max(10,rect.top-h-6) : below;
+        card.style.left=left+'px';card.style.top=top+'px';
+      }else{card.style.left='';card.style.top='';}
+      card.querySelector('button,a')?.focus();
     }
+    document.getElementById('contextMenuCard').addEventListener('click',e=>{
+      if(e.target.closest('button,a'))setTimeout(()=>closeContextMenu(),0);
+    },true);
+    window.addEventListener('resize',()=>closeContextMenu());
+    let settingsOpener=null;
+    function closeSettings(restoreFocus=false){
+      const el=document.getElementById('settingsOverlay');
+      if(!el)return;
+      el.classList.remove('is-open');el.setAttribute('aria-hidden','true');
+      document.getElementById('settingsTrigger')?.setAttribute('aria-expanded','false');
+      if(restoreFocus)settingsOpener?.focus();
+    }
+    function toggleSettings(e){
+      e?.stopPropagation();
+      const el=document.getElementById('settingsOverlay');
+      const isOpen=el.classList.contains('is-open');
+      closeContextMenu();
+      if(isOpen){closeSettings(true);return;}
+      settingsOpener=e?.currentTarget || document.getElementById('settingsTrigger');
+      if(window.innerWidth>700){
+        const rect=settingsOpener.getBoundingClientRect();
+        const panel=document.getElementById('settingsPanel');
+        panel.style.top=Math.min(window.innerHeight-100,rect.bottom+8)+'px';
+        panel.style.right=Math.max(12,window.innerWidth-rect.right)+'px';
+      }
+      el.classList.add('is-open');el.setAttribute('aria-hidden','false');
+      document.getElementById('settingsTrigger').setAttribute('aria-expanded','true');
+      el.querySelector('button')?.focus();
+    }
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){
+        const menu=document.getElementById('contextMenuPortal');
+        if(menu.classList.contains('is-open')){e.preventDefault();closeContextMenu(true);}
+        else if(document.getElementById('settingsOverlay').classList.contains('is-open')){e.preventDefault();closeSettings(true);}
+      }
+      if(e.key==='Tab'){
+        const overlay=document.querySelector('#settingsOverlay.is-open, #contextMenuPortal.is-open');
+        if(!overlay)return;
+        const targets=[...overlay.querySelectorAll('button:not([disabled]),a[href],input:not([disabled])')].filter(x=>x.offsetParent!==null);
+        if(!targets.length)return;
+        if(e.shiftKey&&document.activeElement===targets[0]){e.preventDefault();targets.at(-1).focus();}
+        else if(!e.shiftKey&&document.activeElement===targets.at(-1)){e.preventDefault();targets[0].focus();}
+      }
+    });
 
     function moveObject(procId, objId, direction) {
       const p = state.find(x => x.id === procId);
@@ -3822,7 +3958,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
                 <span class="counter-badge ${folderBadgeClass}">${allActiveObjects.length}</span>
               </div>
               <div class="folder-right-tools" onclick="event.stopPropagation()">
-                <button class="btn-row-menu" onclick="toggleMenuGeneric(event, 'fmenu-${proc.id}')" title="Опции">···</button>
+                <button class="btn-row-menu" onclick="toggleMenuGeneric(event, 'fmenu-${proc.id}')" title="Действия с направлением">···</button>
                 <div class="obj-dropdown-menu" id="fmenu-${proc.id}">
                   <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editProcessTitle(${jsId(proc.id)})">✏️ Переименовать</button>
                   ${procIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveProcess(${jsId(proc.id)}, -1)">⬆️ Вверх</button>` : ''}
@@ -3931,40 +4067,32 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
                           const hist = s.history || [];
 
                           return `
-                            <div class="step-unit ${s.done ? 'done' : ''} ${hasBlock ? 'blocked' : ''}">
-                              <!-- СТРОКА 1: ГАЛОЧКА + НАЗВАНИЕ СЛЕВА, ТРОЕТОЧИЕ СПРАВА -->
+                            <div class="step-unit ${s.done ? 'done' : ''} ${hasBlock ? 'blocked' : ''} ${s.id===currentActiveStepId ? 'current' : ''}">
                               <div class="step-top-bar">
                                 <div class="step-left-part">
                                   <input type="checkbox" id="chk-${s.id}" class="step-check" aria-label="Выполнено: ${escapeHtml(s.text)}" ${s.done ? 'checked' : ''} onchange="toggleStep(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
                                   <label class="step-text" for="chk-${s.id}">${escapeHtml(s.text)}</label>
                                 </div>
-
-                                <div style="position:relative; flex-shrink:0;" onclick="event.stopPropagation()">
-                                  <button type="button" class="step-del-btn" onclick="toggleMenuGeneric(event, 'smenu-${s.id}')" title="Опции этапа">···</button>
+                                <div class="step-menu-controls" onclick="event.stopPropagation()">
+                                  <button type="button" class="step-del-btn" onclick="toggleMenuGeneric(event, 'smenu-${s.id}')" aria-label="Действия с этапом" aria-haspopup="dialog" aria-expanded="false" title="Действия с этапом">···</button>
                                   <div class="obj-dropdown-menu" id="smenu-${s.id}">
-                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); openEditStepModal(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">✏️ Переименовать</button>
-                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); openStepDetails(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">👤 Ответственный / документ</button>
-                                    ${sIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveStep(${jsId(proc.id)}, ${jsId(obj.id)},${jsId(s.id)}, -1)">⬆️ Вверх</button>` : ''}
-                                    ${sIdx < stepsArr.length - 1 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveStep(${jsId(proc.id)}, ${jsId(obj.id)},${jsId(s.id)}, 1)">⬇️ Вниз</button>` : ''}
-                                    <button type="button" class="obj-dropdown-item del-action" onclick="event.stopPropagation(); deleteStep(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">✕ Удалить</button>
+                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openEditStepModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Переименовать</button>
+                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Изменить срок</button>
+                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openStepDetails(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Ответственный, документ и статус</button>
+                                    ${s.documentUrl && Model.validUrl(s.documentUrl) ? `<a class="obj-dropdown-item" target="_blank" rel="noopener noreferrer" href="${escapeHtml(Model.validUrl(s.documentUrl))}">Открыть документ</a>` : ''}
+                                    ${!s.done ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openRiskModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">${hasBlock ? 'Открыть замечание' : hist.length ? 'История замечаний ('+hist.length+')' : 'Добавить замечание'}</button>` : ''}
+                                    ${sIdx>0?`<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();moveStep(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)},-1)">Выше</button>`:''}
+                                    ${sIdx<stepsArr.length-1?`<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();moveStep(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)},1)">Ниже</button>`:''}
+                                    <button type="button" class="obj-dropdown-item del-action" onclick="event.stopPropagation();deleteStep(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Удалить этап</button>
                                   </div>
                                 </div>
                               </div>
-
-                              <!-- СТРОКА 2: ЧИПЫ СРОКА И ЗАМЕЧАНИЯ -->
-                              <div class="step-chips-bar">
-                                <button type="button" class="chip-btn ${dateMeta.cls}" onclick="this.blur(); openDateModal(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
-                                  ${escapeHtml(formatDeadlineChip(s,dateMeta))}
-                                </button>
-                                ${s.owner ? `<button type="button" class="step-owner-compact" onclick="openStepDetails(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Изменить ответственного: ${escapeHtml(s.owner)}">👤 <span>${escapeHtml(s.owner)}</span></button>` : ''}
-                                ${!s.done && s.workflowStatus==='waiting' ? '<span class="chip-btn urgent" aria-label="Ожидание">⏳ Ожидание</span>' : ''}
-                                ${s.documentUrl ? `<a class="step-document-link" href="${escapeHtml(Model.validUrl(s.documentUrl))}" target="_blank" rel="noopener noreferrer">Документ ↗</a>` : ''}
-                                ${s.done && s.completedAt ? `<span class="step-owner">Закрыто: ${escapeHtml(s.completedAt)}</span>` : ''}
-                                ${!s.done ? `
-                                  <button type="button" class="chip-btn ${hasBlock ? 'risk-active' : (hist.length > 0 ? 'risk-notes' : 'ghost')}" onclick="this.blur(); openRiskModal(${jsId(proc.id)}, ${jsId(obj.id)},${jsId(s.id)})">
-                                    ${hasBlock ? 'Замечание · активно' : (hist.length > 0 ? 'Замечания (' + hist.length + ')' : '+ Замечание')}
-                                  </button>
-                                ` : ''}
+                              <div class="step-status-row" aria-label="Состояние этапа">
+                                ${s.done ? `<span class="step-state step-state-done">Сделано</span>` :
+                                  hasBlock ? `<button type="button" class="step-state step-state-blocked" onclick="openRiskModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Замечание активно</button>` :
+                                  s.workflowStatus==='waiting' ? `<span class="step-state step-state-wait">Ожидание</span>` : `<span class="step-state step-state-active">В работе</span>`}
+                                ${s.date ? `<button type="button" class="step-date-minimal ${dateMeta.cls==='overdue'?'is-late':''}" onclick="openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Изменить срок">${escapeHtml(s.done ? 'Срок: '+s.date : dateMeta.cls==='overdue'?'Просрочено: '+String(s.date).replace(/^до\s+/i,'') : 'До '+String(s.date).replace(/^до\s+/i,''))}</button>` : ''}
+                                ${s.done && s.completedAt ? `<span class="step-completed-at">${escapeHtml(s.completedAt)}</span>` : ''}
                               </div>
 
                               ${hist.length > 0 ? `
