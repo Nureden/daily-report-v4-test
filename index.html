@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов 5.5 — Блокнот</title>
+  <title>Мониторинг проектов 5.7 — Объекты и процессы</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1961,6 +1961,44 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 @media(prefers-reduced-motion:reduce){.v56-task-card{transition:none}}
 </style>
 
+<style id="v57-object-layout">
+/* V5.7: object is the primary unit of navigation. A single column at every width. */
+.v56-group-list{gap:23px!important}
+.v56-direction-group{gap:9px!important}
+.v56-direction-label{font-size:13px!important;letter-spacing:.025em!important;color:#51647e!important;margin:3px 3px 2px!important}
+.v57-object-list{display:grid;grid-template-columns:minmax(0,1fr);gap:11px;min-width:0}
+.v57-object-card{min-width:0;border:1px solid #e5eaf3;background:#fff;border-radius:16px;padding:15px 17px;box-shadow:0 2px 10px rgba(22,46,89,.035);display:grid;gap:11px}
+.v57-object-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0}
+.v57-object-name{color:#1d304e;font-size:19px;line-height:1.28;font-weight:700;overflow-wrap:anywhere;min-width:0;flex:1}
+.v57-object-meta{font-size:13px;line-height:1.3;color:#78889b;margin-top:4px}
+.v57-object-status{flex:0 0 auto;border-radius:7px;padding:4px 8px;font-size:12px;line-height:1.3;font-weight:600;color:#3267c4;background:#eaf1ff;white-space:nowrap}
+.v57-object-status.late,.v57-object-status.blocked{color:#b8364d;background:#fff0f3}
+.v57-object-status.waiting{background:#fff4db;color:#96651c}
+.v57-object-status.done{background:#e7f7ed;color:#258359}
+.v57-progress{width:100%;height:4px;background:#e9eef5;border-radius:999px;overflow:hidden}
+.v57-progress-fill{height:100%;background:#36a77b;border-radius:999px;min-width:0}
+.v57-step-list{display:grid;gap:0;border-top:1px solid #f0f2f6;padding-top:3px}
+.v57-step{display:flex;align-items:flex-start;gap:10px;width:100%;border:0;background:transparent;color:#233854;min-width:0;text-align:left;padding:10px 0;cursor:pointer;min-height:48px}
+.v57-step+.v57-step{border-top:1px solid #f3f5f8}
+.v57-step:focus-visible,.v57-object-tools button:focus-visible{outline:2px solid #1765eb;outline-offset:2px;border-radius:7px}
+.v57-step-indicator{width:19px;height:19px;flex:0 0 19px;margin-top:1px;border-radius:50%;display:grid;place-items:center;background:#edf3ff;color:#2f6bca;font-size:12px;font-weight:700}
+.v57-step.is-late .v57-step-indicator,.v57-step.is-blocked .v57-step-indicator{background:#fff0f1;color:#ce4057}
+.v57-step.is-waiting .v57-step-indicator{background:#fff4de;color:#ab741b}
+.v57-step.is-done .v57-step-indicator{background:#e6f7ec;color:#27946a}
+.v57-step-main{min-width:0;flex:1;display:grid;gap:3px}
+.v57-step-title{font-size:16px;line-height:1.29;font-weight:600;overflow-wrap:anywhere;color:#2a3c55}
+.v57-step.is-done .v57-step-title{color:#8593a4;text-decoration:line-through;text-decoration-thickness:1px}
+.v57-step-meta{color:#8694a5;font-size:12.5px;line-height:1.4;display:flex;gap:2px 12px;flex-wrap:wrap}
+.v57-step-status{align-self:center;font-size:11px;white-space:nowrap;color:#bb4457;font-weight:600}
+.v57-step.is-waiting .v57-step-status{color:#9e711e}
+.v57-step-arrow{color:#a3b0c1;flex:0 0 auto;align-self:center;font-size:21px}
+.v57-object-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.v57-object-tools button{min-height:34px;border:0;background:transparent;color:#326bc2;font-size:13px;font-weight:600;padding:7px 1px;cursor:pointer}
+.v57-object-tools button.v57-add{color:#78899e}
+.v57-no-steps{font-size:13px;color:#8b99a9;padding:11px 0 3px}
+@media(max-width:700px){.v57-object-card{padding:13px 12px;gap:9px}.v57-object-name{font-size:17px}.v57-object-status{font-size:11px}.v57-step{gap:8px;padding:9px 0}.v57-step-title{font-size:15.5px}.v57-object-meta{font-size:12.5px}.v57-object-tools button{font-size:12.5px}}
+@media(max-width:365px){.v57-object-top{gap:5px}.v57-object-status{white-space:normal;text-align:center;max-width:91px}.v57-step-status{font-size:10px}}
+</style>
 <style id="v56-state-fix">#v56Workspace[hidden]{display:none!important}#v56LegacyWorkspace[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -2035,18 +2073,18 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
       <button class="btn-reset-filter" onclick="toggleBlockersFilter('all')">Показать все ✕</button>
     </div>
 
-    <!-- Version 5.6: default notebook cards, no change to data schema. -->
-    <section id="v56Workspace" class="v56-workspace" aria-label="Рабочие процессы">
+    <!-- Version 5.7: object-first layout; preserves existing storage schema. -->
+    <section id="v56Workspace" class="v56-workspace" aria-label="Объекты и процессы">
       <div class="v56-heading-row">
-        <div><h1 id="v56Heading">Мои процессы</h1><p id="v56Subheading">Все рабочие записи по объектам</p></div>
-        <button type="button" class="v56-structure-link" onclick="v56ToggleStructure()" id="v56LegacyButton">Структура объектов</button>
+        <div><h1 id="v56Heading">Мои объекты</h1><p id="v56Subheading">Откройте объект, чтобы увидеть его процессы</p></div>
+        <button type="button" class="v56-structure-link" onclick="v56ToggleStructure()" id="v56LegacyButton">Полный реестр</button>
       </div>
       <div class="v56-search-wrap">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
-        <input id="v56Search" aria-label="Поиск по процессам, объектам, ответственным и документам" placeholder="Поиск: объект, задача, ответственный..." autocomplete="off" oninput="v56SearchChanged(this.value)">
+        <input id="v56Search" aria-label="Поиск по объектам, процессам, ответственным и документам" placeholder="Найти объект, процесс, ответственного..." autocomplete="off" oninput="v56SearchChanged(this.value)">
         <button type="button" id="v56ClearSearch" class="v56-search-clear" title="Очистить поиск" onclick="v56ClearSearch()" hidden>×</button>
       </div>
-      <div class="v56-filter-bar" id="v56Filters" aria-label="Фильтр задач">
+      <div class="v56-filter-bar" id="v56Filters" aria-label="Фильтр объектов">
         <button type="button" data-filter="all" class="selected" onclick="v56SetFilter('all')">Все <span id="v56CountAll"></span></button>
         <button type="button" data-filter="active" onclick="v56SetFilter('active')">В работе <span id="v56CountActive"></span></button>
         <button type="button" data-filter="waiting" onclick="v56SetFilter('waiting')">Ожидание <span id="v56CountWaiting"></span></button>
@@ -2057,7 +2095,7 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
       <button type="button" id="v56More" class="v56-more" onclick="v56LoadMore()" hidden>Показать ещё</button>
     </section>
     <section id="v56LegacyWorkspace" class="v56-legacy-workspace" hidden>
-      <div class="v56-legacy-intro"><div><h2>Структура объектов</h2><p>Направления, объекты, этапы и настройки</p></div><button type="button" class="v56-structure-link" onclick="v56ToggleStructure()">Вернуться к карточкам</button></div>
+      <div class="v56-legacy-intro"><div><h2>Структура объектов</h2><p>Направления, объекты, этапы и настройки</p></div><button type="button" class="v56-structure-link" onclick="v56ToggleStructure()">К объектам</button></div>
     <!-- КОМПАКТНАЯ ШАПКА РЕЕСТРА -->
     <div class="section-bar">
       <span class="section-bar-title">Направления</span>
@@ -5247,142 +5285,188 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
     });
 
 
-// V5.6 – visual layer only. No new cloud tables or schema changes.
-let v56Screen='projects',v56Status='all',v56Legacy=false,v56Query='',v56Limit=40;
-let v56Rows=[];
-function v56GetRows(){
-  const rows=[];
-  for(const proc of state)for(const obj of proc.objects||[]){
-    if(obj.archived)continue;
-    for(const step of obj.steps||[]){
-      const late=!step.done&&isStepOverdue(step.date,step.done);
-      const blocked=!step.done&&!!step.blocker;
-      const waiting=!step.done&&step.workflowStatus==='waiting'&&!blocked;
-      const status=step.done?'done':late?'late':blocked?'blocked':waiting?'waiting':'active';
-      rows.push({proc,obj,step,late,blocked,waiting,status,priority:step.done?5:late?0:blocked?1:waiting?2:3});
-    }
-  }
-  return rows;
-}
-function v56GroupName(proc,obj){
-  const text=String(obj.title||'').trim().toLowerCase();
-  if(/^жылыой\b|^жылыой\s|^жылыой[-–—]/i.test(text))return 'Жылыойский район';
-  if(/^макат\b|^мақат\b|^макат\s|^макат[-–—]/i.test(text))return 'Макатский район';
-  if(/^исатай\b|^исатай\s/i.test(text))return 'Исатайский район';
-  if(/^махамбет\b|^махамбет\s/i.test(text))return 'Махамбетский район';
-  const p=String(proc.title||'').trim();
-  return p||'Без направления';
-}
-function v56StatusText(row){
-  return row.step.done?'Выполнено':row.late?'Просрочено':row.blocked?'Проблема':row.waiting?'Ожидание':'В работе';
-}
+// V5.7: object-first presentation; state, Reports and Supabase protocol unchanged.
+let v56Screen='projects',v56Status='all',v56Legacy=false,v56Query='',v56Limit=30;
+let v57VisibleObjects=[],v57RenderedSteps=[];
+const v57ExpandedObjects=new Set();
+function v57ObjectKey(proc,obj){return JSON.stringify([String(proc.id),String(obj.id)]);}
 function v56SafeText(str){return escapeHtml(String(str??''));}
 function v56DateShort(raw){
   const iso=displayToISO(raw||'');
-  if(/^\d{4}-\d{2}-\d{2}$/.test(iso))return iso.slice(8)+'.'+iso.slice(5,7)+'.'+iso.slice(0,4);
+  if(v55StrictISO(iso))return iso.slice(8)+'.'+iso.slice(5,7)+'.'+iso.slice(0,4);
   return String(raw||'').replace(/^до\s*/i,'');
 }
-function v56Matches(row){
-  if(v56Screen==='today'){
-    if(row.step.done)return false;
-    const today=getTodayISO(),due=displayToISO(row.step.date||''),next=v55StrictISO(row.step.nextDate||'');
-    if(!(row.late||row.blocked||(due&&due<=today)||(next&&next<=today)))return false;
+function v57StepInfo(step){
+  const late=!step.done&&isStepOverdue(step.date,step.done);
+  const blocked=!step.done&&!!step.blocker;
+  const waiting=!step.done&&step.workflowStatus==='waiting'&&!blocked;
+  const status=step.done?'done':late?'late':blocked?'blocked':waiting?'waiting':'active';
+  return {step,late,blocked,waiting,status};
+}
+function v57Rows(){
+  const rows=[];
+  for(const proc of state||[])for(const obj of proc.objects||[]){
+    if(obj.archived)continue;
+    const steps=(obj.steps||[]).map(v57StepInfo);
+    const unfinished=steps.filter(x=>!x.step.done);
+    const late=steps.some(x=>x.late),blocked=steps.some(x=>x.blocked),waiting=steps.some(x=>x.waiting);
+    const active=steps.some(x=>x.status==='active');
+    const done=steps.length>0&&unfinished.length===0;
+    const status=late?'late':blocked?'blocked':waiting&&!active?'waiting':done?'done':'active';
+    rows.push({proc,obj,steps,late,blocked,waiting,active,done,status,finished:steps.length-unfinished.length});
   }
-  if(v56Status==='done'&&!row.step.done)return false;
+  return rows;
+}
+function v57MatchesSearchInStep(row,info){
+  if(!v56Query)return false;
+  const s=info.step,ev=Array.isArray(s.progressEvents)?s.progressEvents:[];
+  const hist=Array.isArray(s.history)?s.history:[];
+  const terms=[s.text,s.owner,s.expectedResult,s.actualResult,s.blocker,s.doc,s.documentUrl,s.nextAction,
+    ...ev.flatMap(e=>[e.what,e.reason,e.solution,e.doc,e.nextAction,e.result]),
+    ...hist.flatMap(h=>[h.text,h.doc])].join(' ').toLowerCase();
+  return terms.includes(v56Query);
+}
+function v57TodayStep(info){
+  if(info.step.done)return false;
+  const today=getTodayISO(),due=v55StrictISO(displayToISO(info.step.date||'')),next=v55StrictISO(info.step.nextDate||'');
+  return !!(info.late||info.blocked||(due&&due<=today)||(next&&next<=today));
+}
+function v57FilterRows(row){
+  const objectMatch=v56Query&&[row.proc.title,row.obj.title].join(' ').toLowerCase().includes(v56Query);
+  const hits=v56Query?row.steps.filter(i=>v57MatchesSearchInStep(row,i)):[];
+  if(v56Query&&!objectMatch&&!hits.length)return false;
+  if(v56Screen==='today'&&!row.steps.some(v57TodayStep))return false;
+  if(v56Status==='done'&&!row.done)return false;
   if(v56Status==='late'&&!row.late)return false;
   if(v56Status==='waiting'&&!row.waiting)return false;
-  if(v56Status==='active'&&(row.step.done||row.waiting||row.late||row.blocked))return false;
-  if(v56Query){
-    const ev=Array.isArray(row.step.progressEvents)?row.step.progressEvents:[];
-    const text=[row.proc.title,row.obj.title,row.step.text,row.step.owner,row.step.expectedResult,row.step.blocker,row.step.doc,row.step.documentUrl,
-      row.step.nextAction,...ev.slice(-20).flatMap(e=>[e.what,e.reason,e.solution,e.doc,e.nextAction])].join(' ').toLowerCase();
-    if(!text.includes(v56Query))return false;
-  }
+  if(v56Status==='active'&&!row.active)return false;
   return true;
+}
+function v57StatusText(row){
+  return row.status==='done'?'Выполнено':row.status==='late'?'Просрочено':row.status==='blocked'?'Проблема':row.status==='waiting'?'Ожидание':'В работе';
+}
+function v57StepHtml(row,info){
+  const idx=v57RenderedSteps.push({proc:row.proc,obj:row.obj,step:info.step})-1;
+  const s=info.step;
+  const icon=s.done?'✓':info.late||info.blocked?'!':info.waiting?'◷':'·';
+  const status=info.late?'Просрочено':info.blocked?'Замечание':info.waiting?'Ожидание':'';
+  const own=s.owner?`<span>${v56SafeText(s.owner)}</span>`:'';
+  const due=s.date?`<span>${s.done?'Срок':'До'} ${v56SafeText(v56DateShort(s.date))}</span>`:'';
+  const details=own||due?`<span class="v57-step-meta">${own}${due}</span>`:'';
+  return `<button type="button" class="v57-step is-${info.status}" data-v57-step="${idx}" aria-label="Открыть процесс: ${v56SafeText(s.text)}">
+    <span class="v57-step-indicator" aria-hidden="true">${icon}</span>
+    <span class="v57-step-main"><span class="v57-step-title">${v56SafeText(s.text)}</span>${details}</span>
+    ${status?`<span class="v57-step-status">${status}</span>`:''}<span class="v57-step-arrow" aria-hidden="true">›</span></button>`;
+}
+function v57ShowSteps(row){
+  const all=row.steps;
+  if(!all.length)return [];
+  // Full process timeline only on request. Search reveals matching steps, even completed ones.
+  if(v57ExpandedObjects.has(v57ObjectKey(row.proc,row.obj)))return all;
+  if(v56Query){
+    if([row.proc.title,row.obj.title].join(' ').toLowerCase().includes(v56Query)){
+      // Object/direction search: retain the current-focus presentation.
+    }else return all.filter(i=>v57MatchesSearchInStep(row,i));
+  }
+  if(v56Status==='done')return all.filter(i=>i.step.done).slice(-2);
+  if(v56Status==='late')return all.filter(i=>i.late).slice(0,3);
+  if(v56Status==='waiting')return all.filter(i=>i.waiting).slice(0,3);
+  if(v56Status==='active')return all.filter(i=>i.status==='active').slice(0,3);
+  if(v56Screen==='today')return all.filter(v57TodayStep).slice(0,3);
+  const current=all.find(i=>!i.step.done);
+  const urgent=all.filter(i=>!i.step.done&&(i.late||i.blocked));
+  if(!current)return all.slice(-1);
+  const subset=new Set([current,...urgent.slice(0,2)]);
+  return all.filter(i=>subset.has(i)).slice(0,3);
 }
 function v56RenderCards(){
   const root=document.getElementById('v56Cards');if(!root)return;
-  const all=v56GetRows();
-  const counts={all:all.length,active:all.filter(r=>r.status==='active').length,waiting:all.filter(r=>r.waiting).length,
-    late:all.filter(r=>r.late).length,done:all.filter(r=>r.step.done).length};
+  const all=v57Rows();
+  const population=v56Screen==='today'?all.filter(r=>r.steps.some(v57TodayStep)):all;
+  const counts={all:population.length,active:population.filter(r=>r.active).length,
+    waiting:population.filter(r=>r.waiting).length,late:population.filter(r=>r.late).length,done:population.filter(r=>r.done).length};
   for(const name of ['All','Active','Waiting','Late','Done']){
-    const key=name.toLowerCase(),el=document.getElementById('v56Count'+name);
-    if(el)el.textContent=counts[key]||'';
+    const el=document.getElementById('v56Count'+name);if(el)el.textContent=counts[name.toLowerCase()]||'';
   }
   for(const btn of document.querySelectorAll('#v56Filters button'))btn.classList.toggle('selected',btn.dataset.filter===v56Status);
   const today=v56Screen==='today';
-  document.getElementById('v56Heading').textContent=today?'Сегодня':'Мои процессы';
-  document.getElementById('v56Subheading').textContent=today?'Просрочки, проблемы и действия на сегодня':'Рабочие записи по направлениям и объектам';
+  document.getElementById('v56Heading').textContent=today?'Требует внимания':'Мои объекты';
+  document.getElementById('v56Subheading').textContent=today?'Просрочки, проблемы и следующие действия':'Направления → объекты → процессы';
   document.getElementById('v56NavProjects')?.classList.toggle('is-active',!today);
   document.getElementById('v56NavToday')?.classList.toggle('is-active',today);
   document.getElementById('v56ClearSearch').hidden=!v56Query;
-  let filtered=all.filter(v56Matches);
-  filtered.sort((a,b)=>a.priority-b.priority);
-  const visible=filtered.slice(0,v56Limit);
-  v56Rows=visible;
+  const filtered=all.filter(v57FilterRows),visible=filtered.slice(0,v56Limit);
+  v57VisibleObjects=visible;v57RenderedSteps=[];
   const groups=new Map();
-  for(let i=0;i<visible.length;i++){
-    const r=visible[i],group=v56GroupName(r.proc,r.obj);
+  visible.forEach((r,index)=>{
+    const group=String(r.proc.title||'Без направления');
     if(!groups.has(group))groups.set(group,[]);
-    groups.get(group).push({...r,cardIndex:i});
-  }
+    groups.get(group).push({row:r,index});
+  });
   const chunks=[];
   if(!filtered.length){
-    chunks.push(`<div class="v56-empty"><strong>${all.length?'Записей не найдено':'Начните с первой записи'}</strong><span>${all.length?'Попробуйте изменить фильтр или поисковый запрос':'Создайте направление, затем добавьте рабочую запись'}</span><button type="button" onclick="${all.length?"v56ClearAllFilters()":"openAddProcessModal()"}">${all.length?'Показать всё':'Добавить направление'}</button></div>`);
+    chunks.push(`<div class="v56-empty"><strong>${all.length?'Объекты не найдены':'Пока нет объектов'}</strong><span>${all.length?'Попробуйте другой запрос или фильтр':'Создайте направление и первую рабочую запись'}</span><button type="button" onclick="${all.length?"v56ClearAllFilters()":"openAddProcessModal()"}">${all.length?'Показать всё':'Добавить направление'}</button></div>`);
   }
   for(const [group,items] of groups){
-    const cards=items.map(({proc,obj,step,status,blocked,late,cardIndex})=>{
-      const reason=String(step.blocker||'').trim();
-      const latest=Array.isArray(step.progressEvents)&&step.progressEvents.length?step.progressEvents[step.progressEvents.length-1]:null;
-      const problem=reason||(!step.done&&!latest?.resolved?latest?.reason:'');
-      const next=step.nextAction?`Следующее: ${step.nextAction}${step.nextDate?' · '+v56DateShort(step.nextDate):''}`:'';
-      const note=(!step.done&&problem)?`<div class="v56-task-note is-problem">Причина: ${v56SafeText(problem)}</div>`:
-        (!step.done&&next)?`<div class="v56-task-note">${v56SafeText(next)}</div>`:
-        (step.done&&step.actualResult)?`<div class="v56-task-note">Результат: ${v56SafeText(step.actualResult)}</div>`:
-        (step.expectedResult?`<div class="v56-task-note">Результат: ${v56SafeText(step.expectedResult)}</div>`:'');
-      const badgeStatus=step.done?'done':late?'late':blocked?'blocked':status;
-      const icon=step.done?'✓':late||blocked?'!':status==='waiting'?'◷':'•';
-      const owner=step.owner?`<span>Ответственный: ${v56SafeText(step.owner)}</span>`:'';
-      const due=step.date?`<span>${step.done?'Срок':'До'} ${v56SafeText(v56DateShort(step.date))}</span>`:'';
-      return `<button type="button" class="v56-task-card is-${badgeStatus}" data-v56-index="${cardIndex}" aria-label="Открыть процесс: ${v56SafeText(step.text)}">
-        <span class="v56-status-icon" aria-hidden="true">${icon}</span>
-        <span class="v56-task-content"><span class="v56-task-top"><span class="v56-task-title">${v56SafeText(step.text)}</span><span class="v56-badge ${badgeStatus}">${v56StatusText({step,late,blocked,waiting:status==='waiting'})}</span></span>
-          <span class="v56-object-line">${v56SafeText(obj.title)} <span aria-hidden="true">·</span> ${v56SafeText(proc.title)}</span>
-          ${owner||due?`<span class="v56-meta-row">${owner}${due}</span>`:''}${note}</span><span class="v56-card-chevron" aria-hidden="true">›</span>
-        </button>`;
+    const cards=items.map(({row,index})=>{
+      const key=v57ObjectKey(row.proc,row.obj),expanded=v57ExpandedObjects.has(key);
+      const show=v57ShowSteps(row);
+      const done=row.finished,total=row.steps.length;
+      const progress=total?Math.round(done/total*100):0;
+      const inner=show.length?show.map(info=>v57StepHtml(row,info)).join(''):'<p class="v57-no-steps">Нет процессов. Добавьте первую запись.</p>';
+      const extra=total>show.length;
+      const fullLabel=expanded?'Скрыть завершённые и будущие этапы':`Все этапы (${total})`;
+      return `<article class="v57-object-card" aria-label="Объект: ${v56SafeText(row.obj.title)}">
+        <div class="v57-object-top"><div style="min-width:0;flex:1"><h3 class="v57-object-name">${v56SafeText(row.obj.title)}</h3><p class="v57-object-meta">${done} из ${total} этапов выполнено</p></div>
+          ${total?`<span class="v57-object-status ${row.status}">${v57StatusText(row)}</span>`:''}</div>
+        ${total?`<div class="v57-progress" role="progressbar" aria-label="Выполнение объекта" aria-valuenow="${done}" aria-valuemin="0" aria-valuemax="${total}"><div class="v57-progress-fill" style="width:${progress}%"></div></div>`:''}
+        <div class="v57-step-list">${inner}</div>
+        <div class="v57-object-tools"><button type="button" class="v57-add" data-v57-add="${index}">+ Новая запись</button>
+          ${extra||expanded?`<button type="button" data-v57-expand="${index}" aria-expanded="${expanded}">${fullLabel}</button>`:''}</div>
+      </article>`;
     }).join('');
-    chunks.push(`<section class="v56-direction-group"><h2 class="v56-direction-label">${v56SafeText(group)}<span class="v56-count">${items.length}</span></h2><div class="v56-card-grid">${cards}</div></section>`);
+    chunks.push(`<section class="v56-direction-group"><h2 class="v56-direction-label">${v56SafeText(group)}<span class="v56-count">${items.length} ${items.length===1?'объект':(items.length%10>=2&&items.length%10<=4&&(items.length%100<12||items.length%100>14)?'объекта':'объектов')}</span></h2><div class="v57-object-list">${cards}</div></section>`);
   }
   root.innerHTML=chunks.join('');
   const more=document.getElementById('v56More');more.hidden=filtered.length<=v56Limit;
-  if(!more.hidden)more.textContent=`Показать ещё · ${filtered.length-v56Limit}`;
+  if(!more.hidden)more.textContent=`Показать ещё ${filtered.length-v56Limit} объектов`;
 }
-function v56OpenCard(index){
-  const row=v56Rows[index];if(row)openProcessDetail(row.proc.id,row.obj.id,row.step.id);
-}
-function v56SetFilter(filter){v56Status=filter;v56Limit=40;v56RenderCards();}
+function v56SetFilter(filter){v56Status=filter;v56Limit=30;v56RenderCards();}
 function v56SetScreen(screen){
   v56Screen=screen==='today'?'today':'projects';v56Legacy=false;
   const main=document.getElementById('v56Workspace'),legacy=document.getElementById('v56LegacyWorkspace');
   main.hidden=false;legacy.hidden=true;
-  v56Status='all';v56Limit=40;v56RenderCards();
+  v56Status='all';v56Limit=30;v56Query='';document.getElementById('v56Search').value='';v56RenderCards();
   window.scrollTo({top:0,behavior:'instant'});
 }
-function v56SearchChanged(value){v56Query=String(value||'').trim().toLowerCase();v56Limit=40;v56RenderCards();}
+function v56SearchChanged(value){v56Query=String(value||'').trim().toLowerCase();v56Limit=30;v56RenderCards();}
 function v56ClearSearch(){v56Query='';document.getElementById('v56Search').value='';v56RenderCards();document.getElementById('v56Search').focus();}
 function v56ClearAllFilters(){v56Query='';v56Status='all';v56Screen='projects';document.getElementById('v56Search').value='';v56SetScreen('projects');}
-function v56LoadMore(){v56Limit+=40;v56RenderCards();}
+function v56LoadMore(){v56Limit+=30;v56RenderCards();}
 function v56ToggleStructure(){
   v56Legacy=!v56Legacy;
   document.getElementById('v56Workspace').hidden=v56Legacy;
   document.getElementById('v56LegacyWorkspace').hidden=!v56Legacy;
   if(!v56Legacy)v56RenderCards();
+  const btn=document.getElementById('v56LegacyButton');if(btn)btn.textContent=v56Legacy?'К объектам':'Полный реестр';
   window.scrollTo({top:0,behavior:'instant'});
 }
 function v56OpenSettings(e){toggleSettings(e);}
 document.getElementById('v56Cards').addEventListener('click',event=>{
-  const b=event.target.closest('button[data-v56-index]');if(!b)return;
-  v56OpenCard(Number(b.dataset.v56Index));
+  const process=event.target.closest('button[data-v57-step]');
+  if(process){
+    const row=v57RenderedSteps[Number(process.dataset.v57Step)];
+    if(row)openProcessDetail(row.proc.id,row.obj.id,row.step.id);
+    return;
+  }
+  const button=event.target.closest('button[data-v57-expand],button[data-v57-add]');
+  if(!button)return;
+  const row=v57VisibleObjects[Number(button.dataset.v57Expand??button.dataset.v57Add)];
+  if(!row)return;
+  if(button.hasAttribute('data-v57-add')){openEntryWizard(row.proc.id,row.obj.id);return;}
+  const key=v57ObjectKey(row.proc,row.obj);
+  if(v57ExpandedObjects.has(key))v57ExpandedObjects.delete(key);else v57ExpandedObjects.add(key);
+  v56RenderCards();
 });
 
     document.getElementById('reportFrom').value=getTodayISO();
