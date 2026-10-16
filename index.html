@@ -1746,6 +1746,66 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
   .step-status-row{padding-left:28px;gap:2px 12px}
   .step-state,.step-date-minimal{font-size:14px}
 }
+
+/* 5.4: KMG PetroChem weekly, two-column report. All typography stays Roboto Condensed. */
+.management-report-entry { background:#edf4ff!important; color:#245bb9!important; font-weight:600!important; }
+#managementReportModal { z-index:2300; }
+#managementReportModal .mgmt-sheet { max-width:970px;width:min(970px,100%);padding:22px;gap:14px;box-sizing:border-box; }
+.mgmt-header-title { font-size:24px;font-weight:700;letter-spacing:-.025em;line-height:1.15; }
+.mgmt-subtext { color:#687583; font-size:15px;line-height:1.45; }
+.mgmt-filters { display:grid;grid-template-columns:minmax(200px,1.4fr) repeat(2,minmax(140px,1fr));gap:10px;align-items:end; }
+.mgmt-filters label {display:flex;flex-direction:column;gap:5px;color:#4b5664;font-size:14px;font-weight:600;}
+.mgmt-filters select,.mgmt-filters input {font:inherit;min-width:0;width:100%;border:1px solid #dce2e8;border-radius:9px;background:white;color:#202b38;min-height:41px;padding:8px;}
+.mgmt-period-clarify {margin-top:3px;color:#586578;font-size:14px;}
+.mgmt-status { color:#7b5632;background:#fff9ea;border-radius:9px;padding:10px 12px;font-size:14px;white-space:pre-line;line-height:1.45; }
+.mgmt-status:empty {display:none;}
+.mgmt-columns { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+.mgmt-column { min-width:0;display:flex;flex-direction:column;gap:7px; }
+.mgmt-column label {font-size:17px;font-weight:700;color:#222f40;}
+.mgmt-column textarea { resize:vertical;min-height:250px;height:35vh;max-height:60vh;width:100%;font-size:15px;line-height:1.5;border:1px solid #dce2e8;border-radius:10px;padding:12px;color:#202c3a;background:#fff; }
+.mgmt-column textarea:focus {outline:2px solid #99bdf4;outline-offset:1px;}
+.mgmt-foot {display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.mgmt-btn {appearance:none;border:1px solid #d9e2ec;background:#fff;color:#24558c;border-radius:9px;min-height:43px;padding:9px 13px;font-size:15px;font-weight:600;cursor:pointer;}
+.mgmt-btn.primary {background:#2563eb;border-color:#2563eb;color:#fff;}
+.mgmt-btn:focus-visible {outline:2px solid #4f91ff;outline-offset:2px;}
+.mgmt-review {font-size:14px;color:#687583;line-height:1.5;}
+@media(max-width:690px){
+ #managementReportModal {align-items:flex-end;}
+ #managementReportModal .mgmt-sheet{width:100%;max-height:92dvh;border-radius:16px 16px 0 0;padding:17px 14px;}
+ .mgmt-header-title{font-size:21px;}
+ .mgmt-filters{grid-template-columns:repeat(2,minmax(0,1fr));}
+ .mgmt-filters label:first-child{grid-column:1 / -1;}
+ .mgmt-columns{grid-template-columns:1fr;}
+ .mgmt-column textarea{height:22vh;min-height:125px;max-height:30vh;}
+ .mgmt-foot .mgmt-btn{flex:1 1 44%;}
+}
+
+/* V5.4.1 — task metadata: one control per field, saved owner visible. */
+.step-owner-visible {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 5px;
+  min-width: 0;
+  max-width: 100%;
+  color: #66788e;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.step-owner-visible strong {
+  color: #2c405a;
+  font-size: inherit;
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .step-status-row { gap: 5px 11px; }
+  .step-owner-visible { flex-basis: 100%; }
+}
 </style>
 
 
@@ -1839,6 +1899,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
   <div class="floating-bar" id="reportBar">
     <button type="button" class="mobile-reports-trigger" id="reportBarToggle" aria-controls="mobileReportActions" aria-expanded="false" onclick="toggleMobileReports(event)">Отчёт</button>
     <div class="report-actions" id="mobileReportActions">
+      <button type="button" class="fab-btn management-report-entry" onclick="closeMobileReports();openManagementReport()">Факт / План недели — KMG PetroChem</button>
       <button type="button" class="fab-btn" onclick="copyReport();closeMobileReports()">Скопировать текст</button>
       <button type="button" class="fab-btn" onclick="exportToExcel();closeMobileReports()">Экспорт Excel</button>
       <button type="button" class="fab-btn" onclick="shareToTelegram();closeMobileReports()">В Telegram</button>
@@ -1908,6 +1969,45 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
         <p class="subtle-hint">Ваша старая база и локальные копии не удаляются.</p>
       </div>
     </div>
+
+  <!-- Корпоративный еженедельный отчёт. Только локальная генерация из state; без отправки данных третьим лицам. -->
+  <div class="modal-overlay" id="managementReportModal" onclick="if(event.target===this)closeManagementReport()" aria-hidden="true">
+    <section class="modal-box mgmt-sheet" role="dialog" aria-modal="true" aria-labelledby="managementReportHeading" onclick="event.stopPropagation()">
+      <div class="modal-top">
+        <h2 class="mgmt-header-title" id="managementReportHeading">Факт / План на неделю</h2>
+        <button type="button" class="modal-x" onclick="closeManagementReport()" aria-label="Закрыть отчёт">✕</button>
+      </div>
+      <p class="mgmt-subtext">Управленческий отчёт для двух колонок Excel. Текст можно отредактировать перед копированием. Данные не отправляются во внешние AI-сервисы.</p>
+      <div class="mgmt-filters">
+        <label>Строка отчёта
+          <select id="managementReportScope" onchange="refreshManagementReport()">
+            <option value="all">Сводно по проекту</option>
+            <option value="by_process">По каждому направлению</option>
+          </select>
+        </label>
+        <label>Отчёт с <input id="managementReportFrom" type="date" onchange="refreshManagementReport()" /></label>
+        <label>по <input id="managementReportTo" type="date" onchange="refreshManagementReport()" /></label>
+      </div>
+      <div class="mgmt-period-clarify" id="managementReportNextWeek">План: следующие 7 дней после конца отчётного периода.</div>
+      <div class="mgmt-status" id="managementReportWarnings" role="status" aria-live="polite"></div>
+      <div class="mgmt-columns">
+        <div class="mgmt-column"><label for="managementReportFact">Работа за отчётный период</label>
+          <textarea id="managementReportFact" spellcheck="true"></textarea>
+          <button type="button" class="mgmt-btn" onclick="copyManagementColumn('fact')">Скопировать факт для ячейки Excel</button>
+        </div>
+        <div class="mgmt-column"><label for="managementReportPlan">Планы на предстоящую неделю</label>
+          <textarea id="managementReportPlan" spellcheck="true"></textarea>
+          <button type="button" class="mgmt-btn" onclick="copyManagementColumn('plan')">Скопировать план для ячейки Excel</button>
+        </div>
+      </div>
+      <div class="mgmt-foot">
+        <button type="button" class="mgmt-btn primary" onclick="copyManagementRow()" id="mgmtCopyRow">Скопировать строку для Excel (Факт / План)</button>
+        <button type="button" class="mgmt-btn" onclick="exportManagementExcel()">Скачать Excel</button>
+        <button type="button" class="mgmt-btn" onclick="refreshManagementReport()">Обновить из блокнота</button>
+      </div>
+      <p class="mgmt-review">Перед отправкой сверьте формулировки с рабочими документами. Текущая работа отражает состояние базы на момент выгрузки, а не историю статусов в прошлом. Автоматический план является проектом.</p>
+    </section>
+  </div>
 
     <!-- МОДАЛЬНОЕ ОКНО AI -->
   <div class="modal-overlay" id="aiModalOverlay" onclick="closeAiModal(event)">
@@ -4077,10 +4177,10 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
                                   <button type="button" class="step-del-btn" onclick="toggleMenuGeneric(event, 'smenu-${s.id}')" aria-label="Действия с этапом" aria-haspopup="dialog" aria-expanded="false" title="Действия с этапом">···</button>
                                   <div class="obj-dropdown-menu" id="smenu-${s.id}">
                                     <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openEditStepModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Переименовать</button>
-                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Изменить срок</button>
+                                    ${!s.date ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Назначить срок</button>` : ''}
                                     <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openStepDetails(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Ответственный, документ и статус</button>
                                     ${s.documentUrl && Model.validUrl(s.documentUrl) ? `<a class="obj-dropdown-item" target="_blank" rel="noopener noreferrer" href="${escapeHtml(Model.validUrl(s.documentUrl))}">Открыть документ</a>` : ''}
-                                    ${!s.done ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openRiskModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">${hasBlock ? 'Открыть замечание' : hist.length ? 'История замечаний ('+hist.length+')' : 'Добавить замечание'}</button>` : ''}
+                                    ${!s.done && !hasBlock && hist.length===0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openRiskModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Добавить замечание</button>` : ''}
                                     ${sIdx>0?`<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();moveStep(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)},-1)">Выше</button>`:''}
                                     ${sIdx<stepsArr.length-1?`<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();moveStep(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)},1)">Ниже</button>`:''}
                                     <button type="button" class="obj-dropdown-item del-action" onclick="event.stopPropagation();deleteStep(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Удалить этап</button>
@@ -4093,6 +4193,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
                                   s.workflowStatus==='waiting' ? `<span class="step-state step-state-wait">Ожидание</span>` : `<span class="step-state step-state-active">В работе</span>`}
                                 ${s.date ? `<button type="button" class="step-date-minimal ${dateMeta.cls==='overdue'?'is-late':''}" onclick="openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Изменить срок">${escapeHtml(s.done ? 'Срок: '+s.date : dateMeta.cls==='overdue'?'Просрочено: '+String(s.date).replace(/^до\s+/i,'') : 'До '+String(s.date).replace(/^до\s+/i,''))}</button>` : ''}
                                 ${s.done && s.completedAt ? `<span class="step-completed-at">${escapeHtml(s.completedAt)}</span>` : ''}
+                                ${s.owner && String(s.owner).trim() ? `<span class="step-owner-visible">Ответственный: <strong>${escapeHtml(s.owner)}</strong></span>` : ''}
                               </div>
 
                               ${hist.length > 0 ? `
@@ -4288,8 +4389,263 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
         }
         return txt.trim();
       }
-      return {generate,weeklyPlan,getPeriod,validatePeriod,status};
+
+      // 5.4 deterministic management report: factual completions by completedAt,
+      // current focus and proposed next seven days. No AI and no database writes.
+      const corporate=(()=>{
+        const districtPatterns=[
+          [/^\s*жылыой(?:ский|ского)?(?:\s+район(?:а)?)?(?:\s*[-–—:/.]|\s|$)/i,'Жылыойский район'],
+          [/^\s*(?:макат|мақат)(?:ский|ского)?(?:\s+район(?:а)?)?(?:\s*[-–—:/.]|\s|$)/i,'Макатский район'],
+          [/^\s*исатай(?:ский|ского)?(?:\s+район(?:а)?)?(?:\s*[-–—:/.]|\s|$)/i,'Исатайский район'],
+          [/^\s*махамбет(?:ский|ского)?(?:\s+район(?:а)?)?(?:\s*[-–—:/.]|\s|$)/i,'Махамбетский район'],
+          [/^\s*индер(?:ский|ского)?(?:\s+район(?:а)?)?(?:\s*[-–—:/.]|\s|$)/i,'Индерский район'],
+          [/^\s*курмангазин(?:ский|ского)?(?:\s+район(?:а)?)?(?:\s*[-–—:/.]|\s|$)/i,'Курмангазинский район'],
+          [/^\s*кызылкогин(?:ский|ского)?(?:\s+район(?:а)?)?(?:\s*[-–—:/.]|\s|$)/i,'Кызылкогинский район']
+        ];
+        function plain(value){
+          return String(value??'').replace(/<[^>]*>/g,' ').replace(/[\u{1F000}-\u{1FAFF}\u2600-\u27BF]/gu,'')
+            .replace(/[\t\r\n]+/g,' ').replace(/\s+/g,' ').trim();
+        }
+        function district(title){
+          const name=plain(title);
+          for(const [rx,label] of districtPatterns)if(rx.test(name))return label;
+          return 'Район не указан';
+        }
+        function objectName(title){
+          const name=plain(title);
+          for(const [rx] of districtPatterns){
+            if(rx.test(name)){
+              const cut=name.replace(rx,'').replace(/^\s*[-–—:/.]\s*/,'').trim();
+              return cut||name;
+            }
+          }
+          return name||'Без названия';
+        }
+        function iso(raw){
+          const value=String(raw??'').trim();
+          let m=value.match(/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/);
+          if(!m){ const r=value.match(/^(\d{2})\.(\d{2})\.(\d{4})/); if(r)m=[r[0],r[3],r[2],r[1]]; }
+          if(!m)return '';
+          const y=Number(m[1]),month=Number(m[2]),day=Number(m[3]);
+          const dt=new Date(Date.UTC(y,month-1,day));
+          if(dt.getUTCFullYear()!==y||dt.getUTCMonth()!==month-1||dt.getUTCDate()!==day)return '';
+          return `${m[1]}-${m[2]}-${m[3]}`;
+        }
+        function dateUTC(date){return new Date(`${date}T12:00:00Z`);}
+        function addDays(date,days){const d=dateUTC(date);d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
+        function currentWeek(){
+          const today=getTodayISO(),d=dateUTC(today),dow=d.getUTCDay();
+          const from=addDays(today,-((dow+6)%7));
+          return {from,to:addDays(from,6)};
+        }
+        function due(step){return iso(step.date)||iso(displayToISO(step.date));}
+        function evidence(step){
+          const doc=plain((step.history||[]).find(h=>h?.active&&h.doc)?.doc||step.doc||'');
+          const url=plain(step.documentUrl||'');
+          return {owner:plain(step.owner||''),doc:doc||url};
+        }
+        function details(step){
+          const e=evidence(step),bits=[];
+          if(e.owner)bits.push(`ответственный: ${e.owner}`);
+          if(e.doc)bits.push(`документ: ${e.doc}`);
+          return bits.length?` (${bits.join('; ')})`:'';
+        }
+        function remark(step){
+          const recent=(step.history||[]).find(h=>h?.active&&h.text);
+          const note=plain(recent?.text||step.blocker||'');
+          return note?` Активное замечание: ${note}.`:'';
+        }
+        function action(step,obj,completed){
+          const t=plain(step.text)||'не указан',o=objectName(obj.title);
+          if(completed)return `Завершён этап «${t}» по объекту «${o}».`;
+          if(/^акт\s+сверки/i.test(t))return `Получение ${t.charAt(0).toLowerCase()+t.slice(1)} по объекту «${o}»`;
+          if(/^(получение|согласование|утверждение|заключение|регистрация|подготовка|разработка|оформление|завершение|расчёт|расчет|оплата|перечисление|проведение)/i.test(t))return `${t} по объекту «${o}»`;
+          return `Выполнение этапа «${t}» по объекту «${o}»`;
+        }
+        function unique(arr){return [...new Set(arr.filter(Boolean))];}
+        function groupsText(groupMap){
+          if(!groupMap.size)return 'Сведений для выбранного периода нет.';
+          const keys=[...groupMap.keys()].sort((a,b)=>{
+            if(a==='Район не указан')return 1;
+            if(b==='Район не указан')return -1;
+            return a.localeCompare(b,'ru');
+          });
+          return keys.map(name=>`${name}:\n${unique(groupMap.get(name)).join('\n')}`).join('\n\n');
+        }
+        function append(map,key,item){if(!map.has(key))map.set(key,[]);map.get(key).push(item);}
+        function forProcesses(processes,from,to){
+          const facts=new Map(),plans=new Map(),notes={undatedDone:0,unknownDistrict:0,undatedNext:0,completed:0,ongoing:0,planned:0};
+          const planFrom=addDays(to,1),planTo=addDays(to,7);
+          for(const proc of processes)for(const obj of proc.objects||[]){
+            if(obj.archived)continue;
+            const area=district(obj.title);
+            if(area==='Район не указан')notes.unknownDistrict++;
+            const steps=obj.steps||[];
+            for(const step of steps){
+              if(!step.done)continue;
+              const completedAt=iso(step.completedAt);
+              if(!completedAt){notes.undatedDone++;continue;}
+              if(completedAt<from||completedAt>to)continue;
+              append(facts,area,action(step,obj,true));notes.completed++;
+            }
+            const open=steps.filter(s=>!s.done);
+            if(!open.length)continue;
+            const current=open[0];
+            // Current work is a present-state snapshot, not a historical activity log.
+            append(facts,area,`Продолжается работа: ${action(current,obj,false)}${details(current)}.${remark(current)}`);notes.ongoing++;
+            for(const other of open.slice(1))if(other.blocker){
+              append(facts,area,`По объекту «${objectName(obj.title)}» сохраняется замечание на этапе «${plain(other.text)}».${remark(other)}`);
+            }
+            const planSteps=open.slice(0,2);
+            planSteps.forEach((step,index)=>{
+              const target=due(step);
+              if(index>0&&target&&target>planTo)return;
+              if(index>0&&!target)notes.undatedNext++;
+              const deadline=target?` (плановый срок: ${fmt(target)})`:'';
+              append(plans,area,`${action(step,obj,false)}${deadline}.`);notes.planned++;
+            });
+          }
+          return {fact:groupsText(facts),plan:groupsText(plans),notes,planFrom,planTo};
+        }
+        function build(scope,from,to){
+          from=iso(from);to=iso(to);
+          if(!from||!to||from>to)throw new Error('Укажите корректный период: дата начала не позднее даты окончания.');
+          if((dateUTC(to)-dateUTC(from))/86400000>92)throw new Error('Период не должен превышать 93 дней.');
+          if(scope==='by_process'){
+            const rows=state.map(p=>({direction:plain(p.title)||'Без названия',...forProcesses([p],from,to)}));
+            return {rows,from,to,byProcess:true};
+          }
+          const chosen=scope==='all'?state:state.filter(p=>String(p.id)===scope);
+          if(!chosen.length)throw new Error('Направление не найдено. Обновите отчёт.');
+          const label=scope==='all'?'Сводно по проекту':plain(chosen[0].title);
+          return {rows:[{direction:label,...forProcesses(chosen,from,to)}],from,to,byProcess:false};
+        }
+        return {build,currentWeek,addDays,iso,plain};
+      })();
+      return {generate,weeklyPlan,getPeriod,validatePeriod,status,corporate};
     })();
+
+    // UI for corporate report. Edits are local to the preview; project records never mutate here.
+    const ManagementReportUI=(()=>{
+      const el=id=>document.getElementById(id);
+      let built=null;
+      function selected(){return el('managementReportScope').value;}
+      function textForColumn(column){return el(column==='fact'?'managementReportFact':'managementReportPlan').value;}
+      function updateScopeChoices(){
+        const select=el('managementReportScope'),previous=select.value;
+        const opts=[['all','Сводно по проекту'],['by_process','По каждому направлению'],
+          ...state.map(p=>[String(p.id),String(p.title||'Без названия')])];
+        select.replaceChildren(...opts.map(([value,label])=>{const o=document.createElement('option');o.value=value;o.textContent=label;return o;}));
+        if(opts.some(o=>o[0]===previous))select.value=previous;
+      }
+      function open(){
+        if(!readyForEditing){showToast('Сначала подключитесь к облаку');return;}
+        updateScopeChoices();
+        if(!el('managementReportFrom').value){
+          const p=Reports.corporate.currentWeek();
+          el('managementReportFrom').value=p.from;el('managementReportTo').value=p.to;
+        }
+        el('managementReportModal').style.display='flex';
+        el('managementReportModal').setAttribute('aria-hidden','false');
+        refresh();
+      }
+      function close(){
+        el('managementReportModal').style.display='none';
+        el('managementReportModal').setAttribute('aria-hidden','true');
+      }
+      function refresh(){
+        try{
+          built=Reports.corporate.build(selected(),el('managementReportFrom').value,el('managementReportTo').value);
+          const fact=built.rows.map(r=>built.byProcess?`${r.direction}\n${r.fact}`:r.fact).join('\n\n');
+          const plan=built.rows.map(r=>built.byProcess?`${r.direction}\n${r.plan}`:r.plan).join('\n\n');
+          el('managementReportFact').value=fact;
+          el('managementReportPlan').value=plan;
+          const a=built.rows.reduce((n,r)=>{for(const key in n)n[key]+=r.notes[key]||0;return n;},
+            {undatedDone:0,unknownDistrict:0,undatedNext:0,completed:0,ongoing:0,planned:0});
+          const from=Reports.corporate.addDays(built.to,1),to=Reports.corporate.addDays(built.to,7);
+          el('managementReportNextWeek').textContent=`План на ${from.split('-').reverse().join('.')} – ${to.split('-').reverse().join('.')} (семь дней после отчётного периода).`;
+          const warns=[];
+          if(a.undatedDone)warns.push(`Выполнено без даты: ${a.undatedDone}. Эти этапы не включены в факт периода.`);
+          if(a.unknownDistrict)warns.push(`Не определён район: ${a.unknownDistrict} объект(ов). Проверьте префиксы названий.`);
+          if(a.undatedNext)warns.push(`Следующий этап без планового срока: ${a.undatedNext}. Проверьте обоснованность включения в план.`);
+          if(!a.completed)warns.push('В выбранном периоде нет подтверждённых завершений с датой.');
+          if(built.byProcess)warns.push('В режиме «По направлениям» Excel и TSV формируют несколько строк. При редактировании сохраняйте названия направлений отдельными строками.');
+          el('managementReportWarnings').textContent=warns.join('\n');
+          el('mgmtCopyRow').textContent=built.byProcess?'Скопировать строки для Excel (Факт / План)':'Скопировать строку для Excel (Факт / План)';
+        }catch(e){built=null;el('managementReportWarnings').textContent=e.message;el('managementReportFact').value='';el('managementReportPlan').value='';}
+      }
+      async function copyPlain(value){
+        if(!value){showToast('Нет текста для копирования');return;}
+        try{
+          if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);showToast('Скопировано');return;}
+          throw new Error('Clipboard API unavailable');
+        }catch(e){
+          const tmp=document.createElement('textarea');tmp.value=value;tmp.style.position='fixed';tmp.style.left='-10000px';
+          document.body.appendChild(tmp);tmp.select();
+          let ok=false;try{ok=document.execCommand('copy');}catch(_){}tmp.remove();
+          showToast(ok?'Скопировано':'Не удалось скопировать автоматически. Выделите текст в поле отчёта.');
+        }
+      }
+      function cell(value){
+        let out=Reports.corporate.plain(value).replace(/\s+/g,' ').trim();
+        if(/^[=+@-]/.test(out))out="'"+out;
+        return out;
+      }
+      // Split editable text by exact direction headings. Do not silently ignore edits.
+      function editedRows(){
+        if(!built)return [];
+        if(!built.byProcess)return [{direction:built.rows[0].direction,fact:textForColumn('fact'),plan:textForColumn('plan')}];
+        function split(text){
+          const lines=text.replace(/\r\n?/g,'\n').split('\n');
+          const out=[];let cursor=0;
+          for(let i=0;i<built.rows.length;i++){
+            const heading=built.rows[i].direction;
+            while(cursor<lines.length&&!lines[cursor].trim())cursor++;
+            if(lines[cursor]?.trim()!==heading)throw new Error('Названия направлений в тексте изменены. Для экспорта по строкам сохраните заголовки направлений.');
+            cursor++;const content=[];
+            const next=built.rows[i+1]?.direction;
+            while(cursor<lines.length && (!next || lines[cursor].trim()!==next))content.push(lines[cursor++]);
+            out.push(content.join('\n').trim());
+          }
+          return out;
+        }
+        const fact=split(textForColumn('fact'));
+        const plan=split(textForColumn('plan'));
+        return built.rows.map((row,i)=>({direction:row.direction,fact:fact[i],plan:plan[i]}));
+      }
+      // Multiline text has to become one physical TSV cell to avoid Excel row splitting.
+      function tsv(){
+        if(!built)return '';
+        return editedRows().map(r=>`${cell(r.fact)}\t${cell(r.plan)}`).join('\n');
+      }
+      function exportExcel(){
+        if(!built){showToast('Сначала сформируйте отчёт');return;}
+        if(typeof XLSX==='undefined'){void copyPlain(tsv());showToast('Библиотека Excel не загрузилась; таблица скопирована');return;}
+        try{
+          const headers=['Направление','Работа за отчетный период','Планы на предстоящую неделю'];
+          const matrix=[headers];
+          for(const row of editedRows())matrix.push([cell(row.direction),row.fact,row.plan]);
+          const safeMatrix=matrix.map((row,i)=>i===0?row:row.map(x=>/^[=+@-]/.test(String(x))?"'"+x:x));
+          const sheet=XLSX.utils.aoa_to_sheet(safeMatrix);
+          sheet['!cols']=[{wch:28},{wch:85},{wch:85}];
+          sheet['!rows']=[{hpt:28},...editedRows().map(r=>({hpt:Math.min(420,Math.max(100,Math.ceil(Math.max(r.fact.length,r.plan.length)/100)*16))}))];
+          for(const addr of Object.keys(sheet)){if(addr[0]==='!')continue;
+            sheet[addr].s={alignment:{wrapText:true,vertical:'top'}};
+          }
+          const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,sheet,'Факт и план');
+          XLSX.writeFile(wb,`KMG_PetroChem_Факт_План_${built.from}_${built.to}.xlsx`);
+          showToast('Excel подготовлен к скачиванию');
+        }catch(e){console.error(e);showToast('Не удалось выгрузить Excel. Попробуйте TSV.');}
+      }
+      return {open,close,refresh,copyPlain,tsv,exportExcel};
+    })();
+    function openManagementReport(){ManagementReportUI.open();}
+    function closeManagementReport(){ManagementReportUI.close();}
+    function refreshManagementReport(){ManagementReportUI.refresh();}
+    function copyManagementColumn(type){void ManagementReportUI.copyPlain(document.getElementById(type==='fact'?'managementReportFact':'managementReportPlan').value);}
+    function copyManagementRow(){try{void ManagementReportUI.copyPlain(ManagementReportUI.tsv());}catch(e){showToast(e.message);}}
+    function exportManagementExcel(){ManagementReportUI.exportExcel();}
+
     function generateTelegramReport(){return Reports.generate();}
     function validateReportPeriod(){Reports.validatePeriod();}
     async function safeCopy(text){
