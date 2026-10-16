@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов 5.1 — Condensed</title>
+  <title>Мониторинг проектов 5.2 — Блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <!-- Only typography for direction/object names; optional remote font with system fallback. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style id="v52-unified-styles">
     :root {
       --bg: #f8fafc;
       --surface: #ffffff;
@@ -1120,8 +1120,8 @@
     .btn-remark-clear {min-height:28px}
     #undoBtn:disabled {opacity:.4;cursor:not-allowed}
     @media(max-width:480px){.report-period{gap:5px}.report-period input{max-width:116px}}
-  </style>
-<style id="design-v3-overrides">
+  
+
 /* Design revision 3.2 — fixes to presentation and AI availability; data schema unchanged */
 :root{--bg:#f5f7fb;--surface:#fff;--surface-subtle:#f7f9fc;--border:#e8edf4;--text-main:#18253c;--text-muted:#687991;--radius-card:16px;--radius-sm:10px;--amber:#bb741d;--amber-bg:#fff7e9;--amber-border:#f8dcaa}
 body{background:var(--bg);font-size:14px;letter-spacing:0;padding:15px 12px 125px}
@@ -1250,8 +1250,8 @@ body{background:var(--bg);font-size:14px;letter-spacing:0;padding:15px 12px 125p
 .ai-helper{font-size:11px;color:#687991;margin-top:6px;line-height:1.45}
 .ai-warning{color:#9e5a17;background:#fff8ea;border:1px solid #f4dfba;border-radius:7px;padding:8px;font-size:11px;line-height:1.45;margin-top:8px}
 @media(max-width:420px){.summary-status-inline{font-size:9.5px}.step-owner-compact{max-width:165px}}
-</style>
-<style id="v4-mobile-online">
+
+
 /* Mobile-first V4: keep the worklist above the fold, and use only two primary metrics. */
 .kpi-expand-btn{display:none;width:100%;padding:7px 10px;border:none;background:#f1f5f9;border-radius:8px;color:#52708f;font-size:12px;font-weight:700;margin:1px 0 12px;cursor:pointer}
 .report-details{margin-top:9px;border-top:1px solid #e9eef5;padding-top:8px}
@@ -1286,8 +1286,8 @@ body:not(.online-ready) .registry-card,body:not(.online-ready) .btn-add-proc-com
   .folder-content{padding:6px!important}
   .item-card{padding:9px!important}
 }
-</style>
-<style id="v43-apple-typography">
+
+
 /* V4.3: Apple-inspired type scale and inset grouped lists. No app logic changed. */
 :root {
   --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, Arial, sans-serif;
@@ -1433,9 +1433,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (prefers-reduced-motion:reduce) {
   *, *::before, *::after { scroll-behavior:auto!important; transition-duration:0.01ms!important; animation-duration:0.01ms!important; }
 }
-</style>
 
-<style id="v5-workbook-layout">
+
 /* V5: one task list, not six dashboards. Presentation only; server and storage are unchanged. */
 :root {
   --bg:#f6f7f9; --surface:#fff; --text-main:#202329; --text-muted:#737983;
@@ -1585,9 +1584,8 @@ body{background:var(--bg);color:var(--text-main);padding:18px 24px 64px;font-siz
  .mobile-reports-trigger{padding:9px 9px;max-width:90px}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
-</style>
 
-<style id="v5-footer-details">
+
 .footer-maintenance{margin:18px 0 5px;text-align:center}
 .footer-maintenance > summary{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 13px;cursor:pointer;list-style:none;color:#768293;font-size:13px;font-weight:470;border-radius:10px;user-select:none}
 .footer-maintenance > summary::-webkit-details-marker{display:none}
@@ -1595,8 +1593,8 @@ body{background:var(--bg);color:var(--text-main);padding:18px 24px 64px;font-siz
 .footer-maintenance[open] > summary::before{transform:rotate(180deg)}
 .footer-maintenance > summary:hover{background:#eceff3}
 .footer-maintenance .footer-subtle-wrap{margin:5px auto 16px}
-</style>
-<style id="v51-condensed-headings">
+
+
 /* V5.1: bold, genuinely condensed names of directions and objects.
    Body copy, badges, notes, dates, JS and cloud data are unchanged. */
 :root {
@@ -1631,7 +1629,84 @@ body .app-container .registry-card .item-title {
   body .app-container .registry-card .folder-title-text { font-size: 18px !important; }
   body .app-container .registry-card .item-title { font-size: 17.5px !important; }
 }
+
+
+/* v5.2: one consistent type family and a stronger direction/object hierarchy. */
+:root{--font-ui:"Roboto Condensed","Arial Narrow","Liberation Sans Narrow",sans-serif;
+      --font-process-condensed:var(--font-ui)}
+html,body,body *,button,input,textarea,select,option{font-family:var(--font-ui)!important}
+.dash-title{font-size:29px!important;font-weight:700!important;letter-spacing:-.012em!important}
+.section-bar-title{font-weight:700!important}
+body .app-container .registry-card .folder-title-text{font-size:20px!important;font-weight:700!important;color:#202936!important;letter-spacing:-.01em!important}
+body .app-container .registry-card .item-title{font-size:18px!important;font-weight:600!important;color:#35404c!important;letter-spacing:0!important;line-height:1.35!important}
+.step-text{font-size:16px!important;font-weight:500!important}
+.step-remark-item{font-size:15px!important;font-weight:400!important}
+.kpi-val{font-weight:700!important}
+/* Stable actions: independent of whether the title wraps to three lines. */
+.item-header{position:relative!important;padding-right:45px!important}
+.item-menu-controls{position:absolute;top:7px;right:0;z-index:35}
+.item-menu-controls .btn-item-more{position:static!important;top:auto!important;right:auto!important;min-width:40px;min-height:40px}
+.item-menu-controls .obj-dropdown-menu{position:absolute!important;right:0!important;left:auto!important;top:calc(100% + 2px)!important;z-index:650!important;max-width:min(250px,90vw)}
+.item-title-wrap{min-width:0}
+/* Thin, meaningful progress indicator; preserve semantic red/amber/green. */
+.progress-pill,.progress-pill.pill-danger,.progress-pill.pill-amber,.progress-pill.green{display:inline-flex!important;align-items:center!important;gap:8px!important}
+.progress-mini-bar,.progress-pill .progress-mini-bar{display:block!important;flex:none!important;width:44px!important;height:4px!important;background:#e9edf2!important;border:0!important;border-radius:3px!important;overflow:hidden!important;margin:0!important}
+.progress-mini-fill{display:block;height:100%;min-height:4px;border-radius:3px;background:#647db2}
+.progress-mini-fill.is-danger{background:#c65064!important}
+.progress-mini-fill.is-amber{background:#d5a44b!important}
+.progress-pill.green .progress-mini-fill{background:#25896c!important}
+/* Plain navigation, no decorative carets or dashes. */
+.kpi-expand-btn,.mobile-reports-trigger,.footer-maintenance>summary{font-size:15px!important;font-weight:500!important;letter-spacing:0!important}
+.kpi-expand-btn{border:0!important;padding:8px 12px!important;background:transparent!important;border-radius:10px!important}
+.kpi-expand-btn:hover,.footer-maintenance>summary:hover{background:#eceff4!important}
+.mobile-reports-trigger{background:transparent!important;border:0!important;box-shadow:none!important;padding:8px 12px!important}
+.report-details{border:0!important;padding-top:2px!important}
+.report-details>summary{list-style:none!important;font-size:15px!important;color:#526175!important;padding:7px 6px}
+.report-details>summary::marker,.footer-maintenance>summary::marker{content:""!important}
+.report-details>summary::-webkit-details-marker,.footer-maintenance>summary::-webkit-details-marker{display:none!important}
+.footer-maintenance>summary::before,.footer-maintenance>summary::after{content:none!important;display:none!important}
+.footer-tools{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px auto 6px;max-width:760px}
+.footer-maintenance{margin:0!important;text-align:left;min-width:0}
+.footer-maintenance>summary{border:0!important;color:#506077!important;padding:9px 16px!important;min-height:42px!important;border-radius:11px!important}
+.footer-maintenance[open]>summary{background:#eaf0f9!important;color:#2864b8!important}
+.footer-maintenance .footer-subtle-wrap{margin:7px auto 12px!important;max-width:420px;align-items:flex-start}
+.footer-maintenance .footer-subtle-wrap .chip-btn{font-size:15px!important;min-height:40px}
+.footer-maintenance .footer-subtle-wrap .footer-rev-tag{font-size:13px!important}
+.section-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.btn-collapse-all{background:transparent;color:#64758a;border:0;border-radius:9px;padding:8px 10px;min-height:40px;font-size:14px;cursor:pointer}
+.btn-collapse-all:hover{background:#edf1f7}
+button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-offset:2px}
+@media(max-width:700px){
+ .item-header{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto!important;padding-right:44px!important}
+ .item-title-wrap{grid-column:1!important;grid-row:1!important;max-width:100%!important}
+ .item-meta-right{grid-column:1!important;grid-row:2!important;position:static!important;min-width:0!important;padding-left:20px!important}
+ .item-menu-controls{top:6px!important;right:0!important}
+ .item-menu-controls .obj-dropdown-menu{top:calc(100% + 2px)!important;right:0!important}
+ body .app-container .registry-card .folder-title-text{font-size:19px!important}
+ body .app-container .registry-card .item-title{font-size:18px!important}
+ .section-bar-title{font-size:20px!important}
+ .section-actions{gap:1px}
+ .btn-collapse-all{font-size:13px!important;padding:7px 5px;min-height:40px}
+ .btn-add-proc-compact{font-size:13px!important;padding:8px!important}
+ .footer-tools{justify-content:center;gap:5px}
+ .footer-maintenance>summary{padding:10px 14px!important}
+ .mobile-reports-trigger{min-width:70px!important}
+}
+@media(max-width:360px){
+ body .app-container .registry-card .folder-title-text{font-size:18px!important}
+ body .app-container .registry-card .item-title{font-size:17px!important}
+ .section-bar-title{font-size:18px!important}
+ .btn-collapse-all{font-size:12px!important}
+}
 </style>
+
+
+
+
+
+
+
+
 </head>
 <body>
 
@@ -1643,7 +1718,7 @@ body .app-container .registry-card .item-title {
           <span class="brand-mark" aria-hidden="true">◈</span> <span>Мои проекты</span>
         </div>
         <div class="dash-controls">
-          <button class="btn-icon-refresh" onclick="manualSync()" title="Синхронизировать и свернуть все">🔄</button>
+          <button class="btn-icon-refresh" onclick="manualSync()" title="Обновить данные из облака" aria-label="Обновить данные из облака">🔄</button>
           <button class="btn-ai-compact" onclick="openAiModal()">✧ AI-отчёт</button>
         </div>
       </div>
@@ -1677,7 +1752,7 @@ body .app-container .registry-card .item-title {
           <span class="kpi-val" id="mTotal">0</span>
         </div>
       </div>
-      <button type="button" class="kpi-expand-btn" id="kpiExpandBtn" aria-controls="metricsExtra" aria-expanded="false" onclick="toggleMobileKpis(this)">Все показатели <span aria-hidden="true">⌄</span></button>
+      <button type="button" class="kpi-expand-btn" id="kpiExpandBtn" aria-controls="metricsExtra" aria-expanded="false" onclick="toggleMobileKpis(this)">Все показатели</button>
 
       <div class="sync-details" id="syncDetails" role="status" aria-live="polite"></div>
     </div>
@@ -1696,7 +1771,10 @@ body .app-container .registry-card .item-title {
     <!-- КОМПАКТНАЯ ШАПКА РЕЕСТРА -->
     <div class="section-bar">
       <span class="section-bar-title">Направления</span>
-      <button class="btn-add-proc-compact" onclick="this.blur(); openAddProcessModal()">+ Направление</button>
+      <div class="section-actions">
+        <button type="button" class="btn-collapse-all" onclick="collapseAllItems();render()">Свернуть все</button>
+        <button class="btn-add-proc-compact" onclick="this.blur(); openAddProcessModal()">+ Направление</button>
+      </div>
     </div>
 
     <div class="workspace-controls" aria-label="Вид списка и отчёты">
@@ -1710,12 +1788,12 @@ body .app-container .registry-card .item-title {
       </div>
   <!-- Экспорт на широком экране; на телефоне компактное раскрываемое меню. -->
   <div class="floating-bar" id="reportBar">
-    <button type="button" class="mobile-reports-trigger" id="reportBarToggle" aria-controls="mobileReportActions" aria-expanded="false" onclick="toggleMobileReports(event)">Отчёт <span aria-hidden="true">⌄</span></button>
+    <button type="button" class="mobile-reports-trigger" id="reportBarToggle" aria-controls="mobileReportActions" aria-expanded="false" onclick="toggleMobileReports(event)">Отчёт</button>
     <div class="report-actions" id="mobileReportActions">
       <button type="button" class="fab-btn" onclick="copyReport();closeMobileReports()">Скопировать текст</button>
       <button type="button" class="fab-btn" onclick="exportToExcel();closeMobileReports()">Экспорт Excel</button>
-      <button type="button" class="fab-btn" onclick="shareToTelegram();closeMobileReports()">В Telegram ↗</button>
-      <details class="report-details"><summary>Отчёт за период · план недели</summary>
+      <button type="button" class="fab-btn" onclick="shareToTelegram();closeMobileReports()">В Telegram</button>
+      <details class="report-details"><summary>Период и план недели</summary>
       <div class="report-period" aria-label="Период отчёта">
         <label>Отчёт с <input type="date" id="reportFrom" onchange="validateReportPeriod()"></label>
         <label>по <input type="date" id="reportTo" onchange="validateReportPeriod()"></label>
@@ -1732,20 +1810,24 @@ body .app-container .registry-card .item-title {
     <div class="registry-card" id="processesRoot"></div>
 
     <!-- СЛУЖЕБНЫЙ ПОДВАЛ -->
-    <details class="footer-maintenance"><summary>Данные и история</summary>
-    <div class="footer-subtle-wrap">
-      <button type="button" class="chip-btn date-normal" onclick="showCloudHistory()">↶ История облачных версий</button>
-      <div style="display:flex; gap:8px;">
-        <button class="chip-btn date-normal" onclick="this.blur(); downloadBackupFile()">📥 Скачать файл бэкапа</button>
-        <button class="chip-btn date-normal" onclick="this.blur(); triggerImportFile()">📤 Загрузить файл</button>
-      </div>
-      <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleFileImport(event)">
-      <div class="footer-rev-tag" id="syncTag" role="status" aria-live="polite">● Загрузка данных...</div>
-      <button type="button" class="chip-btn ghost" id="retrySyncBtn" onclick="pushCloudBackground()" style="display:none">↻ Повторить синхронизацию</button>
-      <button type="button" class="chip-btn date-normal" onclick="undoLastChange()" id="undoBtn" disabled>↶ Отменить последнее действие</button>
-      <button type="button" class="chip-btn ghost" onclick="showAuditLog()">История изменений</button>
-    </div>
-    </details>
+    <nav class="footer-tools" aria-label="Данные и история">
+      <details class="footer-maintenance"><summary>Данные</summary>
+        <div class="footer-subtle-wrap">
+          <button type="button" class="chip-btn date-normal" onclick="this.blur(); downloadBackupFile()">Скачать резервную копию</button>
+          <button type="button" class="chip-btn date-normal" onclick="this.blur(); triggerImportFile()">Загрузить файл</button>
+          <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleFileImport(event)">
+          <div class="footer-rev-tag" id="syncTag" role="status" aria-live="polite">Загрузка данных...</div>
+          <button type="button" class="chip-btn ghost" id="retrySyncBtn" onclick="pushCloudBackground()" style="display:none">Повторить синхронизацию</button>
+        </div>
+      </details>
+      <details class="footer-maintenance"><summary>История</summary>
+        <div class="footer-subtle-wrap">
+          <button type="button" class="chip-btn date-normal" onclick="showCloudHistory()">Облачные версии</button>
+          <button type="button" class="chip-btn ghost" onclick="showAuditLog()">История изменений</button>
+          <button type="button" class="chip-btn date-normal" onclick="undoLastChange()" id="undoBtn" disabled>Отменить последнее действие</button>
+        </div>
+      </details>
+    </nav>
 
   </div>
 
@@ -2519,6 +2601,8 @@ body .app-container .registry-card .item-title {
     let migrationCandidates={};
     let lastPollAt=0;
     let isFetching=false;
+    let pollTimer=null;
+    let loadPromise=null;
 
     const OnlineAPI=(()=>{
       async function request(body){
@@ -2571,7 +2655,19 @@ body .app-container .registry-card .item-title {
       const retry=document.getElementById('retrySyncBtn');if(retry)retry.style.display=failed?'inline-block':'none';
     }
     function updateSyncTag(text){const el=document.getElementById('syncTag');if(el)el.textContent=text;}
+    function stopCloudPolling(){
+      if(pollTimer!==null){clearInterval(pollTimer);pollTimer=null;}
+    }
+    function startCloudPolling(){
+      stopCloudPolling();
+      pollTimer=setInterval(()=>{
+        if(document.visibilityState==='visible' && readyForEditing && !isFetching && !onlinePending && !conflictRemote){
+          void syncWithCloud();
+        }
+      },15000);
+    }
     function lockApp(reason){
+      stopCloudPolling();
       readyForEditing=false;
       document.body.classList.remove('online-ready');
       const lock=document.getElementById('onlineLock');
@@ -2609,7 +2705,12 @@ body .app-container .registry-card .item-title {
       if(!Array.isArray(events))return;
       auditLog=events.map(x=>({id:x.id,at:x.at,device:x.device,action:x.action}));
     }
-    async function loadData(){
+    function loadData(){
+      if(loadPromise)return loadPromise;
+      loadPromise=loadDataOnce().finally(()=>{loadPromise=null;});
+      return loadPromise;
+    }
+    async function loadDataOnce(){
       lockApp('Соединение с личным облачным блокнотом…');
       const cached=getLocalPayload();
       if(cached){try{Model.validateData(cached.data);state=Model.normalize(cached.data);render();}catch(e){console.warn(e);}}
@@ -2642,7 +2743,7 @@ body .app-container .registry-card .item-title {
           syncStatus('✓ Онлайн · всё сохранено','Версия '+serverRevision);
         }
         if(result.revision===0 && !(cached?.pending)) await offerLegacyMigration();
-        setInterval(()=>{if(document.visibilityState==='visible')syncWithCloud();},15000);
+        startCloudPolling();
       }catch(e){
         syncStatus('⚠ Соединение не установлено',e.message,true);
         lockApp('Не удалось подключиться к облаку: '+e.message+' Данные не перезаписаны. Повторите подключение.');
@@ -3783,7 +3884,9 @@ body .app-container .registry-card .item-title {
                           <span class="progress-pill" style="opacity:0.6;">0 задач</span>
                         `}
 
-                        <button class="btn-item-more" onclick="toggleMenuGeneric(event, 'omenu-${obj.id}')" title="Меню">···</button>
+                      </div>
+                      <div class="item-menu-controls" onclick="event.stopPropagation()">
+                        <button type="button" class="btn-item-more" onclick="toggleMenuGeneric(event, 'omenu-${obj.id}')" aria-label="Меню объекта" title="Меню объекта">···</button>
                         <div class="obj-dropdown-menu" id="omenu-${obj.id}">
                           <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editObjectTitle(${jsId(proc.id)},${jsId(obj.id)})">✏️ Переименовать</button>
                           <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); cloneObject(${jsId(proc.id)},${jsId(obj.id)})">📋 Копировать</button>
@@ -4201,7 +4304,7 @@ body .app-container .registry-card .item-title {
       const panel=document.querySelector('.dashboard-panel');
       const expanded=panel.classList.toggle('kpi-expanded');
       btn.setAttribute('aria-expanded',String(expanded));
-      btn.innerHTML=expanded?'Скрыть показатели <span aria-hidden="true">⌃</span>':'Все показатели <span aria-hidden="true">⌄</span>';
+      btn.textContent=expanded?'Скрыть показатели':'Все показатели';
     }
     function closeMobileReports(){
       const bar=document.getElementById('reportBar');
