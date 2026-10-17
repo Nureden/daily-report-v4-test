@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов 5.9 — Рабочий блокнот</title>
+  <title>Мой блокнот 6.0 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2233,7 +2233,81 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
-</head>
+<style id="v60-unified-notebook">
+:root{--font-ui:"Roboto Condensed",Arial,sans-serif!important}
+html body,html body *{font-family:"Roboto Condensed",Arial,sans-serif!important}
+body{background:#f8f9fa!important;color:#2c3542!important}
+.app-container{max-width:820px!important}
+.dash-title{font-size:27px!important;font-weight:700!important;letter-spacing:-.5px!important}
+.v56-brand-caption{font-size:12px!important;font-weight:400!important;color:#8893a0!important}
+.v56-bottom-nav{gap:26px!important;margin:4px 0 18px!important;border-bottom:1px solid #e8ecf0!important;padding-bottom:9px!important}
+.v56-bottom-nav button{font-size:15px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:5px 0!important;color:#8c96a2!important}
+.v56-bottom-nav button.is-active{color:#253d56!important;font-weight:700!important}
+.v59-digest,.metrics-ribbon,.kpi-expand-btn,.v59-bottom-actions,.v56-legacy-workspace,.filter-active-banner,#v56Fab{display:none!important}
+.v59-tools{display:flex!important;gap:12px!important;flex-wrap:wrap!important;margin-bottom:19px!important}
+.v56-search-wrap{flex:1 1 270px!important;min-width:180px!important;background:#fff!important;border:1px solid #e6eaee!important;border-radius:10px!important;box-shadow:none!important}
+.v59-filter-label select{background:#fff!important;border:1px solid #e6eaee!important;border-radius:10px!important;color:#667787!important}
+.v56-group-list{gap:14px!important}
+.v60-region{background:#fff;border:1px solid #e9edf0;border-radius:12px;overflow:hidden}
+.v60-region-head{display:flex;align-items:center;gap:10px;padding:13px 14px;border-bottom:1px solid #eef0f3}
+.v60-region-toggle{flex:1;min-width:0;display:flex;align-items:center;gap:9px;text-align:left;border:0;background:transparent;cursor:pointer;color:#283847;font-size:18px;font-weight:700;padding:0;min-height:26px}
+.v60-region-chevron{font-size:21px;width:15px;color:#9ba6b0;font-weight:400}
+.v60-region-count{font-size:12px;color:#9aa4ae;font-weight:500;margin-left:auto}
+.v60-region-add{border:0;background:#f4f6f8;border-radius:8px;color:#677d93;font-size:20px;width:30px;height:30px;cursor:pointer}
+.v60-object{padding:0 14px}
+.v60-object+.v60-object{border-top:1px solid #f0f2f4}
+.v60-object-head{display:flex;align-items:center;gap:8px;padding:13px 0 5px}
+.v60-object-toggle{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#263644;text-align:left;cursor:pointer;padding:0;min-height:30px}
+.v60-object-arrow{color:#a6b0b9;width:13px;font-size:18px;font-weight:400}
+.v60-object-name{min-width:0;overflow-wrap:anywhere;font-size:17px;line-height:1.25;font-weight:600}
+.v60-object-count{color:#a1aab2;font-size:12px;white-space:nowrap}
+.v60-critical{color:#ad4e4e;font-size:12px;white-space:nowrap}
+.v60-tasks{padding:0 0 10px 21px}
+.v60-task{display:flex;align-items:start;gap:9px;padding:7px 0;min-width:0}
+.v60-task+.v60-task{border-top:1px solid #f7f8f9}
+.v60-check{width:19px;height:19px;flex:0 0 19px;accent-color:#718799;cursor:pointer;margin-top:1px}
+.v60-task-open{display:flex;min-width:0;flex:1;align-items:center;text-align:left;background:transparent;border:0;gap:9px;cursor:pointer;padding:0;color:#334455}
+.v60-task-body{min-width:0;flex:1;display:grid;gap:3px}
+.v60-task-title{font-size:15px;font-weight:500;line-height:1.28;overflow-wrap:anywhere}
+.v60-task-meta{font-size:12px;color:#9ba5af;line-height:1.35}
+.v60-task-next{font-size:20px;color:#b1bac4;line-height:1}
+.v60-task-done .v60-task-title{color:#96a0aa;text-decoration:line-through}
+.v60-task-urgent .v60-task-meta{color:#a95b5b}
+.v60-object-detail{padding:4px 0 12px 21px}
+.v60-object-controls{display:flex;align-items:center;flex-wrap:wrap;gap:14px}
+.v60-object-controls button{border:0;background:transparent;color:#54728d;font-size:13px;font-weight:600;padding:7px 0;cursor:pointer}
+.v60-object-controls .v60-more{margin-left:auto;color:#9faab5;font-size:20px;min-width:25px}
+.v60-object-note{color:#9ca7b0;font-size:12px;padding:4px 0 7px}
+.v60-object-empty{font-size:13px;color:#a0aab3;padding:0 0 9px 21px}
+.v60-tasks[hidden],.v60-region-body[hidden]{display:none!important}
+.v60-inline-result{margin:4px 0 5px 30px;background:#f6f8fa;padding:10px;border-radius:8px;display:grid;gap:8px}
+.v60-inline-result label{font-size:12px;color:#728296}
+.v60-inline-result input{background:#fff;border:1px solid #dbe2e8;border-radius:7px;font-size:14px;padding:8px;width:100%}
+.v60-inline-result button{border:0;background:transparent;color:#57728e;font-size:13px;padding:3px 0;cursor:pointer}
+.v60-note{margin:5px 0 6px 23px;color:#946a56;font-size:12px}
+.v60-footer-note{margin-top:12px;font-size:12px;color:#acb4bc}
+.v60-district-label{display:grid;gap:7px;color:#617082;font-size:14px}
+.v60-district-label select{padding:11px;border:1px solid #e0e5ea;border-radius:8px;background:#fff}
+.v60-event-expand{background:transparent;border:1px solid #e1e7ed;padding:9px 12px;border-radius:8px;color:#5e7487;text-align:left;cursor:pointer;font-size:13px}
+.v60-event-extra{display:grid;gap:12px}.v60-event-extra[hidden]{display:none!important}
+.v60-manual-caption{display:grid;gap:4px;font-size:13px;color:#788796;margin:8px 0}
+.v60-manual-caption strong{font-size:17px;color:#2c3542}
+.v60-report-candidates{display:grid;gap:7px;max-height:210px;overflow:auto;margin:8px 0 14px}
+.v60-report-candidate{padding:9px 10px;border:1px solid #e9edf0;border-radius:8px;display:grid;gap:7px}
+.v60-report-candidate .v60-candidate-title{font-size:13px;font-weight:600}
+.v60-report-candidate small{color:#8693a1}
+.v60-report-candidate button{background:#f5f7f9;border:1px solid #e9edf1;border-radius:6px;padding:5px 9px;color:#586f86;cursor:pointer;font-size:12px}
+.v60-report-buttons{display:flex;gap:9px;flex-wrap:wrap}
+.v60-report-legacy{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.v60-report-legacy button{padding:6px 0;background:transparent;border:0;color:#8293a4;font-size:12px;cursor:pointer}
+.mgmt-controls label:has(#managementReportScope){display:none!important}
+@media(max-width:430px){.dash-title{font-size:24px!important}.v60-object{padding:0 11px}.v60-region-head{padding:11px}.v60-region-toggle{font-size:17px}.v60-object-head{gap:5px}.v60-object-name{font-size:16px}.v60-tasks{padding-left:15px}.v60-object-detail{padding-left:15px}.v60-object-count{font-size:11px}.v60-check{height:21px;width:21px;flex-basis:21px}}
+</style>
+<style id="v60-extra-css">.v56-legacy-workspace{display:block!important} .v56-legacy-workspace[hidden]{display:none!important}.v60-region-pick{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:12px 3px;color:#929fac;font-size:13px}.v60-region-pick select{flex:1;min-width:140px;max-width:220px;background:#fff;border:1px solid #e7ebef;border-radius:8px;padding:8px 9px;color:#5d7083}.v60-region-pick button{background:#fff;border:1px solid #e3e8ed;border-radius:8px;color:#58718a;cursor:pointer;padding:8px 10px}.v60-report-candidates{flex:0 0 auto!important;min-height:166px!important;height:190px!important;max-height:190px!important;overflow-y:auto!important;overflow-x:hidden!important;padding-right:4px}
+.mgmt-filters label:has(#managementReportScope){display:none!important}
+#managementReportModal .mgmt-sheet{overscroll-behavior:contain}
+@media(max-width:690px){.v60-report-candidates{height:166px!important;max-height:166px!important;min-height:166px!important} #managementReportModal .mgmt-sheet{max-height:94dvh!important}}
+</style></head>
 <body>
 
   <div class="app-container">
@@ -2241,11 +2315,11 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
     <div class="dashboard-panel">
       <div class="dash-header">
         <div class="dash-title">
-          <span class="brand-mark" aria-hidden="true">◈</span> <span>Мой блокнот</span><small class="v56-brand-caption">Мониторинг проектов</small>
+          <span class="brand-mark" aria-hidden="true">◈</span> <span>Мой блокнот</span><small class="v56-brand-caption">Объекты и поручения</small>
         </div>
         <div class="dash-controls">
           <button class="btn-icon-refresh" onclick="manualSync()" title="Обновить из облака" aria-label="Обновить из облака">↻</button>
-          <button type="button" class="v59-create" onclick="openEntryWizard()" aria-label="Создать рабочую запись">+ Запись</button>
+          
           <button type="button" class="settings-trigger" id="settingsTrigger" aria-label="Настройки и данные" aria-expanded="false" aria-controls="settingsOverlay" title="Настройки и данные" onclick="toggleSettings(event)">⚙</button>
         </div>
       </div>
@@ -2286,7 +2360,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
 
     <nav class="v56-bottom-nav" aria-label="Разделы блокнота">
       <button type="button" id="v56NavProjects" class="is-active" onclick="v56SetScreen('projects')">Объекты</button>
-      <button type="button" id="v56NavToday" onclick="v56SetScreen('today')">На контроле</button>
+      
       <button type="button" onclick="openManagementReport()">Факт / План</button>
     </nav>
     <div id="v59Digest" class="v59-digest" hidden aria-live="polite"></div>
@@ -2311,7 +2385,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       <div class="v59-tools">
         <div class="v56-search-wrap">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
-          <input id="v56Search" type="search" aria-label="Поиск объектов, процессов, ответственных, документов и событий" placeholder="Поиск объектов, задач, людей…" autocomplete="off" oninput="v56SearchChanged(this.value)">
+          <input id="v56Search" type="search" aria-label="Поиск объектов, процессов, ответственных, документов и событий" placeholder="Найти объект или задачу…" autocomplete="off" oninput="v56SearchChanged(this.value)">
           <button type="button" id="v56ClearSearch" class="v56-search-clear" onclick="v56ClearSearch()" aria-label="Очистить поиск" hidden>×</button>
         </div>
         <label class="v59-filter-label"><span class="sr-only">Статус объекта</span>
@@ -2326,10 +2400,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       </div>
       <div class="v56-group-list" id="v56Cards" aria-live="polite"></div>
       <button type="button" id="v56More" class="v56-more" onclick="v56LoadMore()" hidden>Показать ещё</button>
-      <div class="v59-bottom-actions">
-        <button type="button" onclick="openAddProcessModal()">+ Направление</button>
-        <button type="button" onclick="v59OpenStructure()">Управление и архив</button>
-      </div>
+      <p class="v60-footer-note">Нужная задача всегда находится внутри своего объекта. Чтобы добавить объект, откройте соответствующий район.</p>
     </section>
     <section id="v56LegacyWorkspace" class="v56-legacy-workspace" hidden>
       <div class="v56-legacy-intro"><div><h2>Структура объектов</h2><p>Направления, объекты, этапы и настройки</p></div><button type="button" class="v56-structure-link" onclick="v56ToggleStructure()">К объектам</button></div>
@@ -2338,7 +2409,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       <span class="section-bar-title">Направления</span>
       <div class="section-actions">
         <button type="button" class="btn-collapse-all" onclick="collapseAllItems();render()">Свернуть все</button>
-        <button type="button" class="v55-main-add" onclick="openEntryWizard()">+ Новая запись</button>
+        
         <button class="btn-add-proc-compact" onclick="this.blur(); openAddProcessModal()">+ Направление</button>
       </div>
     </div>
@@ -2380,7 +2451,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
     <!-- Служебные действия доступны из настроек в верхней панели. -->
 
 
-    <button type="button" id="v56Fab" class="v56-fab" onclick="openEntryWizard()" aria-label="Добавить новую запись" title="Новая запись" hidden>+ Запись</button>
+    <button type="button" id="v56Fab" class="v56-fab" onclick="showToast('Откройте нужный объект')" aria-label="Добавить новую запись" title="Новая запись" hidden>+ Запись</button>
   </div>
 
 
@@ -2397,8 +2468,8 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
           <label id="v55NewObjectLabel" for="v55NewObject" hidden>Название нового объекта <input id="v55NewObject" maxlength="300" placeholder="Жылыой — Дорога Сарыкамыс"></label>
         </div>
         <p id="v55WhereFixed" class="v55-subtitle" hidden></p>
-        <label for="v55Owner">3. Кто занимается? <input id="v55Owner" maxlength="160" placeholder="Жукенов / НАО / подрядчик"></label>
-        <label for="v55Result">4. Какой результат должен быть? <input id="v55Result" maxlength="1000" required placeholder="Подписанный акт сверки"></label>
+        <label for="v55Owner">2. Кто отвечает? <input id="v55Owner" maxlength="160" placeholder="Жукенов / НАО / подрядчик"></label><label for="v60Action">3. Что конкретно нужно сделать? <input id="v60Action" maxlength="1000" placeholder="Направить запрос, получить подпись"></label>
+        <label for="v55Result">4. Какой результат должен быть? <input id="v55Result" maxlength="1000" placeholder="Подписанный акт сверки"></label>
         <label for="v55Date">5. Когда нужен результат? <input id="v55Date" type="date"></label>
         <div class="v55-actions"><button type="button" onclick="closeEntryWizard()">Отмена</button><button class="primary" type="submit">Сохранить запись</button></div>
       </form>
@@ -2424,19 +2495,27 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       <p class="v55-subtitle">Запишите факт. Причину и следующий шаг можно дополнить позднее.</p>
       <form class="v55-fields" onsubmit="event.preventDefault();saveProcessEvent()">
         <label for="v55EventWhat">Что произошло? <textarea id="v55EventWhat" maxlength="2000" required placeholder="Направлено письмо №125 в НАО"></textarea></label>
-        <label for="v55EventReason">Почему нет результата? <small>Заполняйте только когда причина действительно известна</small><textarea id="v55EventReason" maxlength="2000" placeholder="НАО запросило дополнительные документы"></textarea></label>
+        <div id="v60EventExtra" class="v60-event-extra" hidden><label for="v55EventReason">Почему нет результата? <small>Заполняйте только когда причина действительно известна</small><textarea id="v55EventReason" maxlength="2000" placeholder="НАО запросило дополнительные документы"></textarea></label>
         <label for="v55EventSolution">Что делаем для решения? <textarea id="v55EventSolution" maxlength="2000" placeholder="Направить уточнённые материалы"></textarea></label>
         <label for="v55EventNext">Что будет дальше? <input id="v55EventNext" maxlength="1000" placeholder="Получить ответ НАО"></label>
         <label for="v55EventWhen">Когда ожидаем следующее событие? <input id="v55EventWhen" type="date"></label>
         <label for="v55EventDoc">Документ / № письма (при наличии) <input id="v55EventDoc" maxlength="500" placeholder="Исх. №125 от 16.10.2026"></label>
-        <label class="v55-check-label" for="v55EventResolved" id="v55EventResolvedLabel"><input id="v55EventResolved" type="checkbox"> Проблема устранена, работа продолжается</label>
+        </div><button type="button" id="v60EventExpand" class="v60-event-expand" onclick="v60ToggleEventExtra()" aria-expanded="false">+ Дополнительные поля: причина, действие, дата контроля</button><label class="v55-check-label" for="v55EventResolved" id="v55EventResolvedLabel"><input id="v55EventResolved" type="checkbox"> Проблема устранена, работа продолжается</label>
         <label class="v55-check-label" for="v55EventDone"><input id="v55EventDone" type="checkbox"> Результат получен — завершить задачу</label>
         <div class="v55-actions"><button type="button" onclick="closeProcessEvent()">Отмена</button><button type="submit" class="primary">Записать в историю</button></div>
       </form>
     </section>
   </div>
 
-  <!-- Одно понятное меню для резервных копий, истории и состояния облака. -->
+  <div class="modal-overlay" id="v60DistrictModal" aria-hidden="true" onclick="if(event.target===this)v60CloseDistrict()">
+    <section class="modal-box v55-modal" role="dialog" aria-modal="true" aria-labelledby="v60DistrictHeading" onclick="event.stopPropagation()">
+      <div class="modal-top"><h2 id="v60DistrictHeading">Район объекта</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="v60CloseDistrict()">✕</button></div>
+      <p class="v55-subtitle" id="v60DistrictObjectName"></p>
+      <label class="v60-district-label" for="v60DistrictChoice">Район<select id="v60DistrictChoice"></select></label>
+      <div class="v55-actions"><button type="button" onclick="v60CloseDistrict()">Отмена</button><button type="button" class="primary" onclick="v60SaveDistrict()">Сохранить</button></div>
+    </section>
+  </div>
+    <!-- Одно понятное меню для резервных копий, истории и состояния облака. -->
   <div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()" aria-hidden="true">
     <section class="settings-panel" id="settingsPanel" role="dialog" aria-modal="true" aria-label="Настройки и данные" onclick="event.stopPropagation()">
       <div class="settings-head"><strong>Настройки</strong><button type="button" class="settings-close" aria-label="Закрыть настройки" onclick="closeSettings()">✕</button></div>
@@ -2445,9 +2524,9 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       <button type="button" class="settings-option" onclick="closeSettings();triggerImportFile()">Загрузить файл</button>
       <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleFileImport(event)">
       <div class="settings-group-label">Инструменты</div>
-      <button type="button" class="settings-option" onclick="closeSettings();openEntryWizard()">Новая рабочая запись</button>
+      
       <button type="button" class="settings-option" onclick="closeSettings();openAddProcessModal()">Новое направление</button>
-      <button type="button" class="settings-option" onclick="closeSettings();v59OpenStructure()">Управление структурой и архив</button>
+      <button type="button" class="settings-option" onclick="closeSettings();v60OpenMaintenance()">Архив и управление старыми направлениями</button>
       <button type="button" class="settings-option" onclick="closeSettings();openAiModal()">AI-помощник (по запросу)</button>
       <div class="settings-group-label">История</div>
       <button type="button" class="settings-option" onclick="closeSettings();showAuditLog()">История изменений</button>
@@ -2508,6 +2587,9 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       </div>
       <div class="mgmt-period-clarify" id="managementReportNextWeek">План: следующие 7 дней после конца отчётного периода.</div>
       <div class="mgmt-status" id="managementReportWarnings" role="status" aria-live="polite"></div>
+      <div class="v60-manual-caption"><strong>Ручной отчёт</strong><span>Выберите записи ниже, затем отредактируйте «Факт» и «План». Ничего не включается автоматически.</span></div>
+      <div id="v60ReportCandidates" class="v60-report-candidates" aria-label="Записи для выбора в отчёт"></div>
+      <div class="v60-report-legacy"><button type="button" onclick="v60LegacyReport()">Открыть прежний автоматический черновик</button><button type="button" onclick="v60ResetReport()">Начать новый черновик</button></div>
       <div class="mgmt-columns">
         <div class="mgmt-column"><label for="managementReportFact">Работа за отчётный период</label>
           <textarea id="managementReportFact" spellcheck="true"></textarea>
@@ -3076,12 +3158,14 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
           for(const obj of proc.objects){
             if(!isPlain(obj)||!Array.isArray(obj.steps)||obj.steps.length>2000)throw new Error('Неверный объект');
             checkId(obj.id);checkText(obj.title,300);
+            if(obj.district!==undefined)checkText(obj.district,120);
             noDuplicateSiblings(obj.steps);
             for(const st of obj.steps){
               if(++count>60000||!isPlain(st))throw new Error('Слишком много этапов');
               checkId(st.id);checkText(st.text,1000);
               if(st.date!==undefined&&typeof st.date!=='string')throw new Error('Неверный срок');
               if(st.expectedResult!==undefined)checkText(st.expectedResult,1000);
+              if(st.action!==undefined)checkText(st.action,1000);
               if(st.actualResult!==undefined)checkText(st.actualResult,2000);
               if(st.nextAction!==undefined)checkText(st.nextAction,1000);
               if(st.nextDate!==undefined)checkText(st.nextDate,30);
@@ -3142,7 +3226,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
               return {...st,id,text:sanitizeRemark(st.text||'Этап'),doc:sanitizeRemark(st.doc||''),
                 blocker,history:hist,done:!!st.done,completedAt:st.done && isDate(st.completedAt) ? st.completedAt : null,
                 owner:String(st.owner||'').slice(0,160),documentUrl:validUrl(st.documentUrl),
-                expectedResult:String(st.expectedResult||'').slice(0,1000),actualResult:String(st.actualResult||'').slice(0,2000),
+                expectedResult:String(st.expectedResult||'').slice(0,1000),action:String(st.action||'').slice(0,1000),actualResult:String(st.actualResult||'').slice(0,2000),
                 nextAction:String(st.nextAction||'').slice(0,1000),nextDate:String(st.nextDate||'').slice(0,30),
                 progressEvents:Array.isArray(st.progressEvents)?st.progressEvents.map(e=>({...e,
                   what:String(e.what||'').slice(0,2000),reason:String(e.reason||'').slice(0,2000),
@@ -4359,7 +4443,11 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
           step.blocker = null;
           (step.history||[]).forEach(h => {if(h.active){h.active=false;h.closedAt=new Date().toISOString();}});
         } else step.completedAt = null;
+        if(!Array.isArray(step.progressEvents))step.progressEvents=[];
+        if(step.progressEvents.length<700)step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:step.done?'Задача завершена':'Задача возвращена в работу',reason:'',solution:'',nextAction:'',nextDate:'',doc:'',completionChange:true});
         step.updatedAt = getTimestampStr();
+        if(step.done){v60LastDone={procId,objId,stepId}; v59OpenedObjects.add(JSON.stringify([String(procId),String(objId)]));}
+        else v60LastDone=null;
         saveData(step.done?'Этап выполнен':'Этап возвращён в работу');
       }
     }
@@ -4451,7 +4539,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
         // Old entries may have no expected result; user can add it while editing.
         v55El('v55Result').required=false;
       }else{
-        v55El('v55Result').required=true;
+        v55El('v55Result').required=false;
         const select=v55El('v55Direction');select.replaceChildren();
         for(const proc of state){const option=document.createElement('option');option.value=String(proc.id);option.textContent=proc.title;select.appendChild(option);}
         if(procId!==null && state.some(x=>String(x.id)===String(procId)))select.value=String(procId);
@@ -4477,8 +4565,8 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
     function saveEntryWizard(){
       if(!readyForEditing){showToast('Нет соединения с облаком');return;}
       const what=v55Text(v55El('v55What').value,1000),owner=v55Text(v55El('v55Owner').value,160);
-      const result=v55Text(v55El('v55Result').value,1000),rawDate=v55El('v55Date').value;
-      if(!what||(!v55WizardContext.stepId&&!result)){showToast('Укажите действие и ожидаемый результат');return;}
+      const result=v55Text(v55El('v55Result').value,1000),action=v55Text(v55El('v60Action').value,1000),rawDate=v55El('v55Date').value;
+      if(!what){showToast('Укажите название задачи');return;}
       if(rawDate&&!v55StrictISO(rawDate)){showToast('Неверный срок');return;}
       let {procId,objId,stepId}=v55WizardContext;
       let proc=null,obj=null,step=null;
@@ -4498,9 +4586,16 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       if(!step&&obj.steps.some(s=>!s.done&&String(s.text||'').trim().toLowerCase()===what.toLowerCase())){showToast('Такая запись уже есть в этом объекте');return;}
       const now=getTimestampStr();
       if(step){
-        step.text=what;step.owner=owner;step.expectedResult=result;step.date=rawDate?isoToDisplay(rawDate):'';step.updatedAt=now;
+        const before=[['Название',step.text,what],['Ответственный',step.owner,owner],['Действие',step.action,action],['Результат',step.expectedResult,result],['Срок',step.date,rawDate?isoToDisplay(rawDate):'']];
+        const changed=before.filter(x=>String(x[1]||'')!==String(x[2]||''));
+        if(changed.length&&(!step.progressEvents||step.progressEvents.length<700)){
+          if(!Array.isArray(step.progressEvents))step.progressEvents=[];
+          const note=changed.map(x=>x[0]+': '+String(x[1]||'не указано')+' → '+String(x[2]||'не указано')).join('; ').slice(0,1900);
+          step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:'Изменена запись: '+note,reason:'',solution:'',nextAction:'',nextDate:'',doc:'',editChange:true});
+        }
+        step.text=what;step.owner=owner;step.action=action;step.expectedResult=result;step.date=rawDate?isoToDisplay(rawDate):'';step.updatedAt=now;
       }else{
-        step={id:createId(),text:what,owner,expectedResult:result,date:rawDate?isoToDisplay(rawDate):'',
+        step={id:createId(),text:what,owner,action,expectedResult:result,date:rawDate?isoToDisplay(rawDate):'',
           done:false,completedAt:null,doc:'',documentUrl:'',blocker:null,history:[],
           workflowStatus:'active',progressEvents:[{id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:'Рабочая запись создана',reason:'',solution:'',nextAction:'',nextDate:'',doc:'',created:true}],
           nextAction:'',nextDate:'',createdAt:new Date().toISOString(),updatedAt:now};
@@ -4566,7 +4661,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       for(const key of ['v55EventWhat','v55EventReason','v55EventSolution','v55EventNext','v55EventWhen','v55EventDoc'])v55El(key).value='';
       v55El('v55EventDone').checked=false;
       v55El('v55EventResolved').checked=false;
-      v55El('v55EventResolvedLabel').hidden=!step.blocker;
+      v55El('v55EventResolvedLabel').hidden=true; v55El('v60EventExtra').hidden=true;v55El('v60EventExpand').setAttribute('aria-expanded','false');
       closeProcessDetail();v55OpenModal('processEventModal');v55El('v55EventWhat').focus();
     }
     function closeProcessEvent(){v55CloseModal('processEventModal');}
@@ -4577,7 +4672,7 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       const solution=v55Text(v55El('v55EventSolution').value,2000),nextAction=v55Text(v55El('v55EventNext').value,1000);
       const nextDate=v55El('v55EventWhen').value,doc=v55Text(v55El('v55EventDoc').value,500);
       const done=v55El('v55EventDone').checked;
-      const resolved=v55El('v55EventResolved').checked;
+      const resolved=false;
       if(!what){showToast('Запишите, что произошло');return;}
       if(resolved&&reason){showToast('Если причина устранена, не добавляйте её как новую активную проблему');return;}
       if(nextDate&&!v55StrictISO(nextDate)){showToast('Неверная дата следующего события');return;}
@@ -4586,12 +4681,8 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
       if(!Array.isArray(step.progressEvents))step.progressEvents=[];
       if(step.progressEvents.length>=700){showToast('История процесса слишком велика');return;}
       step.progressEvents.push({id:createId(),at,date,what,reason,solution,nextAction,nextDate,doc,resolved,completed:done});
-      if(reason&&!done){
-        step.blocker=reason;
-        step.history=step.history||[];
-        for(const h of step.history)if(h.active){h.active=false;h.closedAt=at;}
-        step.history.push({id:createId(),date:getTimestampStr(),text:reason,doc,active:true,closedAt:null});
-      }
+      // A recorded reason is a journal entry, not a separate active blocker.
+      // Historical blocker values are left intact for legacy compatibility.
       if(resolved||done){
         step.blocker=null;
         for(const h of step.history||[])if(h.active){h.active=false;h.closedAt=at;}
@@ -5355,7 +5446,13 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
           showToast('Excel подготовлен к скачиванию');
         }catch(e){console.error(e);showToast('Не удалось выгрузить Excel. Попробуйте TSV.');}
       }
-      return {open,close,refresh,copyPlain,tsv,exportExcel};
+      function setManualRows(districts){
+        const from=el('managementReportFrom').value||getTodayISO(),to=el('managementReportTo').value||getTodayISO();
+        const labels=districts.length?districts:['Все районы'];
+        built={from,to,byProcess:!!districts.length,rows:labels.map(direction=>({direction,fact:'',plan:'',notes:{}}))};
+        el('mgmtCopyRow').textContent=districts.length?'Скопировать строки по районам для Excel':'Скопировать строку для Excel';
+      }
+      return {open,close,refresh,copyPlain,tsv,exportExcel,setManualRows};
     })();
     function openManagementReport(){ManagementReportUI.open();}
     function closeManagementReport(){ManagementReportUI.close();}
@@ -5730,7 +5827,7 @@ function v56RenderCards(){
     if(activeProblems){const one=activeProblems%10===1&&activeProblems%100!==11;const few=activeProblems%10>=2&&activeProblems%10<=4&&!(activeProblems%100>=12&&activeProblems%100<=14);parts.push(`${activeProblems} ${one?'активное замечание':few?'активных замечания':'активных замечаний'}`);}
     if(parts.length){
       digest.hidden=false;
-      digest.innerHTML=`<button type="button" class="v59-digest-button" onclick="v59FocusAttention()"><span class="v59-digest-mark" aria-hidden="true"></span><span><strong>Требует внимания</strong><small>${v56SafeText(parts.join(' · '))}</small></span><span class="v59-digest-open">Показать →</span></button>`;
+      digest.innerHTML=`<button type="button" class="v59-digest-button" onclick="v59FocusAttention()"><span class="v59-digest-mark" aria-hidden="true"></span><span><strong>Есть задачи со сроками</strong><small>${v56SafeText(parts.join(' · '))}</small></span><span class="v59-digest-open">Показать →</span></button>`;
     }else{digest.hidden=true;digest.innerHTML='';}
   }
   document.getElementById('v56NavProjects')?.classList.toggle('is-active',v56Screen!=='today');
@@ -5853,6 +5950,316 @@ document.getElementById('v56Cards').addEventListener('click',event=>{
   if(v57ExpandedObjects.has(key))v57ExpandedObjects.delete(key);else v57ExpandedObjects.add(key);
   v56RenderCards();
 });
+
+// VERSION 6.0 — one day-to-day notebook, grouped by administrative district.
+// No new Supabase tables, no changes to Telegram authentication or cloud transport.
+const v60DistrictNames=['Жылыойский район','Макатский район','Атырау','Исатайский район','Махамбетский район','Индерский район','Курмангазинский район','Кызылкогинский район'];
+const v60DistrictRules=[
+ [/^\s*жылыой(?:ский|ского)?(?:\s+район(?:а)?)?(?=\s|[-–—:/.]|$)/i,'Жылыойский район'],
+ [/^\s*(?:макат|мақат)(?:ский|ского)?(?:\s+район(?:а)?)?(?=\s|[-–—:/.]|$)/i,'Макатский район'],
+ [/^\s*атырау(?:\s+город)?(?=\s|[-–—:/.]|$)/i,'Атырау'],
+ [/^\s*исатай(?:ский|ского)?(?=\s|[-–—:/.]|$)/i,'Исатайский район'],
+ [/^\s*махамбет(?:ский|ского)?(?=\s|[-–—:/.]|$)/i,'Махамбетский район'],
+ [/^\s*индер(?:ский|ского)?(?=\s|[-–—:/.]|$)/i,'Индерский район'],
+ [/^\s*курмангазин(?:ский|ского)?(?=\s|[-–—:/.]|$)/i,'Курмангазинский район'],
+ [/^\s*кызылкогин(?:ский|ского)?(?=\s|[-–—:/.]|$)/i,'Кызылкогинский район']
+];
+function v60DistrictOf(obj,proc){
+  if(obj?.district&&v60DistrictNames.includes(obj.district))return obj.district;
+  for(const source of [obj?.title,proc?.title]){
+    const text=String(source||'');
+    for(const [rule,district] of v60DistrictRules)if(rule.test(text))return district;
+  }
+  return 'Район не указан';
+}
+function v60DisplayObjectName(row){
+  const text=String(row.obj.title||'Объект без названия');
+  for(const [rule] of v60DistrictRules){if(rule.test(text))return text.replace(rule,'').replace(/^\s*[-–—:/.]\s*/,'').trim()||text;}
+  return text;
+}
+const v60ClosedRegions=new Set();
+let v60Regions=[],v60Rows=[],v60Steps=[],v60LastDone=null,v60DistrictTarget=null;
+const v60ShowEveryStep=new Set();
+const v60ViewKey='notebook_v60_view';
+try{
+ const saved=JSON.parse(localStorage.getItem(v60ViewKey)||'{}');
+ for(const d of (Array.isArray(saved.closed)?saved.closed:[]))if(typeof d==='string')v60ClosedRegions.add(d);
+ for(const o of (Array.isArray(saved.opened)?saved.opened:[]))if(typeof o==='string')v59OpenedObjects.add(o);
+}catch(e){}
+function v60PersistView(){
+ try{localStorage.setItem(v60ViewKey,JSON.stringify({closed:[...v60ClosedRegions].slice(0,50),opened:[...v59OpenedObjects].slice(0,40)}));}catch(e){}
+}
+
+function v60Key(row){return v57ObjectKey(row.proc,row.obj);}
+function v60Order(row){
+ const today=getTodayISO(),pin=String(pinnedStepsMap[row.obj.id]||''),query=v56Query.trim();
+ const objectMatched=(row.obj.title+' '+row.proc.title+' '+v60DistrictOf(row.obj,row.proc)).toLowerCase().includes(query);
+ return row.steps.filter(i=>!i.step.done).sort((a,b)=>{
+    const rank=i=>{
+      if(query&&!objectMatched&&v57MatchesSearchInStep(row,i))return -2;
+      if(pin&&String(i.step.id)===pin)return -1;
+      return i.late?0:(i.step.nextDate&&i.step.nextDate<=today?1:2);
+    };
+    const iso=i=>displayToISO(i.step.date||'')||'9999-99-99';
+    return rank(a)-rank(b)||iso(a).localeCompare(iso(b));
+ });
+}
+function v60StepLink(row,info){return v60Steps.push({proc:row.proc,obj:row.obj,step:info.step})-1;}
+function v60RenderStep(row,info){
+ const idx=v60StepLink(row,info),step=info.step;
+ const done=!!step.done;
+ const tags=[];
+ if(step.owner)tags.push(v56SafeText(step.owner));
+ if(step.date)tags.push('Срок '+v56SafeText(v56DateShort(step.date)));
+ if(!done&&step.nextDate)tags.push('Контроль '+v56SafeText(v56DateShort(step.nextDate)));
+ if(info.late)tags.push('Просрочено');
+ const meta=tags.length?tags.join(' · '):'Без срока и ответственного';
+ const inline=v60LastDone&&String(v60LastDone.stepId)===String(step.id)&&String(v60LastDone.objId)===String(row.obj.id)&&String(v60LastDone.procId)===String(row.proc.id)&&done;
+ return `<div class="v60-task ${done?'v60-task-done':''} ${info.late?'v60-task-urgent':''}">
+   <input type="checkbox" class="v60-check" data-v60-check="${idx}" aria-label="${done?'Вернуть в работу':'Выполнить'}: ${v56SafeText(step.text)}" ${done?'checked':''}>
+   <button type="button" class="v60-task-open" data-v60-step="${idx}" aria-label="Открыть процесс: ${v56SafeText(step.text)}">
+      <span class="v60-task-body"><span class="v60-task-title">${v56SafeText(step.text)}</span><span class="v60-task-meta">${meta}</span></span><span class="v60-task-next" aria-hidden="true">›</span>
+   </button></div>${inline?`<div class="v60-inline-result"><label for="v60ResultValue">Задача завершена. Фактический результат (необязательно)</label><input id="v60ResultValue" type="text" maxlength="2000" placeholder="Например: получен акт сверки №125" value="${v56SafeText(step.actualResult||'')}"><div><button type="button" data-v60-result-save="${idx}">Сохранить результат</button> · <button type="button" data-v60-result-close>Не указывать</button></div></div>`:''}`;
+}
+function v60RenderObject(row,i){
+ const opened=v59OpenedObjects.has(v60Key(row));
+ const active=v60Order(row);
+ let all=opened?(v60ShowEveryStep.has(v60Key(row))?row.steps:active.length?active:row.steps.slice(-2)):active.slice(0,2);
+ // Keep a newly completed row visible so the optional result can be entered.
+ if(opened&&v60LastDone&&String(v60LastDone.objId)===String(row.obj.id)&&String(v60LastDone.procId)===String(row.proc.id)){
+   const completedInfo=row.steps.find(x=>String(x.step.id)===String(v60LastDone.stepId)&&x.step.done);
+   if(completedInfo&&!all.includes(completedInfo))all=[completedInfo,...all];
+ }
+ const urgent=row.steps.filter(x=>x.late).length;
+ const completed=row.finished;
+ const count=urgent?`<span class="v60-critical">${urgent} просроч.</span>`:`<span class="v60-object-count">${completed}/${row.steps.length}</span>`;
+ const note=opened&&urgent&&row.steps.some(info=>info.late&&!info.step.blocker)?'<p class="v60-note">Есть просроченные сроки. При открытии процесса можно указать причину и следующее действие.</p>':'';
+ const more=opened?`<div class="v60-object-detail"><div class="v60-object-controls"><button type="button" data-v60-add="${i}">+ Новая запись</button>${(row.steps.length>2)?`<button type="button" data-v60-all="${i}">${v60ShowEveryStep.has(v60Key(row))?'Только текущие':'Все задачи ('+row.steps.length+')'}</button>`:''}<button type="button" data-v60-district="${i}">${v60DistrictOf(row.obj,row.proc)==='Район не указан'?'Указать район':'Изменить район'}</button><button type="button" class="v60-more" data-v60-object-menu="${i}" aria-label="Действия с объектом">···</button></div>${note}</div>`:'';
+ return `<div class="v60-object"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">${opened?'⌄':'›'}</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}</div>
+   ${all.length?`<div class="v60-tasks">${all.map(info=>v60RenderStep(row,info)).join('')}</div>`:`<div class="v60-object-empty">Нет текущих задач. Откройте объект, чтобы добавить запись.</div>`}
+   ${more}</div>`;
+}
+function v56RenderCards(){
+ const root=document.getElementById('v56Cards');if(!root)return;
+ const query=v56Query.trim().toLowerCase();
+ const all=v57Rows();
+ const selected=all.filter(row=>{
+   if(v56Status==='late'&&!row.late)return false;
+   if(v56Status==='waiting'&&!row.waiting)return false;
+   if(v56Status==='active'&&!row.steps.some(i=>!i.step.done))return false;
+   if(v56Status==='done'&&!row.done)return false;
+   if(!query)return true;
+   if((v60DistrictOf(row.obj,row.proc)+' '+row.obj.title+' '+row.proc.title).toLowerCase().includes(query))return true;
+   return row.steps.some(info=>v57MatchesSearchInStep(row,info));
+ });
+ v60Rows=selected.slice(0,v56Limit);v60Steps=[];v60Regions=[];
+ const groups=new Map();
+ v60Rows.forEach((row,i)=>{
+  const label=v60DistrictOf(row.obj,row.proc);
+  if(!groups.has(label))groups.set(label,[]);
+  groups.get(label).push({row,i});
+ });
+ const ordered=[...groups.keys()].sort((a,b)=>{
+   const ix=v60DistrictNames.indexOf(a),iy=v60DistrictNames.indexOf(b);
+   return (ix<0?99:ix)-(iy<0?99:iy)||a.localeCompare(b,'ru');
+ });
+ const html=[];
+ if(!all.length)html.push('<div class="v59-empty"><strong>Блокнот пока пуст</strong><p>Добавьте первый объект внутри района.</p></div>');
+ else if(!selected.length)html.push('<div class="v59-empty"><strong>Ничего не найдено</strong><p>Измените запрос или фильтр.</p><button type="button" onclick="v56ClearAllFilters()">Показать все</button></div>');
+ for(const district of ordered){
+  const entries=groups.get(district);
+  const id=v60Regions.push(district)-1;
+  const folded=v60ClosedRegions.has(district)&&!query;
+  html.push(`<section class="v60-region"><div class="v60-region-head"><button type="button" data-v60-region="${id}" class="v60-region-toggle" aria-expanded="${!folded}"><span class="v60-region-chevron" aria-hidden="true">${folded?'›':'⌄'}</span><span>${v56SafeText(district)}</span><span class="v60-region-count">${entries.length}</span></button><button type="button" data-v60-create-object="${id}" class="v60-region-add" title="Добавить объект" aria-label="Добавить объект в ${v56SafeText(district)}">+</button></div><div class="v60-region-body" ${folded?'hidden':''}>${entries.map(({row,i})=>v60RenderObject(row,i)).join('')}</div></section>`);
+ }
+ // Users can always create the first region's object, even on a brand-new database.
+ if(!ordered.length||!ordered.includes('Район не указан')){
+  html.push(`<div class="v60-footer-note">${!ordered.length?'Выберите район для первого объекта.':'Если район объекта указан неверно, откройте объект и выберите «Изменить район».'}</div>`);
+ }
+ html.push('<div class="v60-region-pick"><label for="v60AddRegion">Новый объект в районе</label><select id="v60AddRegion" aria-label="Выбрать район для нового объекта"><option value="">Выберите район</option>'+v60DistrictNames.map(x=>`<option>${v56SafeText(x)}</option>`).join('')+'</select><button type="button" id="v60CreateObject">+ Объект</button></div>');
+ root.innerHTML=html.join('');
+ const more=document.getElementById('v56More');if(more){more.hidden=selected.length<=v56Limit;if(!more.hidden)more.textContent=`Показать ещё ${selected.length-v56Limit} объектов`;}
+ const filter=document.getElementById('v59Filter');if(filter)filter.value=v56Status;
+ const clear=document.getElementById('v56ClearSearch');if(clear)clear.hidden=!query;
+}
+function v60ToggleEventExtra(){const extra=document.getElementById('v60EventExtra'),toggle=document.getElementById('v60EventExpand');extra.hidden=!extra.hidden;toggle.setAttribute('aria-expanded',String(!extra.hidden));toggle.textContent=extra.hidden?'+ Дополнительные поля: причина, действие, дата контроля':'− Скрыть дополнительные поля';}
+function v60DistrictDialog(procId,objId){
+ const obj=v55Obj(procId,objId);if(!obj)return;
+ v60DistrictTarget={procId,objId};
+ const sel=document.getElementById('v60DistrictChoice');sel.replaceChildren();
+ for(const district of v60DistrictNames){const o=document.createElement('option');o.value=district;o.textContent=district;sel.appendChild(o);}
+ sel.value=v60DistrictOf(obj,state.find(p=>String(p.id)===String(procId)));
+ document.getElementById('v60DistrictObjectName').textContent=obj.title;
+ document.getElementById('v60DistrictModal').style.display='flex';
+}
+function v60CloseDistrict(){document.getElementById('v60DistrictModal').style.display='none';v60DistrictTarget=null;}
+function v60SaveDistrict(){
+ if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
+ const obj=v60DistrictTarget&&v55Obj(v60DistrictTarget.procId,v60DistrictTarget.objId);
+ const sel=document.getElementById('v60DistrictChoice');
+ if(!obj||!v60DistrictNames.includes(sel.value))return;
+ obj.district=sel.value;v60CloseDistrict();saveData('Изменён район объекта');showToast('Район объекта сохранён');
+}
+function v60NewObject(district){
+ if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
+ if(!v60DistrictNames.includes(district)){showToast('Сначала выберите район');return;}
+ showTextModal('Новый объект — '+district,'',(value)=>{
+   const name=String(value||'').trim().slice(0,300);if(!name)return;
+   if(state.some(p=>(p.objects||[]).some(o=>!o.archived&&v60DistrictOf(o,p)===district&&o.title.trim().toLowerCase()===name.toLowerCase()))){showToast('Такой объект уже существует в этом районе');return;}
+   let proc=state.find(p=>(p.objects||[]).some(o=>v60DistrictOf(o,p)===district));
+   if(!proc)proc=state.find(p=>v60DistrictOf({title:''},p)===district);
+   if(!proc){proc={id:createId(),title:district,objects:[],collapsed:true};state.push(proc);}
+   const obj={id:createId(),title:name,district,archived:false,collapsed:false,steps:[]};proc.objects.push(obj);
+   v60ClosedRegions.delete(district);v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));v60PersistView();
+   saveData('Создан объект в районе '+district);
+ });
+}
+function v60ObjectMenu(row){
+ showTextModal('Переименовать объект',row.obj.title,(value)=>{
+  const next=String(value||'').trim().slice(0,300);
+  if(!next||next===row.obj.title)return;
+  row.obj.title=next;saveData('Переименован объект');
+ });
+}
+function v60SaveResult(idx){
+ const linked=v60Steps[idx],step=linked?.step;
+ if(!step||!step.done)return;
+ const result=String(document.getElementById('v60ResultValue')?.value||'').trim().slice(0,2000);
+ if(result!==String(step.actualResult||'')){
+  step.actualResult=result;step.updatedAt=getTimestampStr();
+  if(result && (!step.progressEvents||step.progressEvents.length<700)){
+    if(!Array.isArray(step.progressEvents))step.progressEvents=[];
+    step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:'Фактический результат: '+result,reason:'',solution:'',nextAction:'',nextDate:'',doc:''});
+  }
+  saveData('Уточнён фактический результат');
+ }
+ v60LastDone=null;v56RenderCards();showToast('Результат сохранён');
+}
+function v60OpenMaintenance(){v59OpenStructure();}
+function v60CloseResult(){v60LastDone=null;v56RenderCards();}
+// Existing legacy registry is preserved only for backups/archives in Settings.
+const v60OriginalOpenWizard=openEntryWizard;
+openEntryWizard=function(procId=null,objId=null,stepId=null){
+ if(objId===null){showToast('Откройте объект и нажмите «+ Новая запись»');return;}
+ v60OriginalOpenWizard(procId,objId,stepId);
+ if(stepId!==null){const s=v55Step({procId,objId,stepId});document.getElementById('v60Action').value=s?.action||'';}
+ else document.getElementById('v60Action').value='';
+};
+const v60OriginalDetail=openProcessDetail;
+openProcessDetail=function(procId,objId,stepId){
+ v60OriginalDetail(procId,objId,stepId);
+ const s=v55Step({procId,objId,stepId});if(!s)return;
+ const body=document.getElementById('v55ProcessBody');
+ if(s.action){const div=document.createElement('div');div.className='v55-progress-card';const head=document.createElement('strong');head.textContent='Что конкретно делаем';const value=document.createElement('div');value.textContent=s.action;div.append(head,value);body.insertBefore(div,body.children[2]||null);}
+ const actions=document.querySelector('#processDetailModal .v55-actions');
+ if(!actions.querySelector('#v60DetailDelete')){const b=document.createElement('button');b.id='v60DetailDelete';b.type='button';b.textContent='Удалить';b.onclick=()=>{closeProcessDetail();deleteStep(v55DetailTarget.procId,v55DetailTarget.objId,v55DetailTarget.stepId);};actions.prepend(b);}
+};
+// Report selection — never auto-insert project facts into the final manual report.
+let v60ReportItems=[],v60ReportSelected=new Set(),v60ReportDistricts=[],v60ReportDrafts=new Map();
+function v60ReportCandidates(){
+ const from=document.getElementById('managementReportFrom').value,to=document.getElementById('managementReportTo').value;
+ if(from&&to&&from>to)return [];
+ const candidates=[];
+ for(const row of v57Rows()){
+  const district=v60DistrictOf(row.obj,row.proc);
+  for(const info of row.steps){
+   const s=info.step,object=String(row.obj.title);
+   if(s.done&&s.completedAt&&(!from||s.completedAt>=from)&&(!to||s.completedAt<=to)){
+     candidates.push({id:`${s.id}_done`,kind:'fact',district,date:s.completedAt,text:`${object}: ${s.actualResult||s.text} (выполнено ${v55DateRu(s.completedAt)})`});
+   }
+   for(const ev of s.progressEvents||[]){
+     if(ev.what==='Рабочая запись создана'||ev.completionChange)continue;
+     const date=ev.date||String(ev.at||'').slice(0,10);
+     if((from&&date<from)||(to&&date>to))continue;
+     candidates.push({id:`${s.id}_${ev.id}`,kind:'fact',district,date,text:`${object} / ${s.text}: ${ev.what}${ev.solution?' — '+ev.solution:''}`});
+   }
+   if(!s.done)candidates.push({id:`${s.id}_plan`,kind:'plan',district,date:s.nextDate||displayToISO(s.date||'')||'',text:`${object}: ${s.nextAction||s.text}${s.date?' (срок '+v56DateShort(s.date)+')':''}`});
+  }
+ }
+ return candidates.sort((a,b)=>a.kind.localeCompare(b.kind)||String(b.date).localeCompare(String(a.date))).slice(0,500);
+}
+function v60UpdateReportCandidates(){
+ const root=document.getElementById('v60ReportCandidates');if(!root)return;
+ v60ReportItems=v60ReportCandidates();
+ root.innerHTML=v60ReportItems.length?v60ReportItems.map((x,i)=>`<div class="v60-report-candidate"><span class="v60-candidate-title">${v56SafeText(x.text)}</span><small>${v56SafeText(x.district)}${x.date?' · '+v56SafeText(v56DateShort(x.date)):''}</small><div class="v60-report-buttons"><button type="button" data-v60-report="${i}">${v60ReportSelected.has(x.id)?'✓ Добавлено':x.kind==='fact'?'+ В факт':'+ В план'}</button></div></div>`).join(''):'<p class="v60-object-note">За этот период записей нет. Можно заполнить отчёт вручную в полях ниже.</p>';
+ document.getElementById('managementReportWarnings').textContent='Выберите подтверждённые события вручную. После выбора проверьте и отредактируйте текст.';
+}
+function v60ReportCapture(){
+ // Preserve manual edits already typed into the report between selections.
+ const split=(key)=>{
+  const text=String(document.getElementById(key==='fact'?'managementReportFact':'managementReportPlan').value||'');
+  if(!v60ReportDistricts.length)return;
+  let current=null,lines=[];const flush=()=>{if(current!==null){const draft=v60ReportDrafts.get(current)||{fact:'',plan:''};draft[key]=lines.join('\n').trim();v60ReportDrafts.set(current,draft);}};
+  for(const line of text.split('\n')){
+   if(v60ReportDistricts.includes(line.trim())){flush();current=line.trim();lines=[];}
+   else if(current!==null)lines.push(line);
+  }flush();
+ };
+ split('fact');split('plan');
+}
+function v60ReportOutput(){
+ const fact=v60ReportDistricts.map(d=>`${d}\n${v60ReportDrafts.get(d)?.fact||''}`).join('\n\n');
+ const plan=v60ReportDistricts.map(d=>`${d}\n${v60ReportDrafts.get(d)?.plan||''}`).join('\n\n');
+ document.getElementById('managementReportFact').value=fact;
+ document.getElementById('managementReportPlan').value=plan;
+ ManagementReportUI.setManualRows(v60ReportDistricts);
+}
+function v60AddReportItem(i){
+ const x=v60ReportItems[i];if(!x)return;
+ if(v60ReportSelected.has(x.id)){showToast('Эта запись уже добавлена');return;}
+ v60ReportCapture();
+ const district=x.district;
+ if(!v60ReportDistricts.includes(district)){v60ReportDistricts.push(district);v60ReportDistricts.sort((a,b)=>a.localeCompare(b,'ru'));}
+ const draft=v60ReportDrafts.get(district)||{fact:'',plan:''};
+ draft[x.kind]+=(draft[x.kind]?'\n':'')+'• '+x.text;
+ v60ReportDrafts.set(district,draft);v60ReportSelected.add(x.id);
+ v60ReportOutput();v60UpdateReportCandidates();
+}
+function v60ResetReport(){
+ v60ReportSelected.clear();v60ReportDistricts=[];v60ReportDrafts=new Map();
+ document.getElementById('managementReportFact').value='';document.getElementById('managementReportPlan').value='';
+ ManagementReportUI.setManualRows([]);v60UpdateReportCandidates();
+}
+function v60LegacyReport(){
+ if(!confirm('Открыть старый автоматический черновик? Текущий ручной текст будет заменён.'))return;
+ ManagementReportUI.refresh();showToast('Показан прежний автоматический черновик');
+}
+function openManagementReport(){ManagementReportUI.open();v60ResetReport();}
+function refreshManagementReport(){v60UpdateReportCandidates();}
+document.getElementById('v60ReportCandidates').addEventListener('click',event=>{
+ const b=event.target.closest('button[data-v60-report]');if(b)v60AddReportItem(Number(b.dataset.v60Report));
+});
+document.getElementById('v56Cards').addEventListener('click',event=>{
+ let b=event.target.closest('button');if(!b)return;
+ if(b.hasAttribute('data-v60-region')){
+  const district=v60Regions[Number(b.dataset.v60Region)];if(!district)return;
+  if(v60ClosedRegions.has(district))v60ClosedRegions.delete(district);else v60ClosedRegions.add(district);
+  v60PersistView();v56RenderCards();return;
+ }
+ if(b.hasAttribute('data-v60-create-object')){v60NewObject(v60Regions[Number(b.dataset.v60CreateObject)]);return;}
+ if(b.id==='v60CreateObject'){v60NewObject(document.getElementById('v60AddRegion').value);return;}
+ if(b.hasAttribute('data-v60-toggle')){
+  const row=v60Rows[Number(b.dataset.v60Toggle)];if(!row)return;
+  const key=v60Key(row);if(v59OpenedObjects.has(key))v59OpenedObjects.delete(key);else v59OpenedObjects.add(key);
+  v60PersistView();v56RenderCards();return;
+ }
+ if(b.hasAttribute('data-v60-step')){const x=v60Steps[Number(b.dataset.v60Step)];if(x)openProcessDetail(x.proc.id,x.obj.id,x.step.id);return;}
+ if(b.hasAttribute('data-v60-add')){const x=v60Rows[Number(b.dataset.v60Add)];if(x)openEntryWizard(x.proc.id,x.obj.id);return;}
+ if(b.hasAttribute('data-v60-district')){const x=v60Rows[Number(b.dataset.v60District)];if(x)v60DistrictDialog(x.proc.id,x.obj.id);return;}
+ if(b.hasAttribute('data-v60-object-menu')){const x=v60Rows[Number(b.dataset.v60ObjectMenu)];if(x)v60ObjectMenu(x);return;}
+ if(b.hasAttribute('data-v60-all')){const x=v60Rows[Number(b.dataset.v60All)];if(!x)return;const k=v60Key(x);if(v60ShowEveryStep.has(k))v60ShowEveryStep.delete(k);else v60ShowEveryStep.add(k);v56RenderCards();return;}
+ if(b.hasAttribute('data-v60-result-save')){v60SaveResult(Number(b.dataset.v60ResultSave));return;}
+ if(b.hasAttribute('data-v60-result-close')){v60CloseResult();return;}
+});
+document.getElementById('v56Cards').addEventListener('change',event=>{
+ const input=event.target.closest('input[data-v60-check]');if(!input)return;
+ const x=v60Steps[Number(input.dataset.v60Check)];if(!x)return;
+ if(!readyForEditing){showToast('Нет подключения к облаку');v56RenderCards();return;}
+ toggleStep(x.proc.id,x.obj.id,x.step.id);
+});
+// The previous presentation's additional filters, working-status dashboard, legacy
+// register and server code remain bundled for safe rollback but are not used in the normal interface.
+v56Screen='projects';
 
     document.getElementById('reportFrom').value=getTodayISO();
     document.getElementById('reportTo').value=getTodayISO();
