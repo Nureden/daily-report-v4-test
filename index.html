@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов 5.8 — Рабочий блокнот</title>
+  <title>Мониторинг проектов 5.9 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2104,6 +2104,135 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
 </style>
 
 <style id="v56-state-fix">#v56Workspace[hidden]{display:none!important}#v56LegacyWorkspace[hidden]{display:none!important}</style>
+
+<style id="v59-one-notebook">
+/* V5.9 — The working list is the product. No traffic-light badges or second routine list. */
+:root{--n59-ink:#202b39;--n59-muted:#7c8796;--n59-accent:#24466e;--n59-border:#e9edf1;--n59-risk:#b24648}
+html,body,body *,button,input,textarea,select,option{font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif!important}
+body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-ink)!important}
+.app-container{max-width:880px!important}
+.dashboard-panel{padding:20px 0 2px!important;margin:0!important;box-shadow:none!important}
+.dash-header{align-items:center!important;padding:0!important;gap:10px!important}
+.dash-title{font-size:26px!important;line-height:1.15!important;letter-spacing:-.6px!important;font-weight:700!important;color:#1c2a39!important}
+.v56-brand-caption{font-size:12px!important;line-height:1.3!important;color:#8894a2!important;font-weight:400!important;letter-spacing:0!important;margin-top:4px!important}
+.dash-controls{gap:5px!important}
+.btn-ai-compact{display:none!important}
+.btn-icon-refresh,.settings-trigger{height:36px!important;min-height:36px!important;width:36px!important;border:0!important;background:transparent!important;border-radius:8px!important;color:#8492a3!important;box-shadow:none!important;font-size:18px!important}
+.v59-create{background:#293d55!important;border:1px solid #293d55!important;color:white!important;border-radius:9px!important;font-size:14px!important;font-weight:600!important;min-height:38px!important;padding:8px 13px!important;white-space:nowrap!important;cursor:pointer}
+.metrics-ribbon,.kpi-expand-btn{display:none!important}
+.sync-details{font-size:11px!important;margin:4px 0 0!important;color:#98a4b3!important}
+.v56-bottom-nav{display:flex!important;border:0!important;border-bottom:1px solid #e7eaf0!important;margin:17px 0 16px!important;padding:0!important;gap:23px!important;border-radius:0!important;box-shadow:none!important;position:static!important;background:transparent!important}
+.v56-bottom-nav button,.v56-bottom-nav button:first-child{display:block!important;flex:0 0 auto!important;min-height:36px!important;background:none!important;color:#8a95a4!important;border:0!important;border-bottom:2px solid transparent!important;margin:0 0 -1px!important;padding:4px 0 10px!important;border-radius:0!important;font-size:15px!important;font-weight:500!important}
+.v56-bottom-nav button:last-child{display:block!important}
+.v56-bottom-nav button.is-active{color:#253c58!important;border-bottom-color:#253c58!important;font-weight:700!important}
+.v59-digest{margin:0 0 14px!important}
+.v59-digest[hidden]{display:none!important}
+.v59-digest-button{display:flex;width:100%;min-height:54px;align-items:center;gap:11px;background:#fff;border:1px solid #e8e9e8;border-radius:10px;padding:9px 13px;text-align:left;cursor:pointer;color:#33465d}
+.v59-digest-mark{height:25px;width:3px;border-radius:4px;background:#b77769;flex:0 0 3px}
+.v59-digest-button>span:nth-child(2){display:grid;gap:3px;flex:1;min-width:0}
+.v59-digest-button strong{font-size:14px;font-weight:600;line-height:1.2}
+.v59-digest-button small{font-size:12.5px;font-weight:400;color:#828d9c;line-height:1.3}
+.v59-digest-open{color:#7b899c;font-size:13px;white-space:nowrap}
+.v56-heading-row{display:none!important}
+.v56-workspace{padding:0 0 38px!important}
+.v59-tools{display:flex;align-items:center;gap:10px;margin:0 0 23px;min-width:0}
+.v56-search-wrap{height:42px!important;margin:0!important;flex:1;min-width:0;border:1px solid #e4e9ef!important;border-radius:9px!important;box-shadow:none!important;background:#fff!important;padding:0 12px!important;color:#909cac!important}
+.v56-search-wrap input{font-size:14px!important;min-width:0!important}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.v59-filter-label{flex:0 0 auto}
+.v59-filter-label select{height:42px;max-width:160px;border:1px solid #e5e9ef;border-radius:9px;background:#fff;color:#667487;cursor:pointer;padding:0 24px 0 12px;font-size:13.5px;outline-offset:2px}
+.v56-filter-bar{display:none!important}
+.v56-group-list{display:grid!important;gap:24px!important}
+.v59-direction{min-width:0;display:grid;gap:9px}
+.v59-direction-row{display:flex;align-items:center;gap:6px;padding:0 1px;min-height:30px}
+.v59-direction-title{min-width:0;display:flex;align-items:center;gap:7px;flex:1;border:0;background:transparent;text-align:left;padding:3px 0;color:#6b7786;cursor:pointer;font-size:14px;font-weight:700;letter-spacing:.02em}
+.v59-direction-title>span:nth-child(2){min-width:0;overflow-wrap:anywhere}
+.v59-direction-title small{color:#a0aab5;font-size:12px;font-weight:400;letter-spacing:0;margin-left:2px}
+.v59-chevron{width:13px;flex:0 0 13px;font-size:18px;font-weight:400;color:#9da8b5;line-height:1}
+.v59-add-object{border:0;background:transparent;color:#8c9aa9;cursor:pointer;font-size:21px;height:30px;width:34px;padding:0;line-height:1}
+.v59-object-list{border:1px solid #e8edf1;border-radius:12px;background:#fff;overflow:hidden}
+.v59-object-list[hidden]{display:none!important}
+.v59-object+.v59-object{border-top:1px solid #edf0f3}
+.v59-object-summary{display:flex;align-items:flex-start;text-align:left;border:0;background:#fff;width:100%;min-width:0;min-height:69px;padding:14px 15px;gap:16px;cursor:pointer;color:var(--n59-ink)}
+.v59-object-summary:hover{background:#fcfdfe}
+.v59-object-open>.v59-object-summary,.v59-open>.v59-object-summary{background:#fbfcfd}
+.v59-object-primary{flex:1;min-width:0;display:grid;gap:4px}
+.v59-object-title{font-size:17px;font-weight:700;line-height:1.23;letter-spacing:-.18px;overflow-wrap:anywhere}
+.v59-object-now{font-size:14px;font-weight:400;color:#6c7a8a;line-height:1.3;min-width:0;overflow-wrap:anywhere}
+.v59-now-label{color:#9ba5b0;font-weight:400}
+.v59-object-meta{display:flex;flex-wrap:wrap;gap:2px 7px;align-items:center;color:#788697;font-size:12.5px;line-height:1.35}
+.v59-object-meta:empty{display:none}
+.v59-meta-sep{color:#c7cdd4}
+.v59-object-aside{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding-top:1px;color:#a4acb5;font-size:12.5px;white-space:nowrap}
+.v59-object-status{color:#8994a0;font-size:12px}
+.v59-object-status.v59-alert{color:var(--n59-risk);font-weight:600}
+.v59-number{color:#a6b0bd;font-size:12px;font-variant-numeric:tabular-nums}
+.v59-arrow{font-size:21px;color:#9fabb9;line-height:1}
+.v59-detail{padding:0 15px 13px 23px;border-top:1px solid #f0f2f5;background:#fff}
+.v59-detail-head{display:flex;justify-content:space-between;gap:8px;margin:13px 0 5px;color:#9ba6b2;letter-spacing:.07em;font-size:11px;font-weight:500}
+.v59-detail-head span:last-child{letter-spacing:0;font-weight:400}
+.v59-process-list{display:grid}
+.v59-process{display:flex;align-items:flex-start;text-align:left;gap:8px;border:0;background:transparent;min-width:0;min-height:50px;width:100%;padding:8px 0;cursor:pointer;color:#2e4055}
+.v59-process+.v59-process{border-top:1px solid #f2f4f6}
+.v59-process-symbol{flex:0 0 19px;color:#b1b9c3;font-size:15px;line-height:1.3}
+.v59-process-content{flex:1;min-width:0;display:grid;gap:3px}
+.v59-process-title{font-size:15px;font-weight:500;line-height:1.3;overflow-wrap:anywhere}
+.v59-process-meta{font-size:12.5px;color:#9aa5b3;line-height:1.3;display:flex;gap:4px 7px;flex-wrap:wrap}
+.v59-process-status{font-size:12px;color:#929eab;white-space:nowrap;padding-top:1px}
+.v59-process-status.v59-alert{color:#b4484a}
+.v59-completed .v59-process-title{color:#9da7b3;text-decoration:line-through}
+.v59-proceed{color:#b9c3cc;font-size:19px;line-height:1}
+.v59-detail-actions{display:flex;align-items:center;gap:18px;margin:8px 0 0 18px;flex-wrap:wrap}
+.v59-detail-actions button{background:transparent;border:0;color:#506e93;min-height:33px;padding:3px 0;cursor:pointer;font-size:13px;font-weight:500}
+.v59-detail-actions .v59-more{margin-left:auto;min-width:34px;font-size:19px;color:#94a1ae}
+.v59-insight{margin:7px 0 3px 18px;display:flex;align-items:center;gap:8px;padding:9px 11px;background:#faf8f6;border:1px solid #f0e9e4;border-radius:8px;color:#8b625b;font-size:13px;text-align:left;cursor:pointer;width:calc(100% - 18px)}
+.v59-insight-sign{font-weight:700}
+.v59-insight>span:last-child{margin-left:auto;color:#a68a82}
+.v59-blank{color:#a4afb9;padding:12px 0;font-size:13px}
+.v59-bottom-actions{display:flex;align-items:center;gap:18px;margin:17px 0 25px}
+.v59-bottom-actions button{background:transparent;border:0;color:#8c9bad;cursor:pointer;padding:8px 2px;font-size:13px}
+.v59-empty{background:#fff;border:1px solid #e8edf1;border-radius:11px;padding:23px;display:grid;gap:8px;color:#415267}
+.v59-empty strong{font-size:17px}
+.v59-empty p{font-size:14px;color:#95a0ac}
+.v59-empty button{justify-self:start;cursor:pointer;border:1px solid #dde6f0;border-radius:8px;background:#f5f8fb;padding:9px 12px;color:#3d5979}
+#v56Fab{display:none!important}
+.v56-more{border:1px solid #e5eaf0!important;background:#fff!important;color:#6e7e91!important;box-shadow:none!important}
+.settings-panel .settings-option{font-size:14px!important}
+.v55-progress-card,.v55-modal{box-shadow:none!important}
+@media(max-width:700px){
+ body{padding:0 11px 40px!important}
+ .dashboard-panel{padding-top:14px!important}
+ .dash-title{font-size:23px!important}
+ .v59-create{padding:8px 11px!important;min-height:36px!important;font-size:13px!important}
+ .dash-controls{gap:2px!important}
+ .btn-icon-refresh,.settings-trigger{width:31px!important;min-width:31px!important}
+ .v56-bottom-nav{gap:22px!important;margin:13px 0 12px!important}
+ .v56-bottom-nav button{font-size:14px!important}
+ .v59-tools{gap:7px;margin-bottom:16px}
+ .v59-filter-label select{max-width:127px;font-size:12.5px;padding-left:9px}
+ .v56-search-wrap{padding:0 9px!important}
+ .v56-search-wrap input{font-size:13.5px!important}
+ .v56-group-list{gap:17px!important}
+ .v59-object-summary{padding:12px 11px;gap:5px;min-height:65px}
+ .v59-object-title{font-size:16px}
+ .v59-object-now{font-size:13px}
+ .v59-object-aside{gap:5px;align-items:flex-start;padding-top:2px}
+ .v59-object-status{font-size:11px}
+ .v59-number{font-size:11px}
+ .v59-detail{padding:0 10px 12px 12px}
+ .v59-detail-actions{gap:13px}
+ .v59-digest-button{padding:9px 10px}
+ .v59-digest-open{font-size:12px}
+}
+@media(max-width:370px){
+ .v59-object-aside{max-width:89px;flex-wrap:wrap;justify-content:end;gap:3px 7px}
+ .v59-object-title{font-size:15px}
+ .v59-filter-label select{max-width:108px}
+ .v59-create{font-size:12px!important}
+ .v59-digest-open{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
 
@@ -2112,11 +2241,11 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
     <div class="dashboard-panel">
       <div class="dash-header">
         <div class="dash-title">
-          <span class="brand-mark" aria-hidden="true">◈</span> <span>Мониторинг проектов</span><small class="v56-brand-caption">Мой рабочий блокнот</small>
+          <span class="brand-mark" aria-hidden="true">◈</span> <span>Мой блокнот</span><small class="v56-brand-caption">Мониторинг проектов</small>
         </div>
         <div class="dash-controls">
           <button class="btn-icon-refresh" onclick="manualSync()" title="Обновить из облака" aria-label="Обновить из облака">↻</button>
-          <button class="btn-ai-compact" onclick="openAiModal()">✧ AI</button>
+          <button type="button" class="v59-create" onclick="openEntryWizard()" aria-label="Создать рабочую запись">+ Запись</button>
           <button type="button" class="settings-trigger" id="settingsTrigger" aria-label="Настройки и данные" aria-expanded="false" aria-controls="settingsOverlay" title="Настройки и данные" onclick="toggleSettings(event)">⚙</button>
         </div>
       </div>
@@ -2155,16 +2284,12 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
       <div class="sync-details" id="syncDetails" role="status" aria-live="polite"></div>
     </div>
 
-    <nav class="v56-bottom-nav" aria-label="Главная навигация">
-      <button type="button" id="v56NavProjects" class="is-active" onclick="v56SetScreen('projects')" aria-label="Проекты">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Объекты</span></button>
-      <button type="button" id="v56NavToday" onclick="v56SetScreen('today')" aria-label="Сегодня">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 5h4"/></svg><span>Сегодня</span></button>
-      <button type="button" onclick="openManagementReport()" aria-label="Еженедельный отчёт">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>Отчёт</span></button>
-      <button type="button" onclick="v56OpenSettings(event)" aria-label="Настройки">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m20 12 2-2-2-4-3 1-2-3h-5L8 7 5 6l-3 4 2 2-2 3 3 4 3-1 2 3h5l2-3 3 1 2-4z"/></svg><span>Настройки</span></button>
+    <nav class="v56-bottom-nav" aria-label="Разделы блокнота">
+      <button type="button" id="v56NavProjects" class="is-active" onclick="v56SetScreen('projects')">Объекты</button>
+      <button type="button" id="v56NavToday" onclick="v56SetScreen('today')">На контроле</button>
+      <button type="button" onclick="openManagementReport()">Факт / План</button>
     </nav>
+    <div id="v59Digest" class="v59-digest" hidden aria-live="polite"></div>
 
     <section id="legacyMigrateBanner" class="migration-banner" style="display:none" aria-label="Перенос старых данных">
       <strong>Обнаружены старые записи</strong>
@@ -2178,25 +2303,33 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
     </div>
 
     <!-- Version 5.8: calm notebook layout; existing storage schema is unchanged. -->
-    <section id="v56Workspace" class="v56-workspace" aria-label="Объекты и процессы">
-      <div class="v56-heading-row">
-        <div><h1 id="v56Heading">Мои объекты</h1><p id="v56Subheading">Откройте объект, чтобы увидеть его процессы</p></div>
-        <button type="button" class="v56-structure-link" onclick="v56ToggleStructure()" id="v56LegacyButton">Полный реестр</button>
+    <section id="v56Workspace" class="v56-workspace" aria-label="Рабочий блокнот">
+      <div class="v56-heading-row" hidden>
+        <h1 id="v56Heading">Объекты</h1><p id="v56Subheading"></p>
+        <button type="button" id="v56LegacyButton" hidden>Дополнительно</button>
       </div>
-      <div class="v56-search-wrap">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
-        <input id="v56Search" aria-label="Поиск по объектам, процессам, ответственным и документам" placeholder="Найти объект, процесс, ответственного..." autocomplete="off" oninput="v56SearchChanged(this.value)">
-        <button type="button" id="v56ClearSearch" class="v56-search-clear" title="Очистить поиск" onclick="v56ClearSearch()" hidden>×</button>
-      </div>
-      <div class="v56-filter-bar" id="v56Filters" aria-label="Фильтр объектов">
-        <button type="button" data-filter="all" class="selected" onclick="v56SetFilter('all')">Все <span id="v56CountAll"></span></button>
-        <button type="button" data-filter="active" onclick="v56SetFilter('active')">В работе <span id="v56CountActive"></span></button>
-        <button type="button" data-filter="waiting" onclick="v56SetFilter('waiting')">Ожидание <span id="v56CountWaiting"></span></button>
-        <button type="button" data-filter="late" onclick="v56SetFilter('late')">Просрочено <span id="v56CountLate"></span></button>
-        <button type="button" data-filter="done" onclick="v56SetFilter('done')">Выполнено <span id="v56CountDone"></span></button>
+      <div class="v59-tools">
+        <div class="v56-search-wrap">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+          <input id="v56Search" type="search" aria-label="Поиск объектов, процессов, ответственных, документов и событий" placeholder="Поиск объектов, задач, людей…" autocomplete="off" oninput="v56SearchChanged(this.value)">
+          <button type="button" id="v56ClearSearch" class="v56-search-clear" onclick="v56ClearSearch()" aria-label="Очистить поиск" hidden>×</button>
+        </div>
+        <label class="v59-filter-label"><span class="sr-only">Статус объекта</span>
+          <select id="v59Filter" aria-label="Фильтр объектов" onchange="v59SetFilter(this.value)">
+            <option value="all">Все состояния</option>
+            <option value="late">Просрочено</option>
+            <option value="waiting">Ожидание</option>
+            <option value="active">В работе</option>
+            <option value="done">Завершено</option>
+          </select>
+        </label>
       </div>
       <div class="v56-group-list" id="v56Cards" aria-live="polite"></div>
       <button type="button" id="v56More" class="v56-more" onclick="v56LoadMore()" hidden>Показать ещё</button>
+      <div class="v59-bottom-actions">
+        <button type="button" onclick="openAddProcessModal()">+ Направление</button>
+        <button type="button" onclick="v59OpenStructure()">Управление и архив</button>
+      </div>
     </section>
     <section id="v56LegacyWorkspace" class="v56-legacy-workspace" hidden>
       <div class="v56-legacy-intro"><div><h2>Структура объектов</h2><p>Направления, объекты, этапы и настройки</p></div><button type="button" class="v56-structure-link" onclick="v56ToggleStructure()">К объектам</button></div>
@@ -2247,7 +2380,7 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
     <!-- Служебные действия доступны из настроек в верхней панели. -->
 
 
-    <button type="button" id="v56Fab" class="v56-fab" onclick="openEntryWizard()" aria-label="Добавить новую запись" title="Новая запись">+ Запись</button>
+    <button type="button" id="v56Fab" class="v56-fab" onclick="openEntryWizard()" aria-label="Добавить новую запись" title="Новая запись" hidden>+ Запись</button>
   </div>
 
 
@@ -2311,6 +2444,11 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
       <button type="button" class="settings-option" onclick="closeSettings();downloadBackupFile()">Скачать резервную копию</button>
       <button type="button" class="settings-option" onclick="closeSettings();triggerImportFile()">Загрузить файл</button>
       <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleFileImport(event)">
+      <div class="settings-group-label">Инструменты</div>
+      <button type="button" class="settings-option" onclick="closeSettings();openEntryWizard()">Новая рабочая запись</button>
+      <button type="button" class="settings-option" onclick="closeSettings();openAddProcessModal()">Новое направление</button>
+      <button type="button" class="settings-option" onclick="closeSettings();v59OpenStructure()">Управление структурой и архив</button>
+      <button type="button" class="settings-option" onclick="closeSettings();openAiModal()">AI-помощник (по запросу)</button>
       <div class="settings-group-label">История</div>
       <button type="button" class="settings-option" onclick="closeSettings();showAuditLog()">История изменений</button>
       <button type="button" class="settings-option" onclick="closeSettings();showCloudHistory()">Облачные версии</button>
@@ -4371,6 +4509,7 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
       proc.collapsed=false;obj.collapsed=false;
       if(typeof v58CollapsedDirections!=='undefined')v58CollapsedDirections.delete(String(proc.id));
       pinnedStepsMap[obj.id]=step.id;
+      if(typeof v59OpenedObjects!=="undefined"){v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));}
       expandedAllStepsObjMap[obj.id]=true;
       closeEntryWizard();
       saveData(stepId!==null?'Обновлена рабочая запись':'Создана рабочая запись');
@@ -5495,84 +5634,190 @@ function v58ObjectCount(n){
   const a=Math.abs(n)%100,b=a%10;
   return n+' '+(a>10&&a<15?'объектов':b===1?'объект':b>=2&&b<=4?'объекта':'объектов');
 }
+// V5.9 — real unified notebook: one list, one open object, no duplicate daily register.
+const v59OpenedObjects=new Set();
+let v59CurrentObject=null;
+let v59AttentionOnly=false;
+function v59StatusLabel(row){
+  if(row.late)return 'Просрочено';
+  if(row.blocked)return 'Есть проблема';
+  if(row.waiting&&!row.active)return 'Ожидание';
+  if(row.done)return 'Готово';
+  return '';
+}
+function v59PrimaryStep(row){
+  const list=row.steps;
+  if(!list.length)return null;
+  if(v56Query){
+    const byObject=[row.proc.title,row.obj.title].join(' ').toLowerCase().includes(v56Query);
+    if(!byObject){const hit=list.find(info=>v57MatchesSearchInStep(row,info));if(hit)return hit;}
+  }
+  if(v56Screen==='today')return list.find(v57TodayStep)||list.find(i=>!i.step.done)||list[0];
+  if(v56Status==='late')return list.find(i=>i.late)||list[0];
+  if(v56Status==='waiting')return list.find(i=>i.waiting)||list[0];
+  if(v56Status==='done')return list.find(i=>i.step.done)||list[0];
+  if(v56Status==='active')return list.find(i=>i.status==='active'||i.blocked)||list[0];
+  // Recently created entry takes priority for the current session.
+  return list.find(i=>String(i.step.id)===String(pinnedStepsMap[row.obj.id]||''))||
+    list.find(i=>i.late||i.blocked)||list.find(i=>!i.step.done)||list.at(-1);
+}
+function v59Metadata(step){
+  if(!step)return '';
+  let out=[];
+  if(step.owner)out.push(`<span>${v56SafeText(step.owner)}</span>`);
+  if(step.date)out.push(`<span>${step.done?'Срок':'До'} ${v56SafeText(v56DateShort(step.date))}</span>`);
+  if(!step.done&&step.nextDate&&!step.date)out.push(`<span>Следующее ${v56SafeText(v56DateShort(step.nextDate))}</span>`);
+  return out.join('<span class="v59-meta-sep">·</span>');
+}
+function v59OpenObject(idx){
+  const row=v57VisibleObjects[Number(idx)];if(!row)return;
+  const key=v57ObjectKey(row.proc,row.obj);
+  if(v59OpenedObjects.has(key))v59OpenedObjects.delete(key);
+  else{v59OpenedObjects.clear();v59OpenedObjects.add(key);}
+  v56RenderCards();
+}
+function v59SetFilter(filter){v56Status=filter;v56Limit=30;v59AttentionOnly=false;v56RenderCards();}
+function v59FocusAttention(){
+  v56Screen='today';v56Status='all';v59AttentionOnly=true;v56Query='';
+  const search=document.getElementById('v56Search');if(search)search.value='';
+  v56RenderCards();
+}
+function v59AddObject(procId){
+  const proc=state.find(x=>String(x.id)===String(procId));
+  if(!proc||!readyForEditing){showToast('Дождитесь подключения к облаку');return;}
+  showTextModal('Новый объект','',(value)=>{
+    const name=String(value||'').trim().slice(0,300);if(!name)return;
+    if((proc.objects||[]).some(o=>!o.archived&&String(o.title||'').trim().toLowerCase()===name.toLowerCase())){
+      showToast('Такой объект уже существует');return;
+    }
+    const obj={id:createId(),title:name,archived:false,collapsed:false,steps:[]};
+    proc.objects.push(obj);v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));
+    v58CollapsedDirections.delete(String(proc.id));
+    saveData('Добавлен объект');showToast('Объект создан');
+  });
+}
+function v59OpenStructure(){
+  // Rare maintenance operations: archives, reordering and workflow templates.
+  v56Legacy=true;
+  document.getElementById('v56Workspace').hidden=true;
+  document.getElementById('v56LegacyWorkspace').hidden=false;
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function v59ResetView(){
+  v56Legacy=false;document.getElementById('v56Workspace').hidden=false;
+  document.getElementById('v56LegacyWorkspace').hidden=true;
+  v56RenderCards();window.scrollTo({top:0,behavior:'instant'});
+}
+function v59Insight(info){
+  const step=info?.step;if(!step||step.done)return '';
+  let tip='';
+  if(info.late&&!step.blocker)tip='Срок прошёл. Причина не указана';
+  else if(info.blocked&&!step.nextAction)tip='Есть проблема. Следующее действие не записано';
+  else if(step.nextDate&&v55StrictISO(step.nextDate)&&step.nextDate<getTodayISO()&&step.nextAction)tip='Ожидаемое событие уже должно было наступить';
+  if(!tip)return '';
+  const index=v57RenderedSteps.push(info._linked)-1;
+  return `<button type="button" class="v59-insight" data-v57-step="${index}"><span class="v59-insight-sign" aria-hidden="true">!</span>${v56SafeText(tip)}<span aria-hidden="true">↗</span></button>`;
+}
 function v56RenderCards(){
   const root=document.getElementById('v56Cards');if(!root)return;
   const all=v57Rows();
-  const population=v56Screen==='today'?all.filter(r=>r.steps.some(v57TodayStep)):all;
-  const counts={all:population.length,active:population.filter(r=>['active','blocked'].includes(r.status)).length,
-    waiting:population.filter(r=>r.status==='waiting').length,late:population.filter(r=>r.status==='late').length,done:population.filter(r=>r.status==='done').length};
-  for(const name of ['All','Active','Waiting','Late','Done']){
-    const el=document.getElementById('v56Count'+name);if(el)el.textContent=counts[name.toLowerCase()]||'';
+  const overdueSteps=all.reduce((n,row)=>n+row.steps.filter(i=>i.late).length,0);
+  const activeProblems=all.reduce((n,row)=>n+row.steps.filter(i=>i.blocked).length,0);
+  const digest=document.getElementById('v59Digest');
+  if(digest){
+    const parts=[];
+    if(overdueSteps){const one=overdueSteps%10===1&&overdueSteps%100!==11;const few=overdueSteps%10>=2&&overdueSteps%10<=4&&!(overdueSteps%100>=12&&overdueSteps%100<=14);parts.push(`${overdueSteps} ${one?'просроченный срок':few?'просроченных срока':'просроченных сроков'}`);}
+    if(activeProblems){const one=activeProblems%10===1&&activeProblems%100!==11;const few=activeProblems%10>=2&&activeProblems%10<=4&&!(activeProblems%100>=12&&activeProblems%100<=14);parts.push(`${activeProblems} ${one?'активное замечание':few?'активных замечания':'активных замечаний'}`);}
+    if(parts.length){
+      digest.hidden=false;
+      digest.innerHTML=`<button type="button" class="v59-digest-button" onclick="v59FocusAttention()"><span class="v59-digest-mark" aria-hidden="true"></span><span><strong>Требует внимания</strong><small>${v56SafeText(parts.join(' · '))}</small></span><span class="v59-digest-open">Показать →</span></button>`;
+    }else{digest.hidden=true;digest.innerHTML='';}
   }
-  for(const btn of document.querySelectorAll('#v56Filters button')){
-    const selected=btn.dataset.filter===v56Status;
-    btn.classList.toggle('selected',selected);btn.setAttribute('aria-pressed',String(selected));
-  }
-  const today=v56Screen==='today';
-  document.getElementById('v56Heading').textContent=today?'Сегодня':'Рабочие объекты';
-  document.getElementById('v56Subheading').textContent=today?'Текущие вопросы, которые требуют внимания':'По направлениям и объектам';
-  document.getElementById('v56NavProjects')?.classList.toggle('is-active',!today);
-  document.getElementById('v56NavToday')?.classList.toggle('is-active',today);
-  document.getElementById('v56ClearSearch').hidden=!v56Query;
-  const filtered=all.filter(v57FilterRows),visible=filtered.slice(0,v56Limit);
+  document.getElementById('v56NavProjects')?.classList.toggle('is-active',v56Screen!=='today');
+  document.getElementById('v56NavToday')?.classList.toggle('is-active',v56Screen==='today');
+  const select=document.getElementById('v59Filter');if(select)select.value=v56Status;
+  const clear=document.getElementById('v56ClearSearch');if(clear)clear.hidden=!v56Query;
+  const filtered=all.filter(v57FilterRows);
+  const visible=filtered.slice(0,v56Limit);
   v57VisibleObjects=visible;v57RenderedSteps=[];v58GroupRefs=[];
   const groups=new Map();
-  visible.forEach((row,index)=>{
-    const key=String(row.proc.id);
-    if(!groups.has(key))groups.set(key,{proc:row.proc,entries:[]});
-    groups.get(key).entries.push({row,index});
-  });
+  for(const row of filtered){const key=String(row.proc.id);if(!groups.has(key))groups.set(key,{proc:row.proc,count:0,critical:0,entries:[]});
+    const g=groups.get(key);g.count++;if(row.late||row.blocked)g.critical++;}
+  visible.forEach((row,index)=>{groups.get(String(row.proc.id))?.entries.push({row,index});});
   const chunks=[];
   if(!filtered.length){
-    chunks.push(`<div class="v56-empty"><strong>${all.length?'Ничего не найдено':'Пока нет объектов'}</strong><span>${all.length?'Измените поисковый запрос или фильтр':'Создайте направление и первую запись'}</span><button type="button" onclick="${all.length?"v56ClearAllFilters()":"openAddProcessModal()"}">${all.length?'Показать все':'Добавить направление'}</button></div>`);
+    chunks.push(`<div class="v59-empty"><strong>${all.length?'Записей не найдено':'Блокнот пока пуст'}</strong><p>${all.length?'Попробуйте другой запрос или откройте все состояния':'Создайте направление и первую рабочую запись'}</p><button type="button" onclick="${all.length?'v56ClearAllFilters()':'openAddProcessModal()'}">${all.length?'Показать все':'Создать направление'}</button></div>`);
   }
   for(const [key,group] of groups){
-    const idx=v58GroupRefs.push(key)-1;
-    const entries=group.entries;
-    const folded=v58CollapsedDirections.has(key)&&!v56Query&&v56Status==='all'&&!today;
-    const critical=entries.filter(e=>e.row.late||e.row.blocked).length;
-    const objectRows=entries.map(({row,index})=>{
-      const expanded=v57ExpandedObjects.has(v57ObjectKey(row.proc,row.obj));
-      const visibleSteps=v57ShowSteps(row),total=row.steps.length,done=row.finished;
-      const percent=total?Math.round(done/total*100):0;
-      const status=total?v57StatusText(row):'Без этапов';
-      const stepsHtml=visibleSteps.length?visibleSteps.map(info=>v57StepHtml(row,info)).join(''):'<div class="v58-empty-steps">Пока нет записей</div>';
-      const extra=total>visibleSteps.length;
-      const expandLabel=expanded?'Свернуть этапы':`Все этапы (${total})`;
-      return `<article class="v58-object" aria-label="Объект: ${v56SafeText(row.obj.title)}">
-        <div class="v58-object-head">
-          <div class="v58-object-heading"><h3>${v56SafeText(row.obj.title)}</h3><span class="v58-progress-caption">${done} из ${total} выполнено</span></div>
-          <span class="v58-status v58-status-${row.status}"><span class="v58-status-dot" aria-hidden="true"></span>${status}</span>
-        </div>
-        ${total?`<div class="v58-progress" role="progressbar" aria-label="Прогресс объекта" aria-valuenow="${done}" aria-valuemin="0" aria-valuemax="${total}"><span style="width:${percent}%"></span></div>`:''}
-        <div class="v58-steps">${stepsHtml}</div>
-        <div class="v58-object-actions">
-          ${extra||expanded?`<button type="button" data-v57-expand="${index}" aria-expanded="${expanded}">${expandLabel}</button>`:''}
-          <button type="button" class="v58-add-inline" data-v57-add="${index}">+ Новая запись</button>
-        </div>
-      </article>`;
+    if(!group.entries.length)continue;
+    const index=v58GroupRefs.push(key)-1;
+    const folded=v58CollapsedDirections.has(key)&&!v56Query&&v56Status==='all'&&v56Screen!=='today';
+    const heading=`<div class="v59-direction-row"><button type="button" class="v59-direction-title" data-v58-group="${index}" aria-expanded="${!folded}"><span class="v59-chevron" aria-hidden="true">${folded?'›':'⌄'}</span><span>${v56SafeText(group.proc.title||'Без направления')}</span><small>${group.count}</small></button><button type="button" class="v59-add-object" data-v59-add-object="${index}" aria-label="Добавить объект в ${v56SafeText(group.proc.title)}" title="Добавить объект">+</button></div>`;
+    const objects=group.entries.map(({row,index:rowIndex})=>{
+      const keyObj=v57ObjectKey(row.proc,row.obj),opened=v59OpenedObjects.has(keyObj);
+      const main=v59PrimaryStep(row),s=main?.step;
+      const status=v59StatusLabel(row);
+      const currentTitle=s?v56SafeText(s.text):'Добавьте первую рабочую запись';
+      const mini=s?v59Metadata(s):'';
+      const alert=row.late||row.blocked;
+      const statusLabel=status&&status!=='Готово'?`<span class="v59-object-status ${alert?'v59-alert':''}">${v56SafeText(status)}</span>`:'';
+      let inner='';
+      if(opened){
+        const steps=v57ShowSteps(row);
+        const shown=steps.length?steps.map(info=>{
+          const i=v57RenderedSteps.push({proc:row.proc,obj:row.obj,step:info.step})-1;
+          const d=info.step.done;
+          const stat=info.late?'Просрочено':info.blocked?'Проблема':info.waiting?'Ожидание':'';
+          return `<button class="v59-process ${d?'v59-completed':''}" type="button" data-v57-step="${i}">
+            <span class="v59-process-symbol" aria-hidden="true">${d?'✓':'—'}</span>
+            <span class="v59-process-content"><span class="v59-process-title">${v56SafeText(info.step.text)}</span><span class="v59-process-meta">${v59Metadata(info.step)}</span></span>
+            ${stat?`<span class="v59-process-status ${info.late||info.blocked?'v59-alert':''}">${stat}</span>`:''}
+            <span class="v59-proceed" aria-hidden="true">›</span></button>`;
+        }).join(''):'<div class="v59-blank">Записей пока нет.</div>';
+        const extra=row.steps.length>steps.length;
+        const allMode=v57ExpandedObjects.has(keyObj);
+        const linked={proc:row.proc,obj:row.obj,step:s};
+        if(main)main._linked=linked;
+        const actionable=row.steps.find(i=>i.late&&!i.step.blocker)||row.steps.find(i=>i.blocked&&!i.step.nextAction)||row.steps.find(i=>!i.step.done&&i.step.nextDate&&v55StrictISO(i.step.nextDate)&&i.step.nextDate<getTodayISO())||main;
+        if(actionable)actionable._linked={proc:row.proc,obj:row.obj,step:actionable.step};
+        const insight=actionable?v59Insight(actionable):'';
+        const contextMenu=`<div class="obj-dropdown-menu" id="v59menu-${rowIndex}">
+          <button type="button" class="obj-dropdown-item" onclick="editObjectTitle(${jsId(row.proc.id)},${jsId(row.obj.id)})">Переименовать объект</button>
+          <button type="button" class="obj-dropdown-item" onclick="cloneObject(${jsId(row.proc.id)},${jsId(row.obj.id)})">Создать копию</button>
+          <button type="button" class="obj-dropdown-item" onclick="archiveObject(${jsId(row.proc.id)},${jsId(row.obj.id)})">Переместить в архив</button>
+          <button type="button" class="obj-dropdown-item del-action" onclick="deleteObject(${jsId(row.proc.id)},${jsId(row.obj.id)})">Удалить объект</button>
+        </div>`;
+        inner=`<div class="v59-detail" id="v59-detail-${rowIndex}">
+           <div class="v59-detail-head"><span>ПРОЦЕССЫ</span><span>${row.finished} из ${row.steps.length} выполнено</span></div>
+           <div class="v59-process-list">${shown}</div>${insight}
+           <div class="v59-detail-actions">
+            <button type="button" data-v57-add="${rowIndex}">+ Новая запись</button>
+            ${extra||allMode?`<button type="button" data-v57-expand="${rowIndex}">${allMode?'Скрыть завершённые':'Все этапы ('+row.steps.length+')'}</button>`:''}
+            <button type="button" class="v59-more" aria-label="Действия с объектом" aria-expanded="false" onclick="toggleMenuGeneric(event,'v59menu-${rowIndex}')">···</button>${contextMenu}
+           </div>
+          </div>`;
+      }
+      const count=row.steps.length?`${row.finished}/${row.steps.length}`:'—';
+      return `<article class="v59-object ${opened?'v59-open':''}" aria-label="${v56SafeText(row.obj.title)}">
+          <button type="button" class="v59-object-summary" data-v59-toggle="${rowIndex}" aria-expanded="${opened}" ${opened?`aria-controls="v59-detail-${rowIndex}"`:""}>
+           <span class="v59-object-primary"><span class="v59-object-title">${v56SafeText(row.obj.title)}</span><span class="v59-object-now">${currentTitle}</span><span class="v59-object-meta">${mini}</span></span>
+           <span class="v59-object-aside">${statusLabel}<span class="v59-number">${count}</span><span class="v59-arrow" aria-hidden="true">${opened?'⌄':'›'}</span></span>
+          </button>
+          ${inner}
+        </article>`;
     }).join('');
-    chunks.push(`<section class="v58-direction" aria-label="${v56SafeText(group.proc.title)}">
-      <button type="button" class="v58-direction-head" data-v58-group="${idx}" aria-expanded="${!folded}">
-        <span class="v58-direction-chevron" aria-hidden="true">${folded?'›':'⌄'}</span>
-        <span class="v58-direction-name">${v56SafeText(group.proc.title||'Без направления')}</span>
-        <span class="v58-direction-count">${v58ObjectCount(entries.length)}</span>
-        ${critical?`<span class="v58-direction-alert" title="Объекты с просрочками или проблемами">${critical} требуют внимания</span>`:''}
-      </button>
-      <div class="v58-direction-body" ${folded?'hidden':''}>${objectRows}</div>
-    </section>`);
+    chunks.push(`<section class="v59-direction"><div>${heading}</div><div class="v59-object-list" ${folded?'hidden':''}>${objects}</div></section>`);
   }
   root.innerHTML=chunks.join('');
-  const more=document.getElementById('v56More');more.hidden=filtered.length<=v56Limit;
-  if(!more.hidden)more.textContent=`Показать ещё ${filtered.length-v56Limit} объектов`;
+  const more=document.getElementById('v56More');if(more){more.hidden=filtered.length<=v56Limit;
+    if(!more.hidden)more.textContent=`Ещё ${filtered.length-v56Limit} объектов`;}
 }
-function v56SetFilter(filter){v56Status=filter;v56Limit=30;v56RenderCards();}
+function v56SetFilter(filter){v59SetFilter(filter);}
 function v56SetScreen(screen){
-  v56Screen=screen==='today'?'today':'projects';v56Legacy=false;
+  v56Screen=screen==='today'?'today':'projects';v59AttentionOnly=false;v56Legacy=false;
   const main=document.getElementById('v56Workspace'),legacy=document.getElementById('v56LegacyWorkspace');
-  main.hidden=false;legacy.hidden=true;
-  v56Status='all';v56Limit=30;v56Query='';document.getElementById('v56Search').value='';v56RenderCards();
-  window.scrollTo({top:0,behavior:'instant'});
+  main.hidden=false;legacy.hidden=true;v56Status='all';v56Limit=30;
+  v56RenderCards();window.scrollTo({top:0,behavior:'instant'});
 }
 function v56SearchChanged(value){v56Query=String(value||'').trim().toLowerCase();v56Limit=30;v56RenderCards();}
 function v56ClearSearch(){v56Query='';document.getElementById('v56Search').value='';v56RenderCards();document.getElementById('v56Search').focus();}
@@ -5589,21 +5834,16 @@ function v56ToggleStructure(){
 function v56OpenSettings(e){toggleSettings(e);}
 document.getElementById('v56Cards').addEventListener('click',event=>{
   const direction=event.target.closest('button[data-v58-group]');
-  if(direction){
-    const key=v58GroupRefs[Number(direction.dataset.v58Group)];
-    if(key!==undefined){
-      if(v58CollapsedDirections.has(key))v58CollapsedDirections.delete(key);
-      else v58CollapsedDirections.add(key);
-      v56RenderCards();
-    }
-    return;
-  }
+  if(direction){const key=v58GroupRefs[Number(direction.dataset.v58Group)];if(key!==undefined){
+    if(v58CollapsedDirections.has(key))v58CollapsedDirections.delete(key);else v58CollapsedDirections.add(key);
+    v56RenderCards();}return;}
+  const addObject=event.target.closest('button[data-v59-add-object]');
+  if(addObject){const key=v58GroupRefs[Number(addObject.dataset.v59AddObject)];if(key!==undefined)v59AddObject(key);return;}
+  const toggle=event.target.closest('button[data-v59-toggle]');
+  if(toggle){v59OpenObject(toggle.dataset.v59Toggle);return;}
   const process=event.target.closest('button[data-v57-step]');
-  if(process){
-    const row=v57RenderedSteps[Number(process.dataset.v57Step)];
-    if(row)openProcessDetail(row.proc.id,row.obj.id,row.step.id);
-    return;
-  }
+  if(process){const linked=v57RenderedSteps[Number(process.dataset.v57Step)];
+    if(linked)openProcessDetail(linked.proc.id,linked.obj.id,linked.step.id);return;}
   const button=event.target.closest('button[data-v57-expand],button[data-v57-add]');
   if(!button)return;
   const row=v57VisibleObjects[Number(button.dataset.v57Expand??button.dataset.v57Add)];
