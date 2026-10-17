@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мониторинг проектов 5.7 — Объекты и процессы</title>
+  <title>Мониторинг проектов 5.8 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1999,6 +1999,110 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 @media(max-width:700px){.v57-object-card{padding:13px 12px;gap:9px}.v57-object-name{font-size:17px}.v57-object-status{font-size:11px}.v57-step{gap:8px;padding:9px 0}.v57-step-title{font-size:15.5px}.v57-object-meta{font-size:12.5px}.v57-object-tools button{font-size:12.5px}}
 @media(max-width:365px){.v57-object-top{gap:5px}.v57-object-status{white-space:normal;text-align:center;max-width:91px}.v57-step-status{font-size:10px}}
 </style>
+<style id="v58-notebook-ui">
+/* V5.8: minimalist notebook. Presentation only; no schema or network changes. */
+:root{--v58-ink:#27334a;--v58-muted:#778294;--v58-line:#e5e8ed;--v58-blue:#2465c1}
+html,body,body *,button,input,textarea,select,option{font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif!important}
+body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 60px!important;font-size:15px!important}
+.app-container{max-width:800px!important}
+.dashboard-panel{padding:18px 0 2px!important}
+.dash-header{margin-bottom:0!important;padding:0 0 4px!important}
+.dash-title{font-size:22px!important;color:#253449!important;font-weight:700!important;letter-spacing:-.35px!important}
+.v56-brand-caption{color:#8b95a2!important;font-size:12px!important}
+.sync-details{color:#8a94a3!important;font-size:11px!important;margin:0 0 7px!important}
+.btn-icon-refresh,.settings-trigger,.btn-ai-compact{background:transparent!important;border:1px solid #e4e8ee!important;border-radius:9px!important;color:#6d7f95!important;height:35px!important;min-height:35px!important}
+.v56-bottom-nav{position:static!important;max-width:100%!important;display:flex!important;justify-content:flex-start!important;gap:0!important;background:transparent!important;box-shadow:none!important;border:0!important;border-bottom:1px solid #e0e4eb!important;border-radius:0!important;margin:6px 0 13px!important;padding:0!important;z-index:5!important}
+.v56-bottom-nav button{flex:0 0 auto!important;flex-direction:row!important;gap:0!important;padding:10px 16px 11px!important;margin-bottom:-1px!important;min-height:40px!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;color:#7d8795!important;font-weight:500!important;font-size:15px!important;background:transparent!important}
+.v56-bottom-nav button:first-child{padding-left:2px!important}
+.v56-bottom-nav button svg{display:none!important}
+.v56-bottom-nav button.is-active{color:#245ba9!important;border-bottom-color:#3676ce!important;font-weight:700!important}
+.v56-bottom-nav button:last-child{display:none!important}
+.v56-workspace{padding:0 0 40px!important}
+.v56-heading-row{margin:5px 0 10px!important;align-items:center!important}
+.v56-heading-row h1{font-size:19px!important;font-weight:700!important;letter-spacing:-.3px!important;color:#27354a!important}
+.v56-heading-row p{display:none!important}
+.v56-structure-link{border:0!important;background:transparent!important;color:#7c8798!important;min-height:32px!important;padding:6px 1px 6px 9px!important;font-size:13px!important;font-weight:500!important;border-radius:0!important}
+.v56-search-wrap{height:41px!important;box-shadow:none!important;border:1px solid #e0e5ed!important;border-radius:9px!important;background:#fff!important;margin:0 0 9px!important;padding:0 11px!important;gap:9px!important}
+.v56-search-wrap input{height:37px!important;font-size:14px!important;font-weight:400!important}
+.v56-filter-bar{padding:1px 0 13px!important;gap:4px!important}
+.v56-filter-bar button{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:7px!important;color:#8290a0!important;padding:6px 10px!important;min-height:32px!important;font-size:13px!important;font-weight:500!important}
+.v56-filter-bar button:first-child{padding-left:7px!important}
+.v56-filter-bar button[data-filter=waiting],.v56-filter-bar button[data-filter=late]{background:transparent!important;color:#8290a0!important;border:0!important}
+.v56-filter-bar button.selected{background:#eaf1fc!important;color:#245ca7!important;border:0!important;box-shadow:none!important;font-weight:700!important}
+.v56-filter-bar button span{font-size:12px!important;opacity:.7!important}
+.v56-group-list{display:grid!important;gap:20px!important}
+.v58-direction{display:grid;gap:7px;min-width:0}
+.v58-direction-head{display:flex;gap:8px;align-items:center;min-width:0;border:0;background:transparent;text-align:left;padding:4px 1px 5px;cursor:pointer;color:#2d3a51}
+.v58-direction-chevron{color:#9ca9b8;font-size:19px;font-weight:400;width:14px;flex:0 0 14px;line-height:1}
+.v58-direction-name{font-size:19px;line-height:1.2;font-weight:700;min-width:0;overflow-wrap:anywhere;flex:1}
+.v58-direction-count{flex:0 0 auto;color:#9ba4b0;font-size:12px;font-weight:400;white-space:nowrap}
+.v58-direction-alert{color:#bd5962;font-size:12px;font-weight:500;white-space:nowrap}
+.v58-direction-body{background:#fff;border:1px solid var(--v58-line);border-radius:12px;overflow:hidden;min-width:0}
+.v58-direction-body[hidden]{display:none!important}
+.v58-object{padding:13px 16px 10px;min-width:0;display:grid;gap:8px}
+.v58-object+.v58-object{border-top:1px solid #eaedf1}
+.v58-object-head{display:flex;align-items:flex-start;gap:12px;justify-content:space-between;min-width:0}
+.v58-object-heading{min-width:0;flex:1;display:grid;gap:3px}
+.v58-object-heading h3{color:#26364d;font-weight:600;font-size:17px;line-height:1.25;overflow-wrap:anywhere}
+.v58-progress-caption{font-size:12px;color:#929ca9;line-height:1.35}
+.v58-status{display:inline-flex;align-items:center;gap:5px;color:#758497;font-size:12px;font-weight:500;white-space:nowrap;flex:0 0 auto;padding-top:2px}
+.v58-status-dot{width:6px;height:6px;border-radius:100%;background:#6d9ece;flex:0 0 6px}
+.v58-status-late,.v58-status-blocked{color:#c25360}.v58-status-late .v58-status-dot,.v58-status-blocked .v58-status-dot{background:#d95f67}
+.v58-status-waiting{color:#a4783a}.v58-status-waiting .v58-status-dot{background:#c6a067}
+.v58-status-done{color:#568a74}.v58-status-done .v58-status-dot{background:#62a587}
+.v58-progress{height:3px;border-radius:4px;background:#eef1f5;overflow:hidden;width:100%}
+.v58-progress span{display:block;background:#8fb1d3;height:100%;border-radius:4px;max-width:100%}
+.v58-steps{display:grid;gap:0;min-width:0}
+.v58-step{display:flex;width:100%;align-items:flex-start;gap:9px;text-align:left;border:0;background:transparent;padding:7px 0;cursor:pointer;color:#2d4057;min-width:0}
+.v58-step+.v58-step{border-top:1px solid #f1f3f5}
+.v58-step-mark{flex:0 0 15px;width:15px;height:15px;border:1px solid #a6bfd7;border-radius:50%;display:grid;place-items:center;font-size:10px;color:#3f7fc5;margin-top:2px;font-weight:600;line-height:1}
+.v58-step.v58-late .v58-step-mark,.v58-step.v58-blocked .v58-step-mark{color:#c6535e;border-color:#d99fa5}
+.v58-step.v58-waiting .v58-step-mark{color:#b38b56;border-color:#dbc7a3}
+.v58-step.v58-done .v58-step-mark{color:#4e9b77;border-color:#89c9a9}
+.v58-step-body{display:grid;gap:3px;flex:1;min-width:0}
+.v58-step-title{font-size:15px;font-weight:500;line-height:1.3;color:#37445a;overflow-wrap:anywhere}
+.v58-step.v58-done .v58-step-title{color:#96a1ad;text-decoration:line-through}
+.v58-step-meta{font-size:12.5px;color:#8a96a6;display:flex;flex-wrap:wrap;gap:3px 8px;overflow-wrap:anywhere;line-height:1.35}
+.v58-meta-sep{color:#c5ccd5}
+.v58-step-chevron{color:#b6c0cb;font-size:19px;margin-top:0;line-height:1}
+.v58-object-actions{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:1px 0 0 24px}
+.v58-object-actions button{color:#557da9;font-weight:500;font-size:12.5px;min-height:30px;padding:5px 0;border:0;background:transparent;cursor:pointer}
+.v58-object-actions button.v58-add-inline{color:#9aa5b2}
+.v58-empty-steps{color:#9ba5b0;font-size:13px;padding:7px 0}
+.v56-more{background:transparent!important;color:#587da9!important;border:1px solid #e1e6ef!important;box-shadow:none!important;border-radius:8px!important}
+.v56-fab{background:#326ac0!important;bottom:17px!important;right:max(16px,calc((100vw - 800px)/2 + 15px))!important;width:auto!important;height:43px!important;min-height:43px!important;border-radius:11px!important;padding:0 15px!important;font-size:15px!important;font-weight:600!important;letter-spacing:0!important;box-shadow:0 4px 12px rgba(34,85,155,.17)!important}
+.v55-modal,.v55-progress-card{box-shadow:none!important}
+.v55-progress-card{border:1px solid #e9edf2!important;background:#fafbfc!important}
+.v55-progress-card.problem{background:#fff8f7!important;border-color:#f2e6e5!important}
+.v55-progress-card.action{background:#fafbfc!important;border-color:#e9edf2!important}
+.v55-progress-card.next{background:#f8faff!important;border-color:#e9edf4!important}
+.v55-event{background:#fff!important}
+@media(max-width:700px){
+ body{padding:0 11px 65px!important}
+ .dashboard-panel{padding-top:12px!important}
+ .dash-title{font-size:20px!important}
+ .v56-bottom-nav{margin:2px 0 10px!important}
+ .v56-bottom-nav button{min-height:39px!important;padding:9px 13px!important;font-size:14px!important}
+ .v56-heading-row h1{font-size:18px!important}
+ .v56-structure-link{font-size:12.5px!important}
+ .v56-filter-bar{gap:0!important}
+ .v56-filter-bar button{padding:6px 8px!important;font-size:12.5px!important}
+ .v58-direction{gap:7px}
+ .v58-direction-name{font-size:17px}
+ .v58-direction-head{gap:5px;flex-wrap:wrap}
+ .v58-direction-count{font-size:11.5px}
+ .v58-direction-alert{font-size:11.5px}
+ .v58-object{padding:12px 11px 8px;gap:7px}
+ .v58-object-heading h3{font-size:16px}
+ .v58-step-title{font-size:14.5px}
+ .v58-object-actions{padding-left:23px}
+ .v58-status{font-size:11.5px}
+ .v56-fab{bottom:calc(14px + env(safe-area-inset-bottom))!important;right:14px!important}
+}
+@media(max-width:355px){.v58-direction-alert{display:none}.v58-object-head{gap:5px}.v58-status{font-size:11px}.v56-filter-bar button{padding:6px 7px!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
 <style id="v56-state-fix">#v56Workspace[hidden]{display:none!important}#v56LegacyWorkspace[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -2053,7 +2157,7 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 
     <nav class="v56-bottom-nav" aria-label="Главная навигация">
       <button type="button" id="v56NavProjects" class="is-active" onclick="v56SetScreen('projects')" aria-label="Проекты">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Проекты</span></button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Объекты</span></button>
       <button type="button" id="v56NavToday" onclick="v56SetScreen('today')" aria-label="Сегодня">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18m-13 5h4"/></svg><span>Сегодня</span></button>
       <button type="button" onclick="openManagementReport()" aria-label="Еженедельный отчёт">
@@ -2073,7 +2177,7 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
       <button class="btn-reset-filter" onclick="toggleBlockersFilter('all')">Показать все ✕</button>
     </div>
 
-    <!-- Version 5.7: object-first layout; preserves existing storage schema. -->
+    <!-- Version 5.8: calm notebook layout; existing storage schema is unchanged. -->
     <section id="v56Workspace" class="v56-workspace" aria-label="Объекты и процессы">
       <div class="v56-heading-row">
         <div><h1 id="v56Heading">Мои объекты</h1><p id="v56Subheading">Откройте объект, чтобы увидеть его процессы</p></div>
@@ -2143,7 +2247,7 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
     <!-- Служебные действия доступны из настроек в верхней панели. -->
 
 
-    <button type="button" id="v56Fab" class="v56-fab" onclick="openEntryWizard()" aria-label="Добавить новую запись" title="Новая запись">+</button>
+    <button type="button" id="v56Fab" class="v56-fab" onclick="openEntryWizard()" aria-label="Добавить новую запись" title="Новая запись">+ Запись</button>
   </div>
 
 
@@ -4265,6 +4369,7 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
         obj.steps.push(step);
       }
       proc.collapsed=false;obj.collapsed=false;
+      if(typeof v58CollapsedDirections!=='undefined')v58CollapsedDirections.delete(String(proc.id));
       pinnedStepsMap[obj.id]=step.id;
       expandedAllStepsObjMap[obj.id]=true;
       closeEntryWizard();
@@ -5292,9 +5397,10 @@ const v57ExpandedObjects=new Set();
 function v57ObjectKey(proc,obj){return JSON.stringify([String(proc.id),String(obj.id)]);}
 function v56SafeText(str){return escapeHtml(String(str??''));}
 function v56DateShort(raw){
-  const iso=displayToISO(raw||'');
+  const cleaned=String(raw||'').replace(/^до\s*/i,'').trim();
+  const iso=v55StrictISO(cleaned)?cleaned:displayToISO(cleaned);
   if(v55StrictISO(iso))return iso.slice(8)+'.'+iso.slice(5,7)+'.'+iso.slice(0,4);
-  return String(raw||'').replace(/^до\s*/i,'');
+  return cleaned;
 }
 function v57StepInfo(step){
   const late=!step.done&&isStepOverdue(step.date,step.done);
@@ -5336,10 +5442,10 @@ function v57FilterRows(row){
   const hits=v56Query?row.steps.filter(i=>v57MatchesSearchInStep(row,i)):[];
   if(v56Query&&!objectMatch&&!hits.length)return false;
   if(v56Screen==='today'&&!row.steps.some(v57TodayStep))return false;
-  if(v56Status==='done'&&!row.done)return false;
-  if(v56Status==='late'&&!row.late)return false;
-  if(v56Status==='waiting'&&!row.waiting)return false;
-  if(v56Status==='active'&&!row.active)return false;
+  if(v56Status==='done'&&row.status!=='done')return false;
+  if(v56Status==='late'&&row.status!=='late')return false;
+  if(v56Status==='waiting'&&row.status!=='waiting')return false;
+  if(v56Status==='active'&&!['active','blocked'].includes(row.status))return false;
   return true;
 }
 function v57StatusText(row){
@@ -5348,15 +5454,17 @@ function v57StatusText(row){
 function v57StepHtml(row,info){
   const idx=v57RenderedSteps.push({proc:row.proc,obj:row.obj,step:info.step})-1;
   const s=info.step;
-  const icon=s.done?'✓':info.late||info.blocked?'!':info.waiting?'◷':'·';
-  const status=info.late?'Просрочено':info.blocked?'Замечание':info.waiting?'Ожидание':'';
-  const own=s.owner?`<span>${v56SafeText(s.owner)}</span>`:'';
-  const due=s.date?`<span>${s.done?'Срок':'До'} ${v56SafeText(v56DateShort(s.date))}</span>`:'';
-  const details=own||due?`<span class="v57-step-meta">${own}${due}</span>`:'';
-  return `<button type="button" class="v57-step is-${info.status}" data-v57-step="${idx}" aria-label="Открыть процесс: ${v56SafeText(s.text)}">
-    <span class="v57-step-indicator" aria-hidden="true">${icon}</span>
-    <span class="v57-step-main"><span class="v57-step-title">${v56SafeText(s.text)}</span>${details}</span>
-    ${status?`<span class="v57-step-status">${status}</span>`:''}<span class="v57-step-arrow" aria-hidden="true">›</span></button>`;
+  const mark=s.done?'✓':info.late||info.blocked?'!':info.waiting?'◷':'•';
+  const meta=[];
+  if(s.owner)meta.push(v56SafeText(s.owner));
+  if(s.date)meta.push((s.done?'Срок ':'До ')+v56SafeText(v56DateShort(s.date)));
+  if(!s.done&&s.nextDate&&!s.date)meta.push('Далее '+v56SafeText(v56DateShort(s.nextDate)));
+  const detail=meta.length?`<span class="v58-step-meta">${meta.join('<span class="v58-meta-sep">·</span>')}</span>`:'';
+  return `<button type="button" class="v58-step v58-${info.status}" data-v57-step="${idx}" aria-label="Открыть процесс: ${v56SafeText(s.text)}">
+    <span class="v58-step-mark" aria-hidden="true">${mark}</span>
+    <span class="v58-step-body"><span class="v58-step-title">${v56SafeText(s.text)}</span>${detail}</span>
+    <span class="v58-step-chevron" aria-hidden="true">›</span>
+  </button>`;
 }
 function v57ShowSteps(row){
   const all=row.steps;
@@ -5371,61 +5479,88 @@ function v57ShowSteps(row){
   if(v56Status==='done')return all.filter(i=>i.step.done).slice(-2);
   if(v56Status==='late')return all.filter(i=>i.late).slice(0,3);
   if(v56Status==='waiting')return all.filter(i=>i.waiting).slice(0,3);
-  if(v56Status==='active')return all.filter(i=>i.status==='active').slice(0,3);
+  if(v56Status==='active')return all.filter(i=>i.status==='active'||i.status==='blocked').slice(0,3);
   if(v56Screen==='today')return all.filter(v57TodayStep).slice(0,3);
   const current=all.find(i=>!i.step.done);
   const urgent=all.filter(i=>!i.step.done&&(i.late||i.blocked));
   if(!current)return all.slice(-1);
-  const subset=new Set([current,...urgent.slice(0,2)]);
+  const recentlyAdded=all.find(i=>String(i.step.id)===String(pinnedStepsMap[row.obj.id]||''));
+  const subset=new Set([current,...urgent.slice(0,1),recentlyAdded].filter(Boolean));
   return all.filter(i=>subset.has(i)).slice(0,3);
+}
+// V5.8: one direction = one section; one object = one compact row.
+const v58CollapsedDirections=new Set();
+let v58GroupRefs=[];
+function v58ObjectCount(n){
+  const a=Math.abs(n)%100,b=a%10;
+  return n+' '+(a>10&&a<15?'объектов':b===1?'объект':b>=2&&b<=4?'объекта':'объектов');
 }
 function v56RenderCards(){
   const root=document.getElementById('v56Cards');if(!root)return;
   const all=v57Rows();
   const population=v56Screen==='today'?all.filter(r=>r.steps.some(v57TodayStep)):all;
-  const counts={all:population.length,active:population.filter(r=>r.active).length,
-    waiting:population.filter(r=>r.waiting).length,late:population.filter(r=>r.late).length,done:population.filter(r=>r.done).length};
+  const counts={all:population.length,active:population.filter(r=>['active','blocked'].includes(r.status)).length,
+    waiting:population.filter(r=>r.status==='waiting').length,late:population.filter(r=>r.status==='late').length,done:population.filter(r=>r.status==='done').length};
   for(const name of ['All','Active','Waiting','Late','Done']){
     const el=document.getElementById('v56Count'+name);if(el)el.textContent=counts[name.toLowerCase()]||'';
   }
-  for(const btn of document.querySelectorAll('#v56Filters button'))btn.classList.toggle('selected',btn.dataset.filter===v56Status);
+  for(const btn of document.querySelectorAll('#v56Filters button')){
+    const selected=btn.dataset.filter===v56Status;
+    btn.classList.toggle('selected',selected);btn.setAttribute('aria-pressed',String(selected));
+  }
   const today=v56Screen==='today';
-  document.getElementById('v56Heading').textContent=today?'Требует внимания':'Мои объекты';
-  document.getElementById('v56Subheading').textContent=today?'Просрочки, проблемы и следующие действия':'Направления → объекты → процессы';
+  document.getElementById('v56Heading').textContent=today?'Сегодня':'Рабочие объекты';
+  document.getElementById('v56Subheading').textContent=today?'Текущие вопросы, которые требуют внимания':'По направлениям и объектам';
   document.getElementById('v56NavProjects')?.classList.toggle('is-active',!today);
   document.getElementById('v56NavToday')?.classList.toggle('is-active',today);
   document.getElementById('v56ClearSearch').hidden=!v56Query;
   const filtered=all.filter(v57FilterRows),visible=filtered.slice(0,v56Limit);
-  v57VisibleObjects=visible;v57RenderedSteps=[];
+  v57VisibleObjects=visible;v57RenderedSteps=[];v58GroupRefs=[];
   const groups=new Map();
-  visible.forEach((r,index)=>{
-    const group=String(r.proc.title||'Без направления');
-    if(!groups.has(group))groups.set(group,[]);
-    groups.get(group).push({row:r,index});
+  visible.forEach((row,index)=>{
+    const key=String(row.proc.id);
+    if(!groups.has(key))groups.set(key,{proc:row.proc,entries:[]});
+    groups.get(key).entries.push({row,index});
   });
   const chunks=[];
   if(!filtered.length){
-    chunks.push(`<div class="v56-empty"><strong>${all.length?'Объекты не найдены':'Пока нет объектов'}</strong><span>${all.length?'Попробуйте другой запрос или фильтр':'Создайте направление и первую рабочую запись'}</span><button type="button" onclick="${all.length?"v56ClearAllFilters()":"openAddProcessModal()"}">${all.length?'Показать всё':'Добавить направление'}</button></div>`);
+    chunks.push(`<div class="v56-empty"><strong>${all.length?'Ничего не найдено':'Пока нет объектов'}</strong><span>${all.length?'Измените поисковый запрос или фильтр':'Создайте направление и первую запись'}</span><button type="button" onclick="${all.length?"v56ClearAllFilters()":"openAddProcessModal()"}">${all.length?'Показать все':'Добавить направление'}</button></div>`);
   }
-  for(const [group,items] of groups){
-    const cards=items.map(({row,index})=>{
-      const key=v57ObjectKey(row.proc,row.obj),expanded=v57ExpandedObjects.has(key);
-      const show=v57ShowSteps(row);
-      const done=row.finished,total=row.steps.length;
-      const progress=total?Math.round(done/total*100):0;
-      const inner=show.length?show.map(info=>v57StepHtml(row,info)).join(''):'<p class="v57-no-steps">Нет процессов. Добавьте первую запись.</p>';
-      const extra=total>show.length;
-      const fullLabel=expanded?'Скрыть завершённые и будущие этапы':`Все этапы (${total})`;
-      return `<article class="v57-object-card" aria-label="Объект: ${v56SafeText(row.obj.title)}">
-        <div class="v57-object-top"><div style="min-width:0;flex:1"><h3 class="v57-object-name">${v56SafeText(row.obj.title)}</h3><p class="v57-object-meta">${done} из ${total} этапов выполнено</p></div>
-          ${total?`<span class="v57-object-status ${row.status}">${v57StatusText(row)}</span>`:''}</div>
-        ${total?`<div class="v57-progress" role="progressbar" aria-label="Выполнение объекта" aria-valuenow="${done}" aria-valuemin="0" aria-valuemax="${total}"><div class="v57-progress-fill" style="width:${progress}%"></div></div>`:''}
-        <div class="v57-step-list">${inner}</div>
-        <div class="v57-object-tools"><button type="button" class="v57-add" data-v57-add="${index}">+ Новая запись</button>
-          ${extra||expanded?`<button type="button" data-v57-expand="${index}" aria-expanded="${expanded}">${fullLabel}</button>`:''}</div>
+  for(const [key,group] of groups){
+    const idx=v58GroupRefs.push(key)-1;
+    const entries=group.entries;
+    const folded=v58CollapsedDirections.has(key)&&!v56Query&&v56Status==='all'&&!today;
+    const critical=entries.filter(e=>e.row.late||e.row.blocked).length;
+    const objectRows=entries.map(({row,index})=>{
+      const expanded=v57ExpandedObjects.has(v57ObjectKey(row.proc,row.obj));
+      const visibleSteps=v57ShowSteps(row),total=row.steps.length,done=row.finished;
+      const percent=total?Math.round(done/total*100):0;
+      const status=total?v57StatusText(row):'Без этапов';
+      const stepsHtml=visibleSteps.length?visibleSteps.map(info=>v57StepHtml(row,info)).join(''):'<div class="v58-empty-steps">Пока нет записей</div>';
+      const extra=total>visibleSteps.length;
+      const expandLabel=expanded?'Свернуть этапы':`Все этапы (${total})`;
+      return `<article class="v58-object" aria-label="Объект: ${v56SafeText(row.obj.title)}">
+        <div class="v58-object-head">
+          <div class="v58-object-heading"><h3>${v56SafeText(row.obj.title)}</h3><span class="v58-progress-caption">${done} из ${total} выполнено</span></div>
+          <span class="v58-status v58-status-${row.status}"><span class="v58-status-dot" aria-hidden="true"></span>${status}</span>
+        </div>
+        ${total?`<div class="v58-progress" role="progressbar" aria-label="Прогресс объекта" aria-valuenow="${done}" aria-valuemin="0" aria-valuemax="${total}"><span style="width:${percent}%"></span></div>`:''}
+        <div class="v58-steps">${stepsHtml}</div>
+        <div class="v58-object-actions">
+          ${extra||expanded?`<button type="button" data-v57-expand="${index}" aria-expanded="${expanded}">${expandLabel}</button>`:''}
+          <button type="button" class="v58-add-inline" data-v57-add="${index}">+ Новая запись</button>
+        </div>
       </article>`;
     }).join('');
-    chunks.push(`<section class="v56-direction-group"><h2 class="v56-direction-label">${v56SafeText(group)}<span class="v56-count">${items.length} ${items.length===1?'объект':(items.length%10>=2&&items.length%10<=4&&(items.length%100<12||items.length%100>14)?'объекта':'объектов')}</span></h2><div class="v57-object-list">${cards}</div></section>`);
+    chunks.push(`<section class="v58-direction" aria-label="${v56SafeText(group.proc.title)}">
+      <button type="button" class="v58-direction-head" data-v58-group="${idx}" aria-expanded="${!folded}">
+        <span class="v58-direction-chevron" aria-hidden="true">${folded?'›':'⌄'}</span>
+        <span class="v58-direction-name">${v56SafeText(group.proc.title||'Без направления')}</span>
+        <span class="v58-direction-count">${v58ObjectCount(entries.length)}</span>
+        ${critical?`<span class="v58-direction-alert" title="Объекты с просрочками или проблемами">${critical} требуют внимания</span>`:''}
+      </button>
+      <div class="v58-direction-body" ${folded?'hidden':''}>${objectRows}</div>
+    </section>`);
   }
   root.innerHTML=chunks.join('');
   const more=document.getElementById('v56More');more.hidden=filtered.length<=v56Limit;
@@ -5453,6 +5588,16 @@ function v56ToggleStructure(){
 }
 function v56OpenSettings(e){toggleSettings(e);}
 document.getElementById('v56Cards').addEventListener('click',event=>{
+  const direction=event.target.closest('button[data-v58-group]');
+  if(direction){
+    const key=v58GroupRefs[Number(direction.dataset.v58Group)];
+    if(key!==undefined){
+      if(v58CollapsedDirections.has(key))v58CollapsedDirections.delete(key);
+      else v58CollapsedDirections.add(key);
+      v56RenderCards();
+    }
+    return;
+  }
   const process=event.target.closest('button[data-v57-step]');
   if(process){
     const row=v57RenderedSteps[Number(process.dataset.v57Step)];
