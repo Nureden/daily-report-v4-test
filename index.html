@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Мой блокнот 6.1.2: ручной порядок объектов вверх/вниз и перетаскиванием; сохранение порядка в облачной модели, остальная логика без изменений. -->
+<!-- Мой блокнот 6.1.4: переименование и удаление объекта из основного списка с подтверждением и резервной копией; сохранены сортировка, задачи, история и облачная модель. -->
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой блокнот 6.1.2 — Рабочий блокнот</title>
+  <title>Мой блокнот 6.1.4 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2388,10 +2388,19 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v612-object-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:3px 1px 9px 20px}
 .v612-object-actions button{border:1px solid #e6ebf0;border-radius:7px;background:#fafbfc;color:#536f86;min-height:35px;padding:7px 10px;cursor:pointer;font-size:12px;font-weight:600}
 .v612-object-actions button[disabled]{opacity:.35;cursor:default}
+.v612-object-actions .v613-danger-action{color:#a23636;background:#fff9f8;border-color:#f1d8d5}
+.v612-object-actions .v613-danger-action:hover{background:#fff0ee}
 .v612-object-actions button:focus-visible,.v612-menu-button:focus-visible,.v612-move-grip:focus-visible{outline:2px solid #597a9a;outline-offset:2px}
 .v60-object.v612-drag-origin{opacity:.55}
 .v60-object.v612-drag-target{outline:2px dashed #9ab0c3;outline-offset:-2px}
 @media(max-width:430px){.v612-move-grip{flex-basis:24px;min-height:38px}.v612-menu-button{flex-basis:30px;min-width:30px}.v612-object-actions{padding-left:0}}
+</style>
+<style id="v614-safety-and-layout">
+.v614-direction{font:500 11px/1.2 'Roboto Condensed',sans-serif;color:#8a97a5;margin-left:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:33%}
+.v614-task-menu-button{flex:0 0 32px;min-height:36px;border:0;background:none;color:#8897a5;font-size:18px;cursor:pointer}
+.v614-task-actions{display:flex;justify-content:flex-end;padding:3px 4px 8px 35px}
+.v614-task-actions button{border:1px solid #e2e8f0;color:#9d4e45;background:#fff;border-radius:6px;padding:7px 10px;min-height:35px;cursor:pointer}
+@media(max-width:600px){.v614-direction{max-width:28%;font-size:10px}}
 </style>
 </head>
 <body>
@@ -2593,6 +2602,24 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     </section>
   </div>
 
+  <!-- Atomic object + first task; direction and district are explicit, never guessed. -->
+  <div class="modal-overlay" id="v614ObjectModal" aria-hidden="true" onclick="if(event.target===this)v614CloseNewObject()">
+    <section class="modal-box v55-modal" role="dialog" aria-modal="true" aria-labelledby="v614ObjectHeading" onclick="event.stopPropagation()">
+      <div class="modal-top"><h2 id="v614ObjectHeading">Новый объект и первая задача</h2><button type="button" class="modal-x" onclick="v614CloseNewObject()" aria-label="Закрыть">✕</button></div>
+      <form class="v55-fields" id="v614ObjectForm" onsubmit="event.preventDefault();v614SubmitNewObject()">
+        <label for="v614ObjectDistrict">Район <input id="v614ObjectDistrict" readonly></label>
+        <label for="v614Direction">Направление <select id="v614Direction" required onchange="v614ToggleDirection()"></select></label>
+        <label for="v614NewDirection" id="v614NewDirectionLabel" hidden>Новое направление <input id="v614NewDirection" maxlength="300"></label>
+        <label for="v614ObjectName">Название объекта <input id="v614ObjectName" maxlength="300" required placeholder="Дорога Сарыкамыс"></label>
+        <label for="v614TaskName">Первая задача <input id="v614TaskName" maxlength="1000" required placeholder="Акт сверки НАО"></label>
+        <label for="v614TaskOwner">Ответственный <input id="v614TaskOwner" maxlength="160"></label>
+        <label for="v614TaskAction">Что конкретно нужно сделать <input id="v614TaskAction" maxlength="1000"></label>
+        <label for="v614TaskResult">Ожидаемый результат <input id="v614TaskResult" maxlength="1000"></label>
+        <label for="v614TaskDate">Основной срок <input id="v614TaskDate" type="date"></label>
+        <div class="v55-actions"><button type="button" onclick="v614CloseNewObject()">Отмена</button><button type="submit" class="primary">Создать объект и задачу</button></div>
+      </form>
+    </section>
+  </div>
   <div class="modal-overlay" id="v60DistrictModal" aria-hidden="true" onclick="if(event.target===this)v60CloseDistrict()">
     <section class="modal-box v55-modal" role="dialog" aria-modal="true" aria-labelledby="v60DistrictHeading" onclick="event.stopPropagation()">
       <div class="modal-top"><h2 id="v60DistrictHeading">Район объекта</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="v60CloseDistrict()">✕</button></div>
@@ -2617,6 +2644,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       <div class="settings-group-label">История</div>
       <button type="button" class="settings-option" onclick="closeSettings();showAuditLog()">История изменений</button>
       <button type="button" class="settings-option" onclick="closeSettings();showCloudHistory()">Облачные версии</button>
+      <button type="button" class="settings-option" onclick="closeSettings();v614RestoreLastDeleted()">Восстановить последний удалённый объект</button>
       <button type="button" class="settings-option" onclick="closeSettings();undoLastChange()" id="undoBtn" disabled>Отменить последнее действие</button>
       <div class="settings-state">
         <span id="syncTag" role="status" aria-live="polite">Загрузка данных...</span>
@@ -3251,6 +3279,8 @@ body{background:#f8f9fa!important;color:#2c3542!important}
               if(++count>60000||!isPlain(st))throw new Error('Слишком много этапов');
               checkId(st.id);checkText(st.text,1000);
               if(st.date!==undefined&&typeof st.date!=='string')throw new Error('Неверный срок');
+              if(st.canceled!==undefined&&typeof st.canceled!=='boolean')throw new Error('Неверный статус отмены');
+              if(st.canceledAt!==undefined)checkText(st.canceledAt,100);
               if(st.expectedResult!==undefined)checkText(st.expectedResult,1000);
               if(st.action!==undefined)checkText(st.action,1000);
               if(st.actualResult!==undefined)checkText(st.actualResult,2000);
@@ -3310,7 +3340,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
               let id=st.id;
               if(stepIds.has(String(id))){id=createId();}
               stepIds.add(String(id));
-              return {...st,id,text:sanitizeRemark(st.text||'Этап'),doc:sanitizeRemark(st.doc||''),
+              return {...st,id,canceled:st.canceled===true,canceledAt:String(st.canceledAt||'').slice(0,100),text:sanitizeRemark(st.text||'Этап'),doc:sanitizeRemark(st.doc||''),
                 blocker,history:hist,done:!!st.done,completedAt:st.done && isDate(st.completedAt) ? st.completedAt : null,
                 owner:String(st.owner||'').slice(0,160),documentUrl:validUrl(st.documentUrl),
                 expectedResult:String(st.expectedResult||'').slice(0,1000),action:String(st.action||'').slice(0,1000),actualResult:String(st.actualResult||'').slice(0,2000),
@@ -3564,7 +3594,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     }
     function canReplaceState(){
       return !Array.from(document.querySelectorAll('.modal-overlay')).some(x=>x.style.display==='flex')
-        && !conflictRemote;
+        && !v61Editor && !conflictRemote;
     }
     function refreshAudit(events){
       if(!Array.isArray(events))return;
@@ -4206,9 +4236,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     }
 
     function openEditStepModal(procId, objId, stepId) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step) return;
 
       showTextModal("✏️ Описание этапа", step.text, (newText) => {
@@ -4221,9 +4251,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
     function openDateModal(procId, objId, stepId) {
       activeModalTarget = { procId, objId, stepId };
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step) return;
 
       document.getElementById('dateModalStepTitle').textContent = `${obj.title} → ${step.text}`;
@@ -4244,9 +4274,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
     function saveDateFromModal() {
       const { procId, objId, stepId } = activeModalTarget;
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step) return;
 
       const iso = document.getElementById('modalDatePickerInput').value;
@@ -4258,9 +4288,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
     function clearDateFromModal() {
       const { procId, objId, stepId } = activeModalTarget;
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step) return;
 
       step.date = '';
@@ -4295,9 +4325,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
     function editHistoryItem(idx) {
       const { procId, objId, stepId } = activeModalTarget;
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step || !step.history || !step.history[idx]) return;
 
       const parsed = extractPartyAndText(step.history[idx].text, step.history[idx].doc);
@@ -4335,9 +4365,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
     function deleteHistoryItem(idx) {
       const { procId, objId, stepId } = activeModalTarget;
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step || !step.history) return;
 
       step.history.splice(idx, 1);
@@ -4470,9 +4500,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
     function appendRiskFromModal() {
       const { procId, objId, stepId } = activeModalTarget;
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step) return;
 
       const rawVal = sanitizeRemark(document.getElementById('customRiskInput').value);
@@ -4522,10 +4552,10 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     }
 
     function toggleStep(procId, objId, stepId) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      const step = obj?.steps.find(s => s.id === stepId);
-      if (step) {
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
+      if (step && !step.canceled) {
         step.done = !step.done;
         if (step.done) {
           step.completedAt = getTodayISO();
@@ -4550,12 +4580,12 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     }
 
     function deleteStep(procId, objId, stepId) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
       if (!obj) return;
 
       askConfirm("Удалить этот этап?", () => {
-        obj.steps = obj.steps.filter(s => s.id !== stepId);
+        obj.steps = obj.steps.filter(s => String(s.id) !== String(stepId));
         saveData();
         showToast("Этап удален");
       });
@@ -4807,23 +4837,24 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     function addCustomStep(procId, objId) { openEntryWizard(procId,objId); }
 
     function archiveObject(procId, objId) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      if (obj) {
-        obj.archived = true;
-        saveData();
-        showToast("Перемещено в архив");
-      }
+      const proc=state.find(p=>String(p.id)===String(procId));
+      const obj=proc?.objects.find(o=>String(o.id)===String(objId));
+      if(!obj||!readyForEditing)return;
+      if(!Array.isArray(obj.steps)||!obj.steps.length){showToast('Для архива нужен объект с закрытыми задачами');return;}
+      const pending=obj.steps.filter(s=>!s.done&&!s.canceled);
+      if(pending.length){showToast('Нельзя архивировать: незавершённых задач '+pending.length);return;}
+      obj.archived=true;v612MenuKey=null;
+      saveData('Объект перенесён в архив: '+obj.title);
+      showToast('Объект находится в архиве');
     }
-
-    function restoreObject(procId, objId) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
-      if (obj) {
-        obj.archived = false;
-        saveData();
-        showToast("Объект возвращен в работу");
-      }
+    function restoreObject(procId,objId){
+      const proc=state.find(p=>String(p.id)===String(procId));
+      const obj=proc?.objects.find(o=>String(o.id)===String(objId));
+      if(!obj||!readyForEditing)return;
+      obj.archived=false;
+      obj.manualOrder=v612EnsureDistrictOrder(v60DistrictOf(obj,proc));
+      saveData('Восстановлен объект из архива: '+obj.title);
+      showToast('Объект возвращён в работу');
     }
 
     function toggleArchiveView(procId) {
@@ -4902,7 +4933,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
           const activeObjects = (proc.objects || []).filter(o => !o.archived);
           activeObjects.forEach(o => {
             totalActiveObjs++;
-            (o.steps || []).forEach(s => {
+            (o.steps || []).filter(s=>!s.canceled).forEach(s => {
               if (s.done) totalDone++;
               else {
                 if (s.blocker) totalBlockers++;
@@ -4921,6 +4952,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
           if(label)label.textContent=issueFilterMode==='overdue'?'Показаны объекты с просрочкой':'Показаны объекты с активными замечаниями';
         }
 
+        if (!document.getElementById('v56LegacyWorkspace')?.hidden) {
         state.forEach((proc, procIdx) => {
           const allActiveObjects = (proc.objects || []).filter(o => !o.archived);
           const archivedObjects = (proc.objects || []).filter(o => o.archived);
@@ -4932,7 +4964,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
           let procDoneSteps = 0;
 
           allActiveObjects.forEach(o => {
-            (o.steps || []).forEach(s => {
+            (o.steps || []).filter(s=>!s.canceled).forEach(s => {
               procTotalSteps++;
               if (s.done) {
                 procDoneSteps++;
@@ -4979,7 +5011,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
             <div class="folder-content ${isCollapsed ? 'hidden' : ''}">
               ${visibleObjects.map((obj) => {
                 const objIdx = allActiveObjects.findIndex(x => x.id === obj.id);
-                const stepsArr = obj.steps || [];
+                const stepsArr = (obj.steps || []).filter(s=>!s.canceled);
                 const dCount = stepsArr.filter(s => s.done).length;
                 const tCount = stepsArr.length;
                 const percent = tCount > 0 ? Math.round((dCount / tCount) * 100) : 0;
@@ -5160,6 +5192,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
           root.appendChild(row);
         });
+        } // End rendering visible legacy maintenance UI.
 
         const bBox = document.getElementById('kpiBlockersBox');
         if (bBox) {
@@ -5198,7 +5231,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
         const rows=[];
         for(const proc of state)for(const obj of proc.objects||[]){
           if(obj.archived && !includeArchived)continue;
-          for(const step of obj.steps||[])rows.push({proc,obj,step});
+          for(const step of obj.steps||[])if(!step.canceled)rows.push({proc,obj,step});
         }
         return rows;
       }
@@ -5270,9 +5303,10 @@ body{background:#f8f9fa!important;color:#2c3542!important}
           txt+=`📂 ${proc.title}\n`;
           for(const obj of proc.objects||[]){
             if(obj.archived)continue;
-            const done=(obj.steps||[]).filter(x=>x.done).length;
-            txt+=`📌 ${obj.title} [${done}/${(obj.steps||[]).length}]\n`;
-            for(const step of obj.steps||[]){
+            const activeSteps=(obj.steps||[]).filter(s=>!s.canceled);
+            const done=activeSteps.filter(x=>x.done).length;
+            txt+=`📌 ${obj.title} [${done}/${activeSteps.length}]\n`;
+            for(const step of (obj.steps||[]).filter(s=>!s.canceled)){
               txt+=`  • ${step.text} — ${status(step)}${step.date?' ['+step.date+']':''}${step.completedAt?' (выполнено '+fmt(step.completedAt)+')':''}${step.owner?' / '+step.owner:''}\n`;
               if(step.documentUrl)txt+=`    Документ: ${step.documentUrl}\n`;
               if(step.blocker)txt+=`    Замечание: ${step.blocker}\n`;
@@ -5374,9 +5408,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
           const planFrom=addDays(to,1),planTo=addDays(to,7);
           for(const proc of processes)for(const obj of proc.objects||[]){
             if(obj.archived)continue;
-            const area=district(obj.title);
+            const area=v60DistrictOf(obj,proc);
             if(area==='Район не указан')notes.unknownDistrict++;
-            const steps=obj.steps||[];
+            const steps=(obj.steps||[]).filter(step=>!step.canceled);
             for(const step of steps){
               if(!step.done)continue;
               const completedAt=iso(step.completedAt);
@@ -5555,7 +5589,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       return {open,close,refresh,copyPlain,tsv,exportExcel,setManualRows};
     })();
     function openManagementReport(){ManagementReportUI.open();}
-    function closeManagementReport(){ManagementReportUI.close();}
+    function closeManagementReport(){if(document.getElementById('managementReportModal').style.display==='flex')v614SaveManualReport();ManagementReportUI.close();}
     function refreshManagementReport(){ManagementReportUI.refresh();}
     function copyManagementColumn(type){void ManagementReportUI.copyPlain(document.getElementById(type==='fact'?'managementReportFact':'managementReportPlan').value);}
     function copyManagementRow(){try{void ManagementReportUI.copyPlain(ManagementReportUI.tsv());}catch(e){showToast(e.message);}}
@@ -5575,15 +5609,15 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       if(tg?.openTelegramLink)tg.openTelegramLink(url);else window.open(url,'_blank','noopener');
     }
     function exportToExcel(){
-      const rows=[];let tsv='Направление\tОбъект\tПрогресс\tЭтап\tОтветственный\tДокумент URL\tСрок\tВыполнено\tСтатус\tИстория\n';
+      const rows=[];let tsv='Район\tНаправление\tОбъект\tПрогресс\tЭтап\tОтветственный\tДокумент URL\tСрок\tВыполнено\tСтатус\tИстория\n';
       const sanitizeCell=v=>{const t=String(v??'');return /^[=+@\-\t\r]/.test(t)?"'"+t:t;};
       for(const proc of state)for(const obj of proc.objects||[]){
-        const total=(obj.steps||[]).length;const done=(obj.steps||[]).filter(x=>x.done).length;
-        for(const step of obj.steps||[]){
+        const visible=(obj.steps||[]).filter(s=>!s.canceled);const total=visible.length;const done=visible.filter(x=>x.done).length;
+        for(const step of visible){
           const history=(step.history||[]).map(h=>`[${h.date}] ${h.text} (${h.active?'открыто':'закрыто'})`).join(' → ');
-          const row={Направление:proc.title,Объект:obj.title,Прогресс:total?`${Math.round(done/total*100)}%`:'0%',Этап:step.text,
+          const row={Район:v60DistrictOf(obj,proc),Направление:proc.title,Объект:obj.title,Прогресс:total?`${Math.round(done/total*100)}%`:'0%',Этап:step.text,
             Ответственный:step.owner||'',Документ:step.documentUrl||step.doc||'',Срок:step.date||'', 'Дата выполнения':step.completedAt||'',
-            Статус:Reports.status(step),Хронология:history};
+            Статус:step.canceled?'Отменена':Reports.status(step),Хронология:history};
           const safeRow=Object.fromEntries(Object.entries(row).map(([k,v])=>[k,sanitizeCell(v)]));
           rows.push(safeRow);tsv+=Object.values(safeRow).map(v=>String(v).replace(/[\t\r\n]+/g,' ')).join('\t')+'\n';
         }
@@ -5749,7 +5783,7 @@ function v57Rows(){
   const rows=[];
   for(const proc of state||[])for(const obj of proc.objects||[]){
     if(obj.archived)continue;
-    const steps=(obj.steps||[]).map(v57StepInfo);
+    const steps=(obj.steps||[]).filter(s=>!s.canceled).map(v57StepInfo);
     const unfinished=steps.filter(x=>!x.step.done);
     const late=steps.some(x=>x.late),blocked=steps.some(x=>x.blocked),waiting=steps.some(x=>x.waiting);
     const active=steps.some(x=>x.status==='active');
@@ -5764,7 +5798,7 @@ function v57MatchesSearchInStep(row,info){
   const s=info.step,ev=Array.isArray(s.progressEvents)?s.progressEvents:[];
   const hist=Array.isArray(s.history)?s.history:[];
   const terms=[s.text,s.owner,s.expectedResult,s.actualResult,s.blocker,s.doc,s.documentUrl,s.nextAction,
-    ...ev.flatMap(e=>[e.what,e.reason,e.solution,e.doc,e.nextAction,e.result]),
+    ...ev.flatMap(e=>[e.what,e.owner,e.dueDate,e.reason,e.solution,e.doc,e.nextAction,e.result]),
     ...hist.flatMap(h=>[h.text,h.doc])].join(' ').toLowerCase();
   return terms.includes(v56Query);
 }
@@ -5898,6 +5932,7 @@ function v59OpenStructure(){
   v56Legacy=true;
   document.getElementById('v56Workspace').hidden=true;
   document.getElementById('v56LegacyWorkspace').hidden=false;
+  render();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function v59ResetView(){
@@ -6029,66 +6064,7 @@ function v56ToggleStructure(){
   window.scrollTo({top:0,behavior:'instant'});
 }
 function v56OpenSettings(e){toggleSettings(e);}
-document.getElementById('v56Cards').addEventListener('click',event=>{
-  const direction=event.target.closest('button[data-v58-group]');
-  if(direction){const key=v58GroupRefs[Number(direction.dataset.v58Group)];if(key!==undefined){
-    if(v58CollapsedDirections.has(key))v58CollapsedDirections.delete(key);else v58CollapsedDirections.add(key);
-    v56RenderCards();}return;}
-  const addObject=event.target.closest('button[data-v59-add-object]');
-  if(addObject){const key=v58GroupRefs[Number(addObject.dataset.v59AddObject)];if(key!==undefined)v59AddObject(key);return;}
-  const toggle=event.target.closest('button[data-v59-toggle]');
-  if(toggle){v59OpenObject(toggle.dataset.v59Toggle);return;}
-  const process=event.target.closest('button[data-v57-step]');
-  if(process){const linked=v57RenderedSteps[Number(process.dataset.v57Step)];
-    if(linked)openProcessDetail(linked.proc.id,linked.obj.id,linked.step.id);return;}
-  const button=event.target.closest('button[data-v57-expand],button[data-v57-add]');
-  if(!button)return;
-  const row=v57VisibleObjects[Number(button.dataset.v57Expand??button.dataset.v57Add)];
-  if(!row)return;
-  if(button.hasAttribute('data-v57-add')){openEntryWizard(row.proc.id,row.obj.id);return;}
-  const key=v57ObjectKey(row.proc,row.obj);
-  if(v57ExpandedObjects.has(key))v57ExpandedObjects.delete(key);else v57ExpandedObjects.add(key);
-  v56RenderCards();
-});
-
-// Pointer-based drag for touchscreens and desktop. Drag starts only from the grip.
-let v612Drag=null;
-const v612Root=document.getElementById('v56Cards');
-v612Root.addEventListener('pointerdown',function(event){
- const handle=event.target.closest('[data-v612-drag]');if(!handle||event.button!==0)return;
- const row=v60Rows[Number(handle.dataset.v612Drag)];if(!row)return;
- if(v56Query.trim()||v56Status!=='all'){showToast('Очистите поиск и фильтр, чтобы изменить порядок');return;}
- v612Drag={id:event.pointerId,handle,row,startX:event.clientX,startY:event.clientY,moved:false,target:null,after:false};
- try{handle.setPointerCapture(event.pointerId);}catch(e){}
-});
-v612Root.addEventListener('pointermove',function(event){
- const drag=v612Drag;if(!drag||drag.id!==event.pointerId)return;
- if(!drag.moved&&Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<7)return;
- drag.moved=true;
- const rowEl=drag.handle.closest('.v60-object');if(rowEl)rowEl.classList.add('v612-drag-origin');
- const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest('.v60-object[data-v612-object-index]');
- const candidate=hit?v60Rows[Number(hit.dataset.v612ObjectIndex)]:null;
- const old=v612Root.querySelector('.v612-drag-target');if(old&&old!==hit)old.classList.remove('v612-drag-target');
- if(candidate&&v60Key(candidate)!==v60Key(drag.row)&&v60DistrictOf(candidate.obj,candidate.proc)===v60DistrictOf(drag.row.obj,drag.row.proc)){
-  drag.target=candidate;drag.after=event.clientY>hit.getBoundingClientRect().top+hit.getBoundingClientRect().height/2;
-  hit.classList.add('v612-drag-target');
- }else{if(hit)hit.classList.remove('v612-drag-target');drag.target=null;}
-});
-function v612FinishDrag(event){
- const drag=v612Drag;if(!drag||drag.id!==event.pointerId)return;
- v612Drag=null;
- v612Root.querySelectorAll('.v612-drag-origin,.v612-drag-target').forEach(el=>el.classList.remove('v612-drag-origin','v612-drag-target'));
- if(drag.moved&&drag.target)v612DragTo(drag.row,drag.target,drag.after);
-}
-v612Root.addEventListener('pointerup',v612FinishDrag);
-v612Root.addEventListener('pointercancel',v612FinishDrag);
-v612Root.addEventListener('keydown',function(event){
- const grip=event.target.closest('[data-v612-drag]');if(!grip)return;
- if(event.key==='ArrowUp'||event.key==='ArrowDown'){
-  event.preventDefault();const row=v60Rows[Number(grip.dataset.v612Drag)];if(row)v612Move(row,event.key==='ArrowUp'?-1:1);
- }
-});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&v612MenuKey!==null){v612MenuKey=null;v56RenderCards();}});
+// Earlier v5.9 click listener removed: v6.1 handler below owns #v56Cards.
 
 // VERSION 6.0 — one day-to-day notebook, grouped by administrative district.
 // No new Supabase tables, no changes to Telegram authentication or cloud transport.
@@ -6215,10 +6191,10 @@ function v61EventMeta(step,ev){
  return parts.join(' · ');
 }
 function v60Order(row){
- return row.steps.filter(i=>!i.step.done).sort((a,b)=>{
-   const iso=i=>v61DateISO(i.step.date)||'9999-99-99';
-   return iso(a).localeCompare(iso(b))||String(a.step.text||'').localeCompare(String(b.step.text||''),'ru');
- });
+ const original=new Map(row.steps.map((info,index)=>[String(info.step.id),index]));
+ const iso=i=>v61DateISO(i.step.date)||'9999-99-99';
+ return row.steps.filter(i=>!i.step.done&&!i.step.canceled).sort((a,b)=>
+   iso(a).localeCompare(iso(b))||original.get(String(a.step.id))-original.get(String(b.step.id)));
 }
 function v60StepLink(row,info){return v60Steps.push({proc:row.proc,obj:row.obj,step:info.step})-1;}
 function v61EventEditor(row,step,idx){
@@ -6263,6 +6239,7 @@ function v60RenderStep(row,info){
  const inline=v60LastDone&&String(v60LastDone.stepId)===String(step.id)&&String(v60LastDone.objId)===String(row.obj.id)&&String(v60LastDone.procId)===String(row.proc.id)&&done;
  const working=v61WorkingEvents(step),last=working[0];
  const key=v61StepKey(row.proc,row.obj,step);
+ const taskMenu=v614TaskMenuKey===key&&!done;
  let extras='';
  if(!done){
   extras=`${last?`<button type="button" data-v61-edit="${idx}" class="v61-last-comment" title="${v56SafeText(last.what)}"><span class="v61-last-date">${v56SafeText(v56DateShort(last.date||last.at||''))}</span><span class="v61-last-text">${v56SafeText(last.what)}</span></button>${v61EventMeta(step,last)?`<div class="v61-event-meta">${v56SafeText(v61EventMeta(step,last))}</div>`:''}`:''}
@@ -6275,7 +6252,8 @@ function v60RenderStep(row,info){
   <div class="v61-task-main"><button type="button" class="v60-task-open" data-v60-step="${idx}" aria-label="Открыть подробности: ${v56SafeText(step.text)}">
    <span class="v60-task-body"><span class="v60-task-title">${v56SafeText(step.text)}</span><span class="v60-task-meta">${meta}</span></span><span class="v60-task-next" aria-hidden="true">›</span></button>
    ${extras}
-  </div></div>${eventEditor}${history}
+  </div>${!done?`<button type="button" class="v614-task-menu-button" data-v614-taskmenu="${idx}" aria-expanded="${taskMenu}" aria-label="Действия с задачей">···</button>`:''}</div>
+  ${taskMenu?`<div class="v614-task-actions"><button type="button" data-v614-cancel="${idx}">Отменить задачу</button></div>`:''}${eventEditor}${history}
   ${inline?`<div class="v60-inline-result"><label for="v60ResultValue">Задача завершена. Фактический результат (необязательно)</label><input id="v60ResultValue" type="text" maxlength="2000" placeholder="Например: получен акт сверки №125" value="${v56SafeText(step.actualResult||'')}"><div><button type="button" data-v60-result-save="${idx}">Сохранить результат</button> · <button type="button" data-v60-result-close>Не указывать</button></div></div>`:''}</div>`;
 }
 function v60RenderObject(row,i){
@@ -6293,14 +6271,15 @@ function v60RenderObject(row,i){
  const doneHtml=completed.length?`<div class="v61-done-label">Завершённые (${completed.length})</div>${completed.map(info=>v60RenderStep(row,info)).join('')}`:'';
  const district=v60DistrictOf(row.obj,row.proc),list=v612DistrictRows(district),position=v612ObjectIndex(list,row);
  const menuOpen=v612MenuKey===v60Key(row);
- const menu=menuOpen?`<div class="v612-object-actions" role="group" aria-label="Порядок и действия с объектом"><button type="button" data-v612-move="${i}" data-v612-dir="-1" ${position<=0?'disabled':''}>↑ Вверх</button><button type="button" data-v612-move="${i}" data-v612-dir="1" ${position>=list.length-1?'disabled':''}>↓ Вниз</button><button type="button" data-v612-rename="${i}">Переименовать</button><button type="button" data-v612-district="${i}">Изменить район</button></div>`:'';
- return `<div class="v60-object ${opened?'v60-is-open':''}" data-v612-object-index="${i}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">›</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}<button type="button" class="v612-move-grip" data-v612-drag="${i}" aria-label="Перетащить объект ${v56SafeText(row.obj.title)}" title="Перетащить объект для изменения порядка">⠿</button><button type="button" class="v612-menu-button" data-v60-object-menu="${i}" aria-expanded="${menuOpen}" aria-label="Действия с объектом: ${v56SafeText(row.obj.title)}">···</button></div>
+ const menu=menuOpen?`<div class="v612-object-actions" role="group" aria-label="Порядок и действия с объектом"><button type="button" data-v612-move="${i}" data-v612-dir="-1" ${position<=0?'disabled':''}>↑ Вверх</button><button type="button" data-v612-move="${i}" data-v612-dir="1" ${position>=list.length-1?'disabled':''}>↓ Вниз</button><button type="button" data-v612-rename="${i}">✎ Переименовать объект</button><button type="button" data-v612-district="${i}">Изменить район</button><button type="button" data-v614-archive="${i}" ${row.obj.steps.some(s=>!s.done&&!s.canceled)||!row.obj.steps.length?'disabled title="Сначала завершите или отмените задачи"':''}>В архив</button><button type="button" class="v613-danger-action" data-v613-delete="${i}">Удалить объект</button></div>`:'';
+ return `<div class="v60-object ${opened?'v60-is-open':''}" data-v612-object-index="${i}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">›</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span>${row.proc.title!==district?`<span class="v614-direction">${v56SafeText(row.proc.title)}</span>`:''}</button>${count}<button type="button" class="v612-move-grip" data-v612-drag="${i}" aria-label="Перетащить объект ${v56SafeText(row.obj.title)}" title="Перетащить объект для изменения порядка">⠿</button><button type="button" class="v612-menu-button" data-v60-object-menu="${i}" aria-expanded="${menuOpen}" aria-label="Действия с объектом: ${v56SafeText(row.obj.title)}">···</button></div>
   ${menu}
   ${opened?(activeHtml||doneHtml?`<div class="v60-tasks">${activeHtml}${doneHtml}</div>`:`<div class="v60-object-empty">Задач пока нет. Добавьте первую запись.</div>`):''}
   ${more}</div>`;
 }
 function v56RenderCards(){
  const root=document.getElementById('v56Cards');if(!root)return;
+ const v614EditorDraft=v614CaptureInlineDraft();
  const query=v56Query.trim().toLowerCase();
  const all=v612AllRows();
  const selected=all.filter(row=>{
@@ -6338,6 +6317,7 @@ function v56RenderCards(){
  }
  html.push('<div class="v60-region-pick"><label for="v60AddRegion">Новый объект в районе</label><select id="v60AddRegion" aria-label="Выбрать район для нового объекта"><option value="">Выберите район</option>'+v60DistrictNames.map(x=>`<option>${v56SafeText(x)}</option>`).join('')+'</select><button type="button" id="v60CreateObject">+ Объект</button></div>');
  root.innerHTML=html.join('');
+ v614RestoreInlineDraft(v614EditorDraft);
  const more=document.getElementById('v56More');if(more){more.hidden=selected.length<=v56Limit;if(!more.hidden)more.textContent=`Показать ещё ${selected.length-v56Limit} объектов`;}
  const filter=document.getElementById('v59Filter');if(filter)filter.value=v56Status;
  const clear=document.getElementById('v56ClearSearch');if(clear)clear.hidden=!query;
@@ -6365,23 +6345,121 @@ function v60SaveDistrict(){
 function v60NewObject(district){
  if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
  if(!v60DistrictNames.includes(district)){showToast('Сначала выберите район');return;}
- showTextModal('Новый объект — '+district,'',(value)=>{
-   const name=String(value||'').trim().slice(0,300);if(!name)return;
-   if(state.some(p=>(p.objects||[]).some(o=>!o.archived&&v60DistrictOf(o,p)===district&&o.title.trim().toLowerCase()===name.toLowerCase()))){showToast('Такой объект уже существует в этом районе');return;}
-   let proc=state.find(p=>(p.objects||[]).some(o=>v60DistrictOf(o,p)===district));
-   if(!proc)proc=state.find(p=>v60DistrictOf({title:''},p)===district);
-   if(!proc){proc={id:createId(),title:district,objects:[],collapsed:true};state.push(proc);}
-   const nextOrder=v612EnsureDistrictOrder(district);
-   const obj={id:createId(),title:name,district,manualOrder:nextOrder,archived:false,collapsed:false,steps:[]};proc.objects.push(obj);
-   v60ClosedRegions.delete(district);v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));v60PersistView();
-   saveData('Создан объект в районе '+district);
- });
+ const form=document.getElementById('v614ObjectForm');form.reset();
+ document.getElementById('v614ObjectDistrict').value=district;
+ const selector=document.getElementById('v614Direction');selector.replaceChildren();
+ if(state.length){const hint=document.createElement('option');hint.value='';hint.textContent='Выберите направление';selector.appendChild(hint);}
+ for(const proc of state){const option=document.createElement('option');option.value=String(proc.id);option.textContent=proc.title;selector.appendChild(option);}
+ const fresh=document.createElement('option');fresh.value='__new__';fresh.textContent='+ Новое направление';selector.appendChild(fresh);
+ selector.value=state.length?'':'__new__';
+ v614ToggleDirection();
+ const modal=document.getElementById('v614ObjectModal');modal.style.display='flex';modal.setAttribute('aria-hidden','false');
+ document.getElementById('v614ObjectName').focus();
+}
+function v614ToggleDirection(){
+ const creating=document.getElementById('v614Direction').value==='__new__';
+ const label=document.getElementById('v614NewDirectionLabel');label.hidden=!creating;
+ document.getElementById('v614NewDirection').required=creating;
+}
+function v614CloseNewObject(){
+ const modal=document.getElementById('v614ObjectModal');modal.style.display='none';modal.setAttribute('aria-hidden','true');
+}
+function v614SubmitNewObject(){
+ if(!readyForEditing||onlinePending||conflictRemote){showToast('Дождитесь синхронизации текущих изменений');return;}
+ const form=document.getElementById('v614ObjectForm');
+ if(!form.reportValidity())return;
+ const district=document.getElementById('v614ObjectDistrict').value;
+ const name=document.getElementById('v614ObjectName').value.trim().slice(0,300);
+ const title=document.getElementById('v614TaskName').value.trim().slice(0,1000);
+ const owner=document.getElementById('v614TaskOwner').value.trim().slice(0,160);
+ const action=document.getElementById('v614TaskAction').value.trim().slice(0,1000);
+ const expectedResult=document.getElementById('v614TaskResult').value.trim().slice(0,1000);
+ const date=document.getElementById('v614TaskDate').value;
+ const directionId=document.getElementById('v614Direction').value;
+ if(!name||!title||!v60DistrictNames.includes(district)||!directionId){showToast('Укажите район, направление, объект и задачу');return;}
+ if(date&&!v55StrictISO(date)){showToast('Неверный срок');return;}
+ let proc=state.find(p=>String(p.id)===String(directionId));
+ let newDirection=null;
+ if(directionId==='__new__'){
+  const value=document.getElementById('v614NewDirection').value.trim().slice(0,300);
+  if(!value){showToast('Укажите название направления');return;}
+  proc=state.find(p=>p.title.trim().toLowerCase()===value.toLowerCase());
+  if(!proc){newDirection={id:createId(),title:value,objects:[],collapsed:true};proc=newDirection;}
+ }
+ if(!proc){showToast('Выберите направление');return;}
+ if((proc.objects||[]).some(o=>!o.archived&&v60DistrictOf(o,proc)===district&&String(o.title).trim().toLowerCase()===name.toLowerCase())){
+  showToast('В этом направлении и районе объект уже существует');return;
+ }
+ const now=new Date().toISOString();
+ const step={id:createId(),text:title,owner,action,expectedResult,date:date?isoToDisplay(date):'',
+  done:false,completedAt:null,doc:'',documentUrl:'',blocker:null,history:[],
+  workflowStatus:'active',progressEvents:[{id:createId(),at:now,date:getTodayISO(),what:'Рабочая запись создана',created:true}],
+  nextAction:'',nextDate:'',createdAt:now,updatedAt:getTimestampStr()};
+ const order=v612EnsureDistrictOrder(district);
+ const obj={id:createId(),title:name,district,manualOrder:order,archived:false,collapsed:false,steps:[step]};
+ if(newDirection)state.push(newDirection);
+ proc.objects.push(obj);
+ v60ClosedRegions.delete(district);v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));v60PersistView();
+ v614CloseNewObject();saveData('Создан объект с первой задачей: '+name+' / '+title);
+ showToast('Объект и первая задача сохраняются в облако');
 }
 function v60ObjectMenu(row){
+ if(!readyForEditing){showToast('Дождитесь подключения к облаку');return;}
+ const procId=String(row.proc.id),objId=String(row.obj.id);
  showTextModal('Переименовать объект',row.obj.title,(value)=>{
+  if(!readyForEditing){showToast('Нет подключения к облаку');return;}
+  const proc=state.find(p=>String(p.id)===procId);
+  const obj=proc?.objects.find(o=>String(o.id)===objId);
+  if(!obj){showToast('Объект больше не найден');return;}
   const next=String(value||'').trim().slice(0,300);
-  if(!next||next===row.obj.title)return;
-  row.obj.title=next;saveData('Переименован объект');
+  if(!next||next===obj.title)return;
+  const before=obj.title;
+  obj.title=next;
+  saveData('Переименован объект: '+before+' → '+next);
+  showToast('Название объекта изменено');
+ });
+}
+// V6.1.3: deletion from the ordinary object menu. Keep a local pre-delete
+// snapshot even when the in-memory undo list is cleared on page reload.
+function v613BackupBeforeDelete(name,procId,objId){
+ const historyLabel='Перед удалением объекта «'+name+'»';
+ const snapshot={schema:SNAPSHOT_SCHEMA,snapshotId:currentSnapshotId,rev:serverRevision,
+  updatedAt:Date.now(),deviceId,data:Model.clone(state),audit:auditLog.slice(-250)};
+ try{
+  const old=JSON.parse(localStorage.getItem(LOCAL_HISTORY_KEY)||'[]');
+  if(!Array.isArray(old))throw new Error('Повреждена история резервных копий');
+  const entry={reason:historyLabel,createdAt:new Date().toISOString(),procId,objId,snapshot};
+  // If storage is nearly full, retain the current snapshot preferentially.
+  for(const depth of [5,2,1]){
+   try{
+    const proposed=JSON.stringify([entry,...old].slice(0,depth));
+    localStorage.setItem(LOCAL_HISTORY_KEY,proposed);
+    const verify=JSON.parse(localStorage.getItem(LOCAL_HISTORY_KEY)||'[]');
+    if(verify[0]?.reason===historyLabel && Array.isArray(verify[0]?.snapshot?.data))return true;
+   }catch(e){if(depth===1)throw e;}
+  }
+ }catch(e){console.warn('Нельзя создать резервную копию перед удалением',e);}
+ return false;
+}
+function v613DeleteObject(row){
+ if(!readyForEditing){showToast('Дождитесь подключения к облаку');return;}
+ if(onlinePending||conflictRemote){showToast('Сначала дождитесь сохранения текущих изменений');return;}
+ const procId=String(row.proc.id),objId=String(row.obj.id);
+ const title=String(row.obj.title||'Без названия');
+ const tasks=(row.obj.steps||[]).length;
+ askConfirm('Удалить объект «'+title+'» и все его задачи ('+tasks+')?\n\nПеред удалением будет сохранена резервная копия. Объект исчезнет из рабочего списка.',()=>{
+  if(!readyForEditing||onlinePending||conflictRemote){showToast('Сначала дождитесь сохранения изменений');return;}
+  const proc=state.find(p=>String(p.id)===procId);
+  const obj=proc?.objects.find(o=>String(o.id)===objId);
+  if(!obj){showToast('Объект больше не найден');return;}
+  if(!v613BackupBeforeDelete(String(obj.title||title),procId,objId)){
+   showToast('Не удалось сохранить резервную копию. Удаление отменено.');return;
+  }
+  proc.objects=proc.objects.filter(o=>String(o.id)!==objId);
+  v59OpenedObjects.delete(JSON.stringify([procId,objId]));
+  v612MenuKey=null;
+  saveData('Удалён объект «'+title+'» ('+tasks+' задач)');
+  showToast('Объект удалён. Предыдущая версия сохранена в резервной истории.');
  });
 }
 function v60SaveResult(idx){
@@ -6421,6 +6499,7 @@ function v60ReportCandidates(){
  const candidates=[];
  for(const row of v57Rows()){
   const district=v60DistrictOf(row.obj,row.proc);
+  const firstCurrent=v60Order(row)[0]?.step;
   for(const info of row.steps){
    const s=info.step,object=String(row.obj.title);
    if(s.done&&s.completedAt&&(!from||s.completedAt>=from)&&(!to||s.completedAt<=to)){
@@ -6432,7 +6511,7 @@ function v60ReportCandidates(){
      if((from&&date<from)||(to&&date>to))continue;
      candidates.push({id:`${s.id}_${ev.id}`,kind:'fact',district,date,text:`${object} / ${s.text}: ${ev.what}${ev.solution?' — '+ev.solution:''}`});
    }
-   if(!s.done)candidates.push({id:`${s.id}_plan`,kind:'plan',district,date:s.nextDate||displayToISO(s.date||'')||'',text:`${object}: ${s.nextAction||s.text}${s.date?' (срок '+v56DateShort(s.date)+')':''}`});
+   if(!s.done&&(s===firstCurrent||s.nextAction||s.nextDate))candidates.push({id:`${s.id}_plan`,kind:'plan',district,date:s.nextDate||displayToISO(s.date||'')||'',text:`${object}: ${s.nextAction||s.text}${s.date?' (срок '+v56DateShort(s.date)+')':''}`});
   }
  }
  return candidates.sort((a,b)=>a.kind.localeCompare(b.kind)||String(b.date).localeCompare(String(a.date))).slice(0,500);
@@ -6472,9 +6551,13 @@ function v60AddReportItem(i){
  const draft=v60ReportDrafts.get(district)||{fact:'',plan:''};
  draft[x.kind]+=(draft[x.kind]?'\n':'')+'• '+x.text;
  v60ReportDrafts.set(district,draft);v60ReportSelected.add(x.id);
- v60ReportOutput();v60UpdateReportCandidates();
+ v60ReportOutput();v60UpdateReportCandidates();v614SaveManualReport();
 }
 function v60ResetReport(){
+ v614ClearManualReportStorage();
+ v60ResetReportInternal();
+}
+function v60ResetReportInternal(){
  v60ReportSelected.clear();v60ReportDistricts=[];v60ReportDrafts=new Map();
  document.getElementById('managementReportFact').value='';document.getElementById('managementReportPlan').value='';
  ManagementReportUI.setManualRows([]);v60UpdateReportCandidates();
@@ -6483,8 +6566,22 @@ function v60LegacyReport(){
  if(!confirm('Открыть старый автоматический черновик? Текущий ручной текст будет заменён.'))return;
  ManagementReportUI.refresh();showToast('Показан прежний автоматический черновик');
 }
-function openManagementReport(){ManagementReportUI.open();v60ResetReport();}
-function refreshManagementReport(){v60UpdateReportCandidates();}
+function openManagementReport(){
+  const draft=v614LoadManualReport();
+  ManagementReportUI.open();
+  v60ResetReportInternal();
+  if(draft){
+    for(const key of ['managementReportFrom','managementReportTo'])if(draft[key])document.getElementById(key).value=draft[key];
+    v60ReportDistricts=Array.isArray(draft.districts)?draft.districts.slice(0,80):[];
+    v60ReportSelected=new Set(Array.isArray(draft.selected)?draft.selected.slice(0,1000):[]);
+    v60ReportDrafts=new Map(Array.isArray(draft.drafts)?draft.drafts:[]);
+    document.getElementById('managementReportFact').value=String(draft.fact||'');
+    document.getElementById('managementReportPlan').value=String(draft.plan||'');
+    ManagementReportUI.setManualRows(v60ReportDistricts);
+  }
+  v60UpdateReportCandidates();
+}
+function refreshManagementReport(){v60UpdateReportCandidates();v614SaveManualReport();}
 document.getElementById('v60ReportCandidates').addEventListener('click',event=>{
  const b=event.target.closest('button[data-v60-report]');if(b)v60AddReportItem(Number(b.dataset.v60Report));
 });
@@ -6594,6 +6691,17 @@ document.getElementById('v56Cards').addEventListener('click',event=>{
  if(b.hasAttribute('data-v61-save')){v61SaveEvent(Number(b.dataset.v61Save));return;}
  if(b.hasAttribute('data-v61-cancel')){v61Editor=null;v56RenderCards();return;}
 
+ if(b.hasAttribute('data-v614-taskmenu')){
+  const x=v60Steps[Number(b.dataset.v614Taskmenu)];if(!x)return;
+  const key=v61StepKey(x.proc,x.obj,x.step);
+  v614TaskMenuKey=v614TaskMenuKey===key?null:key;v56RenderCards();return;
+ }
+ if(b.hasAttribute('data-v614-cancel')){
+  const x=v60Steps[Number(b.dataset.v614Cancel)];if(x)v614CancelTask(x);return;
+ }
+ if(b.hasAttribute('data-v614-archive')){
+  const x=v60Rows[Number(b.dataset.v614Archive)];if(x)archiveObject(x.proc.id,x.obj.id);return;
+ }
  if(b.hasAttribute('data-v60-region')){
   const district=v60Regions[Number(b.dataset.v60Region)];if(!district)return;
   if(v60ClosedRegions.has(district))v60ClosedRegions.delete(district);else v60ClosedRegions.add(district);
@@ -6611,6 +6719,7 @@ document.getElementById('v56Cards').addEventListener('click',event=>{
  if(b.hasAttribute('data-v60-district')){const x=v60Rows[Number(b.dataset.v60District)];if(x)v60DistrictDialog(x.proc.id,x.obj.id);return;}
  if(b.hasAttribute('data-v612-move')){const x=v60Rows[Number(b.dataset.v612Move)];if(x)v612Move(x,Number(b.dataset.v612Dir));return;}
  if(b.hasAttribute('data-v612-rename')){const x=v60Rows[Number(b.dataset.v612Rename)];v612MenuKey=null;if(x)v60ObjectMenu(x);return;}
+ if(b.hasAttribute('data-v613-delete')){const x=v60Rows[Number(b.dataset.v613Delete)];v612MenuKey=null;if(x){v56RenderCards();v613DeleteObject(x);}return;}
  if(b.hasAttribute('data-v612-district')){const x=v60Rows[Number(b.dataset.v612District)];v612MenuKey=null;if(x)v60DistrictDialog(x.proc.id,x.obj.id);return;}
  if(b.hasAttribute('data-v60-object-menu')){const x=v60Rows[Number(b.dataset.v60ObjectMenu)];if(x){const key=v60Key(x);v612MenuKey=v612MenuKey===key?null:key;v56RenderCards();}return;}
  if(b.hasAttribute('data-v60-all')){const x=v60Rows[Number(b.dataset.v60All)];if(!x)return;const k=v60Key(x);if(v60ShowEveryStep.has(k))v60ShowEveryStep.delete(k);else v60ShowEveryStep.add(k);v56RenderCards();return;}
@@ -6623,6 +6732,85 @@ document.getElementById('v56Cards').addEventListener('change',event=>{
  if(!readyForEditing){showToast('Нет подключения к облаку');v56RenderCards();return;}
  toggleStep(x.proc.id,x.obj.id,x.step.id);
 });
+
+// V6.1.4: validated operations and protections for one-person notebook.
+let v614TaskMenuKey=null;
+function v614CancelTask(link){
+ if(!readyForEditing||onlinePending||conflictRemote){showToast('Дождитесь сохранения данных');return;}
+ const proc=state.find(p=>String(p.id)===String(link.proc.id));
+ const obj=proc?.objects.find(o=>String(o.id)===String(link.obj.id));
+ const step=obj?.steps.find(s=>String(s.id)===String(link.step.id));
+ if(!step||step.done||step.canceled)return;
+ step.canceled=true;step.canceledAt=new Date().toISOString();step.updatedAt=getTimestampStr();
+ v614TaskMenuKey=null;
+ if(!Array.isArray(step.progressEvents))step.progressEvents=[];
+ if(step.progressEvents.length<700)step.progressEvents.push({id:createId(),at:step.canceledAt,date:getTodayISO(),what:'Задача отменена',systemChange:true});
+ saveData('Отменена задача: '+String(step.text||'').slice(0,100));
+ showToast('Задача отменена и скрыта из рабочего списка');
+}
+function v614CaptureInlineDraft(){
+ if(!v61Editor)return null;
+ const form=document.querySelector('.v61-editor');if(!form)return null;
+ const data={key:v61Editor.key,id:v61Editor.id};
+ for(const field of ['what','owner','date'])data[field]=form.querySelector('[data-v61-'+field+']')?.value;
+ const active=document.activeElement;
+ if(active&&form.contains(active)){data.focus=active.hasAttribute('data-v61-what')?'what':active.hasAttribute('data-v61-owner')?'owner':'date';try{data.position=active.selectionStart??null;}catch(e){data.position=null;}}
+ return data;
+}
+function v614RestoreInlineDraft(draft){
+ if(!draft||!v61Editor||draft.key!==v61Editor.key||draft.id!==v61Editor.id)return;
+ const form=document.querySelector('.v61-editor');if(!form)return;
+ for(const field of ['what','owner','date']){
+  const element=form.querySelector('[data-v61-'+field+']');if(element&&draft[field]!==undefined)element.value=draft[field];
+ }
+ if(draft.focus){const field=form.querySelector('[data-v61-'+draft.focus+']');if(field){field.focus({preventScroll:true});if(draft.position!==null&&field.setSelectionRange){try{field.setSelectionRange(draft.position,draft.position);}catch(e){}}}}
+}
+const v614ReportStorageKey='daily_report_manual_draft_614';
+function v614SaveManualReport(){
+ try{const draft={fact:document.getElementById('managementReportFact').value,
+  plan:document.getElementById('managementReportPlan').value,
+  managementReportFrom:document.getElementById('managementReportFrom').value,
+  managementReportTo:document.getElementById('managementReportTo').value,
+  districts:v60ReportDistricts,drafts:[...v60ReportDrafts.entries()],selected:[...v60ReportSelected]};
+  if(draft.fact.length>100000||draft.plan.length>100000)return;
+  localStorage.setItem(v614ReportStorageKey,JSON.stringify(draft));
+ }catch(e){console.warn('Нельзя сохранить черновик отчёта',e);}
+}
+function v614LoadManualReport(){
+ try{const draft=JSON.parse(localStorage.getItem(v614ReportStorageKey)||'null');
+  if(draft&&typeof draft.fact==='string'&&typeof draft.plan==='string')return draft;
+ }catch(e){}return null;
+}
+function v614ClearManualReportStorage(){try{localStorage.removeItem(v614ReportStorageKey);}catch(e){}}
+for(const key of ['managementReportFact','managementReportPlan']){
+ document.getElementById(key).addEventListener('input',v614SaveManualReport);
+}
+function v614RestoreLastDeleted(){
+ if(!readyForEditing||onlinePending||conflictRemote){showToast('Сначала завершите синхронизацию');return;}
+ let entries=[];try{entries=JSON.parse(localStorage.getItem(LOCAL_HISTORY_KEY)||'[]');}catch(e){}
+ if(!Array.isArray(entries)){showToast('Резервные записи не найдены');return;}
+ const candidate=entries.find(entry=>{
+  if(!entry?.procId||!entry?.objId||!Array.isArray(entry.snapshot?.data))return false;
+  const p=entry.snapshot.data.find(p=>String(p.id)===String(entry.procId));
+  const old=p?.objects?.find(o=>String(o.id)===String(entry.objId));
+  const current=state.some(p=>(p.objects||[]).some(o=>String(o.id)===String(entry.objId)));
+  return !!old&&!current;
+ });
+ if(!candidate){showToast('Нет доступной локальной копии удалённого объекта');return;}
+ const from=candidate.snapshot.data.find(p=>String(p.id)===String(candidate.procId));
+ const archived=from.objects.find(o=>String(o.id)===String(candidate.objId));
+ const p=state.find(p=>String(p.id)===String(candidate.procId));
+ askConfirm('Восстановить объект «'+archived.title+'» вместе с '+(archived.steps||[]).length+' задачами из локальной резервной копии? Текущие объекты сохранятся.',()=>{
+  if(!readyForEditing||onlinePending||conflictRemote){showToast('Дождитесь синхронизации');return;}
+  let target=state.find(x=>String(x.id)===String(candidate.procId));
+  if(!target){target={id:from.id,title:from.title,objects:[],collapsed:true};state.push(target);}
+  if(state.some(x=>(x.objects||[]).some(o=>String(o.id)===String(candidate.objId)))){showToast('Объект уже присутствует');return;}
+  target.objects.push(Model.clone(archived));
+  saveData('Восстановлен удалённый объект: '+archived.title);
+  showToast('Восстановление отправляется в облако');
+ });
+}
+
 // The previous presentation's additional filters, working-status dashboard, legacy
 // register and server code remain bundled for safe rollback but are not used in the normal interface.
 v56Screen='projects';
