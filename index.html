@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой блокнот 6.0 — Рабочий блокнот</title>
+  <title>Мой блокнот 6.0.1 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2303,6 +2303,18 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .mgmt-controls label:has(#managementReportScope){display:none!important}
 @media(max-width:430px){.dash-title{font-size:24px!important}.v60-object{padding:0 11px}.v60-region-head{padding:11px}.v60-region-toggle{font-size:17px}.v60-object-head{gap:5px}.v60-object-name{font-size:16px}.v60-tasks{padding-left:15px}.v60-object-detail{padding-left:15px}.v60-object-count{font-size:11px}.v60-check{height:21px;width:21px;flex-basis:21px}}
 </style>
+<style id="v601-folded-styles">
+/* Compact notebook: districts visible, objects/tasks folded until explicitly opened. */
+.v60-object:not(.v60-is-open) .v60-object-head{padding:6px 0}
+.v60-object:not(.v60-is-open) .v60-object-toggle{min-height:32px}
+.v60-task-done{align-items:center;min-height:32px;padding:4px 0}
+.v60-task-done .v60-check{margin-top:0}
+.v60-task-done .v60-task-body{display:flex;align-items:center;gap:8px;min-width:0}
+.v60-task-done .v60-task-title{font-size:12px!important;font-weight:400!important;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35}
+.v60-task-done .v60-task-meta{font-size:11px!important;white-space:nowrap;flex:0 0 auto;line-height:1.3}
+.v60-task-done .v60-task-next{font-size:14px}
+@media(max-width:430px){.v60-task-done .v60-task-meta{max-width:45%;overflow:hidden;text-overflow:ellipsis}}
+</style>
 <style id="v60-extra-css">.v56-legacy-workspace{display:block!important} .v56-legacy-workspace[hidden]{display:none!important}.v60-region-pick{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:12px 3px;color:#929fac;font-size:13px}.v60-region-pick select{flex:1;min-width:140px;max-width:220px;background:#fff;border:1px solid #e7ebef;border-radius:8px;padding:8px 9px;color:#5d7083}.v60-region-pick button{background:#fff;border:1px solid #e3e8ed;border-radius:8px;color:#58718a;cursor:pointer;padding:8px 10px}.v60-report-candidates{flex:0 0 auto!important;min-height:166px!important;height:190px!important;max-height:190px!important;overflow-y:auto!important;overflow-x:hidden!important;padding-right:4px}
 .mgmt-filters label:has(#managementReportScope){display:none!important}
 #managementReportModal .mgmt-sheet{overscroll-behavior:contain}
@@ -3582,6 +3594,8 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       finally{isFetching=false;lastPollAt=Date.now();}
     }
     async function manualSync(){
+      // Refresh resets the notebook to compact, folded objects.
+      v60FoldAllProcesses();
       if(!readyForEditing){await loadData();return;}
       if(onlinePending){await pushCloudBackground();return;}
       await syncWithCloud(true);
@@ -5984,11 +5998,19 @@ const v60ViewKey='notebook_v60_view';
 try{
  const saved=JSON.parse(localStorage.getItem(v60ViewKey)||'{}');
  for(const d of (Array.isArray(saved.closed)?saved.closed:[]))if(typeof d==='string')v60ClosedRegions.add(d);
- for(const o of (Array.isArray(saved.opened)?saved.opened:[]))if(typeof o==='string')v59OpenedObjects.add(o);
+ // Intentionally ignore previously saved opened objects: every launch starts folded.
 }catch(e){}
 function v60PersistView(){
- try{localStorage.setItem(v60ViewKey,JSON.stringify({closed:[...v60ClosedRegions].slice(0,50),opened:[...v59OpenedObjects].slice(0,40)}));}catch(e){}
+ try{localStorage.setItem(v60ViewKey,JSON.stringify({closed:[...v60ClosedRegions].slice(0,50)}));}catch(e){}
 }
+function v60FoldAllProcesses(){
+ v59OpenedObjects.clear();
+ v60ShowEveryStep.clear();
+ v60LastDone=null;
+ v60PersistView();
+ v56RenderCards();
+}
+
 
 function v60Key(row){return v57ObjectKey(row.proc,row.obj);}
 function v60Order(row){
@@ -6010,10 +6032,14 @@ function v60RenderStep(row,info){
  const done=!!step.done;
  const tags=[];
  if(step.owner)tags.push(v56SafeText(step.owner));
- if(step.date)tags.push('Срок '+v56SafeText(v56DateShort(step.date)));
- if(!done&&step.nextDate)tags.push('Контроль '+v56SafeText(v56DateShort(step.nextDate)));
- if(info.late)tags.push('Просрочено');
- const meta=tags.length?tags.join(' · '):'Без срока и ответственного';
+ if(done){
+   if(step.completedAt)tags.push(v56SafeText(v56DateShort(step.completedAt)));
+ }else{
+   if(step.date)tags.push('Срок '+v56SafeText(v56DateShort(step.date)));
+   if(step.nextDate)tags.push('Контроль '+v56SafeText(v56DateShort(step.nextDate)));
+   if(info.late)tags.push('Просрочено');
+ }
+ const meta=tags.length?tags.join(' · '):(done?'Дата выполнения не указана':'Без срока и ответственного');
  const inline=v60LastDone&&String(v60LastDone.stepId)===String(step.id)&&String(v60LastDone.objId)===String(row.obj.id)&&String(v60LastDone.procId)===String(row.proc.id)&&done;
  return `<div class="v60-task ${done?'v60-task-done':''} ${info.late?'v60-task-urgent':''}">
    <input type="checkbox" class="v60-check" data-v60-check="${idx}" aria-label="${done?'Вернуть в работу':'Выполнить'}: ${v56SafeText(step.text)}" ${done?'checked':''}>
@@ -6024,7 +6050,8 @@ function v60RenderStep(row,info){
 function v60RenderObject(row,i){
  const opened=v59OpenedObjects.has(v60Key(row));
  const active=v60Order(row);
- let all=opened?(v60ShowEveryStep.has(v60Key(row))?row.steps:active.length?active:row.steps.slice(-2)):active.slice(0,2);
+ const recentDone=row.steps.filter(x=>x.step.done).sort((a,b)=>String(b.step.completedAt||'').localeCompare(String(a.step.completedAt||''))).slice(0,2);
+ let all=opened?(v60ShowEveryStep.has(v60Key(row))?row.steps:[...active,...recentDone]):[];
  // Keep a newly completed row visible so the optional result can be entered.
  if(opened&&v60LastDone&&String(v60LastDone.objId)===String(row.obj.id)&&String(v60LastDone.procId)===String(row.proc.id)){
    const completedInfo=row.steps.find(x=>String(x.step.id)===String(v60LastDone.stepId)&&x.step.done);
@@ -6035,8 +6062,8 @@ function v60RenderObject(row,i){
  const count=urgent?`<span class="v60-critical">${urgent} просроч.</span>`:`<span class="v60-object-count">${completed}/${row.steps.length}</span>`;
  const note=opened&&urgent&&row.steps.some(info=>info.late&&!info.step.blocker)?'<p class="v60-note">Есть просроченные сроки. При открытии процесса можно указать причину и следующее действие.</p>':'';
  const more=opened?`<div class="v60-object-detail"><div class="v60-object-controls"><button type="button" data-v60-add="${i}">+ Новая запись</button>${(row.steps.length>2)?`<button type="button" data-v60-all="${i}">${v60ShowEveryStep.has(v60Key(row))?'Только текущие':'Все задачи ('+row.steps.length+')'}</button>`:''}<button type="button" data-v60-district="${i}">${v60DistrictOf(row.obj,row.proc)==='Район не указан'?'Указать район':'Изменить район'}</button><button type="button" class="v60-more" data-v60-object-menu="${i}" aria-label="Действия с объектом">···</button></div>${note}</div>`:'';
- return `<div class="v60-object"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">${opened?'⌄':'›'}</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}</div>
-   ${all.length?`<div class="v60-tasks">${all.map(info=>v60RenderStep(row,info)).join('')}</div>`:`<div class="v60-object-empty">Нет текущих задач. Откройте объект, чтобы добавить запись.</div>`}
+ return `<div class="v60-object ${opened?'v60-is-open':''}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">${opened?'⌄':'›'}</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}</div>
+   ${opened?(all.length?`<div class="v60-tasks">${all.map(info=>v60RenderStep(row,info)).join('')}</div>`:`<div class="v60-object-empty">Задач пока нет. Добавьте первую запись.</div>`):''}
    ${more}</div>`;
 }
 function v56RenderCards(){
