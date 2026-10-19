@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Мой блокнот 6.1.1: единые стрелки раскрытия, меню удаления ошибочных событий с подтверждением; облачная модель и отчёт сохранены. -->
+<!-- Мой блокнот 6.1.2: ручной порядок объектов вверх/вниз и перетаскиванием; сохранение порядка в облачной модели, остальная логика без изменений. -->
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой блокнот 6.1.1 — Рабочий блокнот</title>
+  <title>Мой блокнот 6.1.2 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2378,6 +2378,21 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v611-history-ops button{min-height:28px;padding:4px 1px!important;border:0;background:transparent;font-size:11.5px;color:#55738f;cursor:pointer}
 .v611-history-ops button.v611-delete{color:#a75f5f}
 </style>
+<style id="v612-order-style">
+/* Reordering is available from a collapsed object too. All buttons remain finger-friendly. */
+.v60-object-head{position:relative}
+.v612-move-grip{border:0;background:transparent;color:#a3adb7;flex:0 0 29px;min-height:38px;font-size:17px;cursor:grab;touch-action:none;user-select:none;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.v612-move-grip:active{cursor:grabbing}
+.v612-menu-button{flex:0 0 33px;min-width:33px;height:38px;font-size:21px;line-height:1;color:#8999a8;border:0;border-radius:6px;cursor:pointer;background:transparent}
+.v612-menu-button[aria-expanded="true"]{background:#eef2f5;color:#34485a}
+.v612-object-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:3px 1px 9px 20px}
+.v612-object-actions button{border:1px solid #e6ebf0;border-radius:7px;background:#fafbfc;color:#536f86;min-height:35px;padding:7px 10px;cursor:pointer;font-size:12px;font-weight:600}
+.v612-object-actions button[disabled]{opacity:.35;cursor:default}
+.v612-object-actions button:focus-visible,.v612-menu-button:focus-visible,.v612-move-grip:focus-visible{outline:2px solid #597a9a;outline-offset:2px}
+.v60-object.v612-drag-origin{opacity:.55}
+.v60-object.v612-drag-target{outline:2px dashed #9ab0c3;outline-offset:-2px}
+@media(max-width:430px){.v612-move-grip{flex-basis:24px;min-height:38px}.v612-menu-button{flex-basis:30px;min-width:30px}.v612-object-actions{padding-left:0}}
+</style>
 </head>
 <body>
 
@@ -3230,6 +3245,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
             if(!isPlain(obj)||!Array.isArray(obj.steps)||obj.steps.length>2000)throw new Error('Неверный объект');
             checkId(obj.id);checkText(obj.title,300);
             if(obj.district!==undefined)checkText(obj.district,120);
+            if(obj.manualOrder!==undefined&&(!Number.isSafeInteger(obj.manualOrder)||obj.manualOrder<0||obj.manualOrder>100000))throw new Error('Неверный порядок объекта');
             noDuplicateSiblings(obj.steps);
             for(const st of obj.steps){
               if(++count>60000||!isPlain(st))throw new Error('Слишком много этапов');
@@ -6035,6 +6051,45 @@ document.getElementById('v56Cards').addEventListener('click',event=>{
   v56RenderCards();
 });
 
+// Pointer-based drag for touchscreens and desktop. Drag starts only from the grip.
+let v612Drag=null;
+const v612Root=document.getElementById('v56Cards');
+v612Root.addEventListener('pointerdown',function(event){
+ const handle=event.target.closest('[data-v612-drag]');if(!handle||event.button!==0)return;
+ const row=v60Rows[Number(handle.dataset.v612Drag)];if(!row)return;
+ if(v56Query.trim()||v56Status!=='all'){showToast('Очистите поиск и фильтр, чтобы изменить порядок');return;}
+ v612Drag={id:event.pointerId,handle,row,startX:event.clientX,startY:event.clientY,moved:false,target:null,after:false};
+ try{handle.setPointerCapture(event.pointerId);}catch(e){}
+});
+v612Root.addEventListener('pointermove',function(event){
+ const drag=v612Drag;if(!drag||drag.id!==event.pointerId)return;
+ if(!drag.moved&&Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<7)return;
+ drag.moved=true;
+ const rowEl=drag.handle.closest('.v60-object');if(rowEl)rowEl.classList.add('v612-drag-origin');
+ const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest('.v60-object[data-v612-object-index]');
+ const candidate=hit?v60Rows[Number(hit.dataset.v612ObjectIndex)]:null;
+ const old=v612Root.querySelector('.v612-drag-target');if(old&&old!==hit)old.classList.remove('v612-drag-target');
+ if(candidate&&v60Key(candidate)!==v60Key(drag.row)&&v60DistrictOf(candidate.obj,candidate.proc)===v60DistrictOf(drag.row.obj,drag.row.proc)){
+  drag.target=candidate;drag.after=event.clientY>hit.getBoundingClientRect().top+hit.getBoundingClientRect().height/2;
+  hit.classList.add('v612-drag-target');
+ }else{if(hit)hit.classList.remove('v612-drag-target');drag.target=null;}
+});
+function v612FinishDrag(event){
+ const drag=v612Drag;if(!drag||drag.id!==event.pointerId)return;
+ v612Drag=null;
+ v612Root.querySelectorAll('.v612-drag-origin,.v612-drag-target').forEach(el=>el.classList.remove('v612-drag-origin','v612-drag-target'));
+ if(drag.moved&&drag.target)v612DragTo(drag.row,drag.target,drag.after);
+}
+v612Root.addEventListener('pointerup',v612FinishDrag);
+v612Root.addEventListener('pointercancel',v612FinishDrag);
+v612Root.addEventListener('keydown',function(event){
+ const grip=event.target.closest('[data-v612-drag]');if(!grip)return;
+ if(event.key==='ArrowUp'||event.key==='ArrowDown'){
+  event.preventDefault();const row=v60Rows[Number(grip.dataset.v612Drag)];if(row)v612Move(row,event.key==='ArrowUp'?-1:1);
+ }
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&v612MenuKey!==null){v612MenuKey=null;v56RenderCards();}});
+
 // VERSION 6.0 — one day-to-day notebook, grouped by administrative district.
 // No new Supabase tables, no changes to Telegram authentication or cloud transport.
 const v60DistrictNames=['Жылыойский район','Макатский район','Атырау','Исатайский район','Махамбетский район','Индерский район','Курмангазинский район','Кызылкогинский район'];
@@ -6084,6 +6139,61 @@ function v60FoldAllProcesses(){
 
 
 function v60Key(row){return v57ObjectKey(row.proc,row.obj);}
+// V6.1.2: the ordering is part of the existing object JSON, not device-local state.
+// Legacy objects without manualOrder keep their previous relative order.
+let v612MenuKey=null;
+function v612SortedDistrict(rows){
+ return rows.map((row,index)=>({row,index})).sort((a,b)=>{
+  const aRank=Number.isSafeInteger(a.row.obj.manualOrder)?a.row.obj.manualOrder:Number.MAX_SAFE_INTEGER;
+  const bRank=Number.isSafeInteger(b.row.obj.manualOrder)?b.row.obj.manualOrder:Number.MAX_SAFE_INTEGER;
+  return aRank-bRank||a.index-b.index;
+ }).map(x=>x.row);
+}
+function v612AllRows(){
+ const groups=new Map();
+ for(const row of v57Rows()){
+  const d=v60DistrictOf(row.obj,row.proc);
+  if(!groups.has(d))groups.set(d,[]);
+  groups.get(d).push(row);
+ }
+ return [...groups.values()].flatMap(v612SortedDistrict);
+}
+function v612DistrictRows(district){
+ return v612SortedDistrict(v57Rows().filter(row=>v60DistrictOf(row.obj,row.proc)===district));
+}
+function v612ObjectIndex(rows,target){return rows.findIndex(row=>v60Key(row)===v60Key(target));}
+function v612EnsureDistrictOrder(district){
+ const rows=v612DistrictRows(district);
+ rows.forEach((row,i)=>{row.obj.manualOrder=i;});
+ return rows.length;
+}
+function v612Reorder(row,toIndex){
+ if(!readyForEditing){showToast('Дождитесь подключения к облаку');return false;}
+ if(v56Query.trim()||v56Status!=='all'){showToast('Для сортировки очистите поиск и выберите «Все состояния»');return false;}
+ const district=v60DistrictOf(row.obj,row.proc);
+ const list=v612DistrictRows(district);
+ const from=v612ObjectIndex(list,row);
+ if(from<0||toIndex<0||toIndex>=list.length||from===toIndex)return false;
+ const [moved]=list.splice(from,1);list.splice(toIndex,0,moved);
+ list.forEach((item,i)=>{item.obj.manualOrder=i;});
+ v612MenuKey=null;
+ saveData('Изменён порядок объектов: '+district);
+ showToast('Порядок сохранён');
+ return true;
+}
+function v612Move(row,delta){
+ const district=v60DistrictOf(row.obj,row.proc),list=v612DistrictRows(district),pos=v612ObjectIndex(list,row);
+ return v612Reorder(row,pos+delta);
+}
+function v612DragTo(source,target,after){
+ if(v60DistrictOf(source.obj,source.proc)!==v60DistrictOf(target.obj,target.proc)){showToast('Перетаскивайте объекты внутри одного района');return false;}
+ const rows=v612DistrictRows(v60DistrictOf(source.obj,source.proc));
+ const from=v612ObjectIndex(rows,source),dest=v612ObjectIndex(rows,target);
+ if(from<0||dest<0||from===dest)return false;
+ let to=dest+(after?1:0);if(to>from)to--;
+ return v612Reorder(source,to);
+}
+
 // V6.1: one-row working notes. Store owner/deadline on the EVENT, never on the parent task.
 let v61Editor=null;
 const v61HistoryOpen=new Set();
@@ -6178,17 +6288,21 @@ function v60RenderObject(row,i){
  const urgent=row.steps.filter(x=>x.late).length;
  const count=urgent?`<span class="v60-critical">${urgent} просроч.</span>`:`<span class="v60-object-count">${row.finished}/${row.steps.length}</span>`;
  const note=opened&&urgent&&row.steps.some(info=>info.late&&!info.step.blocker)?'<p class="v60-note">Есть просроченные задачи. При открытии процесса можно указать причину и следующее действие.</p>':'';
- const more=opened?`<div class="v60-object-detail"><div class="v60-object-controls"><button type="button" data-v60-add="${i}">+ Новая запись</button><button type="button" data-v60-district="${i}">${v60DistrictOf(row.obj,row.proc)==='Район не указан'?'Указать район':'Изменить район'}</button><button type="button" class="v60-more" data-v60-object-menu="${i}" aria-label="Действия с объектом">···</button></div>${note}</div>`:'';
+ const more=opened?`<div class="v60-object-detail"><div class="v60-object-controls"><button type="button" data-v60-add="${i}">+ Новая запись</button></div>${note}</div>`:'';
  const activeHtml=active.map(info=>v60RenderStep(row,info)).join('');
  const doneHtml=completed.length?`<div class="v61-done-label">Завершённые (${completed.length})</div>${completed.map(info=>v60RenderStep(row,info)).join('')}`:'';
- return `<div class="v60-object ${opened?'v60-is-open':''}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">›</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}</div>
+ const district=v60DistrictOf(row.obj,row.proc),list=v612DistrictRows(district),position=v612ObjectIndex(list,row);
+ const menuOpen=v612MenuKey===v60Key(row);
+ const menu=menuOpen?`<div class="v612-object-actions" role="group" aria-label="Порядок и действия с объектом"><button type="button" data-v612-move="${i}" data-v612-dir="-1" ${position<=0?'disabled':''}>↑ Вверх</button><button type="button" data-v612-move="${i}" data-v612-dir="1" ${position>=list.length-1?'disabled':''}>↓ Вниз</button><button type="button" data-v612-rename="${i}">Переименовать</button><button type="button" data-v612-district="${i}">Изменить район</button></div>`:'';
+ return `<div class="v60-object ${opened?'v60-is-open':''}" data-v612-object-index="${i}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">›</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}<button type="button" class="v612-move-grip" data-v612-drag="${i}" aria-label="Перетащить объект ${v56SafeText(row.obj.title)}" title="Перетащить объект для изменения порядка">⠿</button><button type="button" class="v612-menu-button" data-v60-object-menu="${i}" aria-expanded="${menuOpen}" aria-label="Действия с объектом: ${v56SafeText(row.obj.title)}">···</button></div>
+  ${menu}
   ${opened?(activeHtml||doneHtml?`<div class="v60-tasks">${activeHtml}${doneHtml}</div>`:`<div class="v60-object-empty">Задач пока нет. Добавьте первую запись.</div>`):''}
   ${more}</div>`;
 }
 function v56RenderCards(){
  const root=document.getElementById('v56Cards');if(!root)return;
  const query=v56Query.trim().toLowerCase();
- const all=v57Rows();
+ const all=v612AllRows();
  const selected=all.filter(row=>{
    if(v56Status==='late'&&!row.late)return false;
    if(v56Status==='waiting'&&!row.waiting)return false;
@@ -6244,7 +6358,9 @@ function v60SaveDistrict(){
  const obj=v60DistrictTarget&&v55Obj(v60DistrictTarget.procId,v60DistrictTarget.objId);
  const sel=document.getElementById('v60DistrictChoice');
  if(!obj||!v60DistrictNames.includes(sel.value))return;
- obj.district=sel.value;v60CloseDistrict();saveData('Изменён район объекта');showToast('Район объекта сохранён');
+ const oldDistrict=v60DistrictOf(obj,state.find(p=>String(p.id)===String(v60DistrictTarget.procId)));
+ if(oldDistrict!==sel.value){const nextOrder=v612EnsureDistrictOrder(sel.value);obj.district=sel.value;obj.manualOrder=nextOrder;}
+ v60CloseDistrict();saveData('Изменён район объекта');showToast('Район объекта сохранён');
 }
 function v60NewObject(district){
  if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
@@ -6255,7 +6371,8 @@ function v60NewObject(district){
    let proc=state.find(p=>(p.objects||[]).some(o=>v60DistrictOf(o,p)===district));
    if(!proc)proc=state.find(p=>v60DistrictOf({title:''},p)===district);
    if(!proc){proc={id:createId(),title:district,objects:[],collapsed:true};state.push(proc);}
-   const obj={id:createId(),title:name,district,archived:false,collapsed:false,steps:[]};proc.objects.push(obj);
+   const nextOrder=v612EnsureDistrictOrder(district);
+   const obj={id:createId(),title:name,district,manualOrder:nextOrder,archived:false,collapsed:false,steps:[]};proc.objects.push(obj);
    v60ClosedRegions.delete(district);v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));v60PersistView();
    saveData('Создан объект в районе '+district);
  });
@@ -6492,7 +6609,10 @@ document.getElementById('v56Cards').addEventListener('click',event=>{
  if(b.hasAttribute('data-v60-step')){const x=v60Steps[Number(b.dataset.v60Step)];if(x)openProcessDetail(x.proc.id,x.obj.id,x.step.id);return;}
  if(b.hasAttribute('data-v60-add')){const x=v60Rows[Number(b.dataset.v60Add)];if(x)openEntryWizard(x.proc.id,x.obj.id);return;}
  if(b.hasAttribute('data-v60-district')){const x=v60Rows[Number(b.dataset.v60District)];if(x)v60DistrictDialog(x.proc.id,x.obj.id);return;}
- if(b.hasAttribute('data-v60-object-menu')){const x=v60Rows[Number(b.dataset.v60ObjectMenu)];if(x)v60ObjectMenu(x);return;}
+ if(b.hasAttribute('data-v612-move')){const x=v60Rows[Number(b.dataset.v612Move)];if(x)v612Move(x,Number(b.dataset.v612Dir));return;}
+ if(b.hasAttribute('data-v612-rename')){const x=v60Rows[Number(b.dataset.v612Rename)];v612MenuKey=null;if(x)v60ObjectMenu(x);return;}
+ if(b.hasAttribute('data-v612-district')){const x=v60Rows[Number(b.dataset.v612District)];v612MenuKey=null;if(x)v60DistrictDialog(x.proc.id,x.obj.id);return;}
+ if(b.hasAttribute('data-v60-object-menu')){const x=v60Rows[Number(b.dataset.v60ObjectMenu)];if(x){const key=v60Key(x);v612MenuKey=v612MenuKey===key?null:key;v56RenderCards();}return;}
  if(b.hasAttribute('data-v60-all')){const x=v60Rows[Number(b.dataset.v60All)];if(!x)return;const k=v60Key(x);if(v60ShowEveryStep.has(k))v60ShowEveryStep.delete(k);else v60ShowEveryStep.add(k);v56RenderCards();return;}
  if(b.hasAttribute('data-v60-result-save')){v60SaveResult(Number(b.dataset.v60ResultSave));return;}
  if(b.hasAttribute('data-v60-result-close')){v60CloseResult();return;}
