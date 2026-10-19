@@ -2472,7 +2472,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     </div>
 
     <!-- Version 5.8: calm notebook layout; existing storage schema is unchanged. -->
-    <section id="v56Workspace" class="v56-workspace" aria-label="Рабочий блокнот">
+    <section id="v56Workspace" class="v56-workspace" aria-label="Рабочий блокнот" hidden>
       <div class="v56-heading-row" hidden>
         <h1 id="v56Heading">Объекты</h1><p id="v56Subheading"></p>
         <button type="button" id="v56LegacyButton" hidden>Дополнительно</button>
@@ -2497,7 +2497,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       <button type="button" id="v56More" class="v56-more" onclick="v56LoadMore()" hidden>Показать ещё</button>
       <p class="v60-footer-note">Нужная задача всегда находится внутри своего объекта. Чтобы добавить объект, откройте соответствующий район.</p>
     </section>
-    <section id="v56LegacyWorkspace" class="v56-legacy-workspace" hidden>
+    <section id="v56LegacyWorkspace" class="v56-legacy-workspace">
       <div class="v56-legacy-intro"><div><h2>Структура объектов</h2><p>Направления, объекты, этапы и настройки</p></div><button type="button" class="v56-structure-link" onclick="v56ToggleStructure()">К объектам</button></div>
     <!-- КОМПАКТНАЯ ШАПКА РЕЕСТРА -->
     <div class="section-bar">
@@ -2927,12 +2927,26 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     </div>
   </div>
 
+  <!-- v6.1.4: no silent success when browser prevents downloading a JSON file -->
+  <div class="modal-overlay" id="backupManualOverlay" style="display:none;z-index:10010" onclick="if(event.target===this)closeBackupManual()">
+    <div class="modal-box" style="max-width:650px;max-height:88vh;overflow:auto" onclick="event.stopPropagation()">
+      <div class="modal-top"><div class="modal-head-title">Резервная копия JSON</div><button type="button" class="modal-x" onclick="closeBackupManual()">✕</button></div>
+      <p id="backupManualReason" style="margin:0 0 8px;font-size:13px">Браузер не подтвердил сохранение файла.</p>
+      <p style="margin:0 0 8px;font-size:13px">Если скачивание не работает: нажмите «Копировать JSON», откройте Блокнот, вставьте Ctrl+V и сохраните с указанным именем, выбрав тип «Все файлы» и кодировку UTF-8.</p>
+      <div id="backupManualFilename" style="font-size:12px;overflow-wrap:anywhere;margin-bottom:8px;font-weight:700"></div>
+      <textarea id="backupManualText" readonly aria-label="Содержимое резервной копии JSON" style="width:100%;box-sizing:border-box;min-height:120px;max-height:22vh;font-family:monospace;font-size:11px"></textarea>
+      <div class="modal-actions-row" style="flex-wrap:wrap">
+        <button type="button" class="btn-m-primary" onclick="copyBackupManual()">Копировать JSON</button>
+        <button type="button" class="btn-m-primary" onclick="retryBackupManual()">Попробовать скачать JSON</button>
+        <button type="button" class="btn-m-danger" onclick="closeBackupManual()">Закрыть</button>
+      </div>
+    </div>
+  </div>
   <div class="toast-msg" id="toastMsg">Готово!</div>
 
   <script>
     const tg = window.Telegram?.WebApp;
     const STORAGE_KEY = 'daily_report_vault_v18';
-    const GEMINI_KEY_STORAGE = 'gemini_user_api_key';
     const CHUNK_SIZE = 900;
     const SNAPSHOT_SCHEMA = 2; // Bundled application release 2.0
     const LOCAL_HISTORY_KEY = STORAGE_KEY + '_snapshots';
@@ -2957,19 +2971,10 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     let activeModalTarget = { procId: null, objId: null, stepId: null };
     let currentRevision = 0;
     let currentSnapshotId = '';
-    let syncedSnapshot = null;
     let lastSyncError = '';
     let undoStack = [];
     let auditLog = [];
-    let lastActionName = 'Изменение данных';
-    let pendingLocalSave = false;
     let deviceId = ''; // Initialized after Model module is defined
-    let lastCloudPointer = null;
-    let retryCount = 0;
-    let cloudSyncInProgress = false;
-    let isSaving = false;
-    let pendingCloudSave = false;
-    let cloudSyncTimer = null;
     let selectedPartyTag = 'Подрядчик CPP';
     let editModalPartyTag = '';
     let textModalCallback = null;
@@ -3549,7 +3554,6 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       const msg=document.getElementById('syncDetails');if(msg)msg.textContent=[label,detail].filter(Boolean).join(' · ');
       const retry=document.getElementById('retrySyncBtn');if(retry)retry.style.display=failed?'inline-block':'none';
     }
-    function updateSyncTag(text){const el=document.getElementById('syncTag');if(el)el.textContent=text;}
     function stopCloudPolling(){
       if(pollTimer!==null){clearInterval(pollTimer);pollTimer=null;}
     }
@@ -3674,8 +3678,10 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     }
     function migrateLegacy(source){
       const old=migrationCandidates[source];if(!old)return;
-      askConfirm('Перенести старые данные в новую облачную базу? Старое хранилище останется без изменений. Перед переносом скачайте исходную копию на устройство.',()=>{
-        Backups.download({...old,type:'projects-monitoring-legacy-backup'},'before_cloud_migration');
+      askConfirm('Перенести старые данные в новую облачную базу? Сначала сохраните исходную копию через системное окно.',async ()=>{
+        if(!await Backups.saveConfirmed({...old,type:'projects-monitoring-legacy-backup'},'before_cloud_migration')){
+          showToast('Перенос отменён: сохранение копии не подтверждено');return;
+        }
         state=Model.normalize(old.data);lastValidData=[];
         currentAction='Перенос старых данных '+source;
         document.getElementById('legacyMigrateBanner').style.display='none';
@@ -4865,18 +4871,44 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       }
     }
 
-    // Backup / restore module: validate before import, and save a downloadable pre-import backup.
+    // Backup / restore module: a triggered anchor click is NOT proof of a saved file.
     const Backups=(()=>{
       function build(){return {schema:SNAPSHOT_SCHEMA,type:'projects-monitoring-backup',exportedAt:new Date().toISOString(),
         rev:currentRevision,snapshotId:currentSnapshotId,data:Model.clone(state),audit:Model.clone(auditLog),presets:getRiskPresets()};}
+      function backupName(prefix){return `${prefix}_${getTodayISO()}.json`;}
+      function backupJson(payload){return JSON.stringify(payload,null,2);}
       function download(payload,prefix='backup_projects'){
+        // Legacy anchor fallback: only a REQUEST; browsers may reject it without an error.
         try{
-          const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+          const blob=new Blob([backupJson(payload)],{type:'application/json;charset=utf-8'});
           const href=URL.createObjectURL(blob);
-          const a=document.createElement('a');a.href=href;a.download=`${prefix}_${getTodayISO()}.json`;
+          const a=document.createElement('a');a.href=href;a.download=backupName(prefix);
           document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),30000);
           return true;
-        }catch(e){console.error(e);showToast('Ошибка создания резервной копии');return false;}
+        }catch(e){console.error(e);showToast('Не удалось запросить скачивание JSON');return false;}
+      }
+      async function saveConfirmed(payload,prefix='backup_projects'){
+        let json;
+        try{json=backupJson(payload);}catch(e){console.error(e);showToast('Не удалось подготовить резервную копию');return false;}
+        const name=backupName(prefix);
+        if(window.isSecureContext && typeof window.showSaveFilePicker==='function'){
+          try{
+            const handle=await window.showSaveFilePicker({suggestedName:name,
+              types:[{description:'Резервная копия JSON',accept:{'application/json':['.json']}}]});
+            const writable=await handle.createWritable();
+            try{await writable.write(new Blob([json],{type:'application/json;charset=utf-8'}));}
+            finally{await writable.close();}
+            showToast('Файл JSON сохранён: '+name);
+            return true;
+          }catch(e){
+            if(e?.name==='AbortError'){showToast('Сохранение отменено');return false;}
+            console.warn('Системное сохранение JSON недоступно',e);
+            openBackupManual(json,name,'Системное сохранение недоступно. Используйте ручной способ.');
+            return false;
+          }
+        }
+        openBackupManual(json,name,'Этот браузер не поддерживает подтверждаемое сохранение. Используйте ручной способ.');
+        return false;
       }
       function previewFile(e){
         const file=e.target.files?.[0];e.target.value='';if(!file)return;
@@ -4892,9 +4924,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
             const objects=normalized.reduce((sum,p)=>sum+p.objects.length,0);
             const steps=normalized.reduce((sum,p)=>sum+p.objects.reduce((v,o)=>v+o.steps.length,0),0);
             const exportInfo=parsed.exportedAt?`\nСоздан: ${String(parsed.exportedAt).slice(0,19)}`:'\nДата резервной копии неизвестна';
-            askConfirm(`Импорт: ${normalized.length} направлений, ${objects} объектов, ${steps} этапов.${exportInfo}\nТекущая база будет заменена. Перед этим скачается её копия. Продолжить?`,()=>{
+            askConfirm(`Импорт: ${normalized.length} направлений, ${objects} объектов, ${steps} этапов.${exportInfo}\nТекущая база будет заменена. Сначала сохраните текущую копию через системное окно. Продолжить?`,async ()=>{
               const previous=build();
-              if(!download(previous,'before_import')){showToast('Импорт отменён: не создана резервная копия');return;}
+              if(!await saveConfirmed(previous,'before_import')){showToast('Импорт отменён: сохранение копии не подтверждено');return;}
               archiveSnapshot(getLocalPayload(),'Перед импортом');
               state=normalized;
               if(Array.isArray(parsed.presets)){
@@ -4909,9 +4941,43 @@ body{background:#f8f9fa!important;color:#2c3542!important}
         };
         reader.readAsText(file,'UTF-8');
       }
-      return {build,download,previewFile};
+      return {build,download,saveConfirmed,previewFile};
     })();
-    function downloadBackupFile(){if(Backups.download(Backups.build()))showToast('Резервная копия скачана');}
+    let backupManualFilename='',backupManualContent='';
+    function openBackupManual(json,name,reason){
+      backupManualFilename=name;backupManualContent=json;
+      document.getElementById('backupManualFilename').textContent=name;
+      document.getElementById('backupManualReason').textContent=reason;
+      document.getElementById('backupManualText').value=json;
+      document.getElementById('backupManualOverlay').style.display='flex';
+    }
+    function closeBackupManual(){
+      document.getElementById('backupManualOverlay').style.display='none';
+      document.getElementById('backupManualText').value='';
+      backupManualFilename='';backupManualContent='';
+    }
+    async function copyBackupManual(){
+      if(!backupManualContent)return;
+      try{
+        if(!navigator.clipboard?.writeText)throw new Error('No clipboard API');
+        await navigator.clipboard.writeText(backupManualContent);
+        showToast('JSON скопирован. Вставьте в Блокнот и сохраните .json');
+      }catch(e){
+        const el=document.getElementById('backupManualText');el.focus();el.select();
+        const copied=!!document.execCommand?.('copy');
+        showToast(copied?'JSON скопирован. Сохраните в Блокноте.':'Выделен JSON. Нажмите Ctrl+C и сохраните в Блокноте.');
+      }
+    }
+    function retryBackupManual(){
+      if(!backupManualContent||!backupManualFilename)return;
+      try{
+        const href=URL.createObjectURL(new Blob([backupManualContent],{type:'application/json;charset=utf-8'}));
+        const a=document.createElement('a');a.href=href;a.download=backupManualFilename;
+        document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),30000);
+        showToast('Запрос отправлен. Проверьте загрузки браузера.');
+      }catch(e){console.warn(e);showToast('Браузер не разрешил скачивание. Используйте копирование JSON.');}
+    }
+    function downloadBackupFile(){void Backups.saveConfirmed(Backups.build());}
     function triggerImportFile(){document.getElementById('backupFileInput').click();}
     function handleFileImport(e){Backups.previewFile(e);}
 
@@ -5761,7 +5827,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 
 
 // V5.7: object-first presentation; state, Reports and Supabase protocol unchanged.
-let v56Screen='projects',v56Status='all',v56Legacy=false,v56Query='',v56Limit=30;
+let v56Screen='projects',v56Status='all',v56Legacy=true,v56Query='',v56Limit=30;
 let v57VisibleObjects=[],v57RenderedSteps=[];
 const v57ExpandedObjects=new Set();
 function v57ObjectKey(proc,obj){return JSON.stringify([String(proc.id),String(obj.id)]);}
