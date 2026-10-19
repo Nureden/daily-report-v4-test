@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<!-- Мой блокнот 6.1: компактная последняя рабочая запись, событие и история прямо под процессом; сохранено облачное API и модель данных. -->
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой блокнот 6.0.1 — Рабочий блокнот</title>
+  <title>Мой блокнот 6.0 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2319,7 +2320,54 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .mgmt-filters label:has(#managementReportScope){display:none!important}
 #managementReportModal .mgmt-sheet{overscroll-behavior:contain}
 @media(max-width:690px){.v60-report-candidates{height:166px!important;max-height:166px!important;min-height:166px!important} #managementReportModal .mgmt-sheet{max-height:94dvh!important}}
-</style></head>
+</style>
+<style id="v61-compact-journal-styles">
+/* One-line latest note, full event history on demand. Do not shrink touch targets. */
+.v61-task-shell{min-width:0;border-bottom:1px solid #f2f3f5;padding:4px 0}
+.v61-task-shell:last-child{border-bottom:0}
+.v61-task-shell .v60-task{padding:3px 0 1px;gap:9px;align-items:flex-start}
+.v61-task-shell .v61-task-main{flex:1;min-width:0}
+.v61-task-shell .v60-task-open{width:100%;align-items:flex-start;min-height:34px}
+.v61-task-shell .v60-task-body{min-width:0;gap:1px}
+.v61-task-shell .v60-task-title{font-size:15px;line-height:1.28;font-weight:600}
+.v61-task-shell .v60-task-meta{font-size:12px;line-height:1.3}
+.v61-task-shell .v60-task-next{margin-left:auto;font-size:19px;flex:0 0 auto;color:#9da9b4}
+.v61-last-comment{display:flex;align-items:center;min-width:0;width:100%;gap:5px;text-align:left;cursor:pointer;background:transparent;border:0;color:#697786;padding:3px 1px;font-size:12px;line-height:1.35}
+.v61-last-date{white-space:nowrap;flex:0 0 auto;color:#8b97a3}
+.v61-last-text{flex:1;min-width:0;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v61-event-meta{color:#8795a2;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:1px}
+.v61-note-actions{display:flex;gap:16px;align-items:center;margin-top:2px}
+.v61-note-actions button{border:0;background:transparent;padding:4px 0;color:#526f8b;font-size:12px;font-weight:500;cursor:pointer}
+.v61-note-actions button+button{color:#8895a2}
+.v61-editor{margin:6px 0 10px 28px;border:1px solid #e8edf0;border-radius:9px;background:#f9fafb;padding:11px;display:grid;gap:9px;min-width:0}
+.v61-editor-title{font-size:13px;font-weight:600;color:#34495a}
+.v61-editor-field{min-width:0;display:grid;gap:4px;font-size:11px;color:#788794}
+.v61-editor-field input,.v61-editor-field textarea{display:block;width:100%;min-width:0;border:1px solid #dce3e9;border-radius:7px;background:#fff;padding:8px 9px;color:#243747;font-size:14px;font-weight:400;resize:vertical;line-height:1.35;box-sizing:border-box}
+.v61-editor-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.v61-editor-actions{display:flex;gap:12px;align-items:center}
+.v61-editor-actions button{border:0;background:transparent;color:#6b7f90;font-size:13px;cursor:pointer;min-height:34px;padding:6px 2px}
+.v61-editor-actions .v61-save{background:#344d66;color:#fff;border-radius:7px;padding:7px 13px}
+.v61-history{margin:4px 0 8px 28px;padding:0 0 0 10px;border-left:2px solid #edf0f3;display:grid;gap:10px;min-width:0}
+.v61-history-item{padding:4px 2px;min-width:0}
+.v61-history-item+.v61-history-item{border-top:1px solid #f0f2f4;padding-top:8px}
+.v61-history-caption{font-size:11px;color:#98a3ad;margin-bottom:3px}
+.v61-history-text{font-size:12px;color:#4e5d6d;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.v61-history-item button{border:0;padding:5px 0;background:transparent;color:#56758e;font-size:11px;cursor:pointer}
+.v61-history-empty{font-size:12px;color:#97a2ad}
+.v61-done-label{font-size:11px;color:#a2aab2;margin:10px 0 2px;border-top:1px solid #edf0f2;padding-top:9px}
+.v61-task-shell:has(.v60-task-done){padding:0;border:0}
+.v61-task-shell .v60-task-done{padding:3px 0;min-height:29px;align-items:center}
+.v61-task-shell .v60-task-done .v61-task-main{min-width:0}
+.v61-task-shell .v60-task-done .v60-task-open{min-height:23px;align-items:center}
+.v61-task-shell .v60-task-done .v60-task-body{display:flex;align-items:center;gap:7px}
+.v61-task-shell .v60-task-done .v60-task-title{font-size:11.5px!important;font-weight:400!important;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:line-through;color:#939fa9}
+.v61-task-shell .v60-task-done .v60-task-meta{font-size:10.5px!important;max-width:48%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9ba5ae}
+.v61-task-shell .v60-task-done .v60-task-next{font-size:14px}
+.v61-task-shell .v60-check{width:20px;height:20px;flex:0 0 20px;margin:3px 0 0}
+.v61-task-shell:has(.v60-task-done) .v60-check{margin:0}
+@media(max-width:380px){.v61-editor-grid{grid-template-columns:1fr}.v61-note-actions{gap:11px}}
+</style>
+</head>
 <body>
 
   <div class="app-container">
@@ -4456,7 +4504,15 @@ body{background:#f8f9fa!important;color:#2c3542!important}
           step.completedAt = getTodayISO();
           step.blocker = null;
           (step.history||[]).forEach(h => {if(h.active){h.active=false;h.closedAt=new Date().toISOString();}});
-        } else step.completedAt = null;
+        } else {
+          if(step.completedAt || step.actualResult){
+            if(!Array.isArray(step.previousCompletions))step.previousCompletions=[];
+            step.previousCompletions.push({at:new Date().toISOString(),completedAt:step.completedAt||'',actualResult:step.actualResult||''});
+            step.previousCompletions=step.previousCompletions.slice(-25);
+          }
+          step.completedAt=null;
+          step.actualResult=''; // Past result is preserved above, not reused as a new result.
+        }
         if(!Array.isArray(step.progressEvents))step.progressEvents=[];
         if(step.progressEvents.length<700)step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:step.done?'Задача завершена':'Задача возвращена в работу',reason:'',solution:'',nextAction:'',nextDate:'',doc:'',completionChange:true});
         step.updatedAt = getTimestampStr();
@@ -4643,6 +4699,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       note('','Что делаем',step.text);
       note('','Ожидаемый результат',step.expectedResult);
       if(step.done&&step.actualResult)note('','Полученный результат',step.actualResult);
+      for(const previous of [...(Array.isArray(step.previousCompletions)?step.previousCompletions:[])].reverse().slice(0,10)){
+        note('','Предыдущее завершение'+(previous.completedAt?' · '+v55DateRu(previous.completedAt):''),previous.actualResult||'Результат не указан');
+      }
       const events=Array.isArray(step.progressEvents)?step.progressEvents:[];
       const last=events.length?events[events.length-1]:null;
       if(!step.done&&(step.blocker||(!last?.resolved&&last?.reason)))note('problem','Почему нет результата',step.blocker||last.reason);
@@ -6004,6 +6063,7 @@ function v60PersistView(){
  try{localStorage.setItem(v60ViewKey,JSON.stringify({closed:[...v60ClosedRegions].slice(0,50)}));}catch(e){}
 }
 function v60FoldAllProcesses(){
+ v61Editor=null;v61HistoryOpen.clear();
  v59OpenedObjects.clear();
  v60ShowEveryStep.clear();
  v60LastDone=null;
@@ -6013,58 +6073,103 @@ function v60FoldAllProcesses(){
 
 
 function v60Key(row){return v57ObjectKey(row.proc,row.obj);}
+// V6.1: one-row working notes. Store owner/deadline on the EVENT, never on the parent task.
+let v61Editor=null;
+const v61HistoryOpen=new Set();
+function v61StepKey(proc,obj,step){return JSON.stringify([String(proc.id),String(obj.id),String(step.id)]);}
+function v61WorkingEvents(step){
+ const all=Array.isArray(step.progressEvents)?step.progressEvents:[];
+ return all.map((e,i)=>({e,i})).filter(({e})=>e&&String(e.what||'').trim()&&!e.created&&!e.editChange&&!e.completionChange&&!e.systemChange&&!/^Фактический результат:/i.test(String(e.what||'')))
+  .sort((a,b)=>{
+   const date=x=>Date.parse(x.e.at||x.e.date||'')||0;
+   return date(b)-date(a)||b.i-a.i;
+  }).map(x=>x.e);
+}
+function v61DateISO(raw){const date=String(raw||'').replace(/^до\s*/i,'').trim();const iso=v55StrictISO(date)?date:displayToISO(date);return v55StrictISO(iso)?iso:'';}
+function v61EventMeta(step,ev){
+ const parts=[];
+ if(ev.owner&&String(ev.owner).trim()!==String(step.owner||'').trim())parts.push(String(ev.owner).trim());
+ const due=v61DateISO(ev.dueDate||'');
+ if(due&&due!==v61DateISO(step.date||''))parts.push('до '+v56DateShort(due));
+ return parts.join(' · ');
+}
 function v60Order(row){
- const today=getTodayISO(),pin=String(pinnedStepsMap[row.obj.id]||''),query=v56Query.trim();
- const objectMatched=(row.obj.title+' '+row.proc.title+' '+v60DistrictOf(row.obj,row.proc)).toLowerCase().includes(query);
  return row.steps.filter(i=>!i.step.done).sort((a,b)=>{
-    const rank=i=>{
-      if(query&&!objectMatched&&v57MatchesSearchInStep(row,i))return -2;
-      if(pin&&String(i.step.id)===pin)return -1;
-      return i.late?0:(i.step.nextDate&&i.step.nextDate<=today?1:2);
-    };
-    const iso=i=>displayToISO(i.step.date||'')||'9999-99-99';
-    return rank(a)-rank(b)||iso(a).localeCompare(iso(b));
+   const iso=i=>v61DateISO(i.step.date)||'9999-99-99';
+   return iso(a).localeCompare(iso(b))||String(a.step.text||'').localeCompare(String(b.step.text||''),'ru');
  });
 }
 function v60StepLink(row,info){return v60Steps.push({proc:row.proc,obj:row.obj,step:info.step})-1;}
+function v61EventEditor(row,step,idx){
+ const key=v61StepKey(row.proc,row.obj,step);
+ if(!v61Editor||v61Editor.key!==key)return '';
+ const ev=v61Editor.id===null?null:v61WorkingEvents(step).find(e=>String(e.id)===String(v61Editor.id));
+ if(v61Editor.id!==null&&!ev)return '';
+ const owner=ev?(ev.owner!==undefined?ev.owner:step.owner):(step.owner||'');
+ const due=ev?(ev.dueDate!==undefined?v61DateISO(ev.dueDate):v61DateISO(step.date)):v61DateISO(step.date);
+ return `<div class="v61-editor" data-v61-editing="${idx}" role="group" aria-label="${ev?'Изменить событие':'Новое событие'}">
+   <div class="v61-editor-title">${ev?'Изменить событие':'Что произошло?'}</div>
+   <label class="v61-editor-field"><span>Событие</span><textarea data-v61-what maxlength="2000" rows="2" placeholder="Кратко запишите, что произошло">${v56SafeText(ev?.what||'')}</textarea></label>
+   <div class="v61-editor-grid"><label class="v61-editor-field"><span>Ответственный за событие</span><input data-v61-owner maxlength="160" value="${v56SafeText(owner)}" placeholder="Не указан"></label>
+    <label class="v61-editor-field"><span>Срок события</span><input data-v61-date type="date" value="${v56SafeText(due)}"></label></div>
+   <div class="v61-editor-actions"><button type="button" data-v61-save="${idx}" class="v61-save">Сохранить</button><button type="button" data-v61-cancel>Отмена</button></div>
+ </div>`;
+}
+function v61History(row,step,idx,working){
+ const key=v61StepKey(row.proc,row.obj,step);
+ if(!v61HistoryOpen.has(key))return '';
+ const old=Array.isArray(step.history)?step.history:[];
+ const entries=working.map(e=>{
+   const full=[e.what,e.reason?'Причина: '+e.reason:'',e.solution?'Решение: '+e.solution:'',e.nextAction?'Дальше: '+e.nextAction:'',e.doc?'Документ: '+e.doc:''].filter(Boolean).join('\n');
+   const attributes=[e.owner||'',e.dueDate?'до '+v56DateShort(e.dueDate):''].filter(Boolean).join(' · ');
+   return `<div class="v61-history-item"><div class="v61-history-caption">${v56SafeText(v56DateShort(e.date||e.at||''))}${attributes?' · '+v56SafeText(attributes):''}</div><div class="v61-history-text">${v56SafeText(full)}</div><button type="button" data-v61-history-edit="${idx}" data-v61-event="${v56SafeText(e.id)}">Изменить</button></div>`;
+ });
+ for(const h of [...old].reverse()){
+  entries.push(`<div class="v61-history-item"><div class="v61-history-caption">${v56SafeText(h.date||'Ранее')}</div><div class="v61-history-text">${v56SafeText(h.text||'')}</div></div>`);
+ }
+ return `<div class="v61-history" aria-label="Вся история процесса">${entries.join('')||'<div class="v61-history-empty">История пока пуста</div>'}</div>`;
+}
 function v60RenderStep(row,info){
- const idx=v60StepLink(row,info),step=info.step;
- const done=!!step.done;
+ const idx=v60StepLink(row,info),step=info.step,done=!!step.done;
  const tags=[];
  if(step.owner)tags.push(v56SafeText(step.owner));
- if(done){
-   if(step.completedAt)tags.push(v56SafeText(v56DateShort(step.completedAt)));
- }else{
-   if(step.date)tags.push('Срок '+v56SafeText(v56DateShort(step.date)));
-   if(step.nextDate)tags.push('Контроль '+v56SafeText(v56DateShort(step.nextDate)));
-   if(info.late)tags.push('Просрочено');
- }
- const meta=tags.length?tags.join(' · '):(done?'Дата выполнения не указана':'Без срока и ответственного');
+ if(done){if(step.completedAt)tags.push(v56SafeText(v56DateShort(step.completedAt)));}
+ else{if(step.date)tags.push('Срок '+v56SafeText(v56DateShort(step.date)));if(info.late)tags.push('Просрочено');}
+ const meta=tags.join(' · ')|| (done?'Дата выполнения не указана':'Без срока и ответственного');
  const inline=v60LastDone&&String(v60LastDone.stepId)===String(step.id)&&String(v60LastDone.objId)===String(row.obj.id)&&String(v60LastDone.procId)===String(row.proc.id)&&done;
- return `<div class="v60-task ${done?'v60-task-done':''} ${info.late?'v60-task-urgent':''}">
-   <input type="checkbox" class="v60-check" data-v60-check="${idx}" aria-label="${done?'Вернуть в работу':'Выполнить'}: ${v56SafeText(step.text)}" ${done?'checked':''}>
-   <button type="button" class="v60-task-open" data-v60-step="${idx}" aria-label="Открыть процесс: ${v56SafeText(step.text)}">
-      <span class="v60-task-body"><span class="v60-task-title">${v56SafeText(step.text)}</span><span class="v60-task-meta">${meta}</span></span><span class="v60-task-next" aria-hidden="true">›</span>
-   </button></div>${inline?`<div class="v60-inline-result"><label for="v60ResultValue">Задача завершена. Фактический результат (необязательно)</label><input id="v60ResultValue" type="text" maxlength="2000" placeholder="Например: получен акт сверки №125" value="${v56SafeText(step.actualResult||'')}"><div><button type="button" data-v60-result-save="${idx}">Сохранить результат</button> · <button type="button" data-v60-result-close>Не указывать</button></div></div>`:''}`;
+ const working=v61WorkingEvents(step),last=working[0];
+ const key=v61StepKey(row.proc,row.obj,step);
+ let extras='';
+ if(!done){
+  extras=`${last?`<button type="button" data-v61-edit="${idx}" class="v61-last-comment" title="${v56SafeText(last.what)}"><span class="v61-last-date">${v56SafeText(v56DateShort(last.date||last.at||''))}</span><span class="v61-last-text">${v56SafeText(last.what)}</span></button>${v61EventMeta(step,last)?`<div class="v61-event-meta">${v56SafeText(v61EventMeta(step,last))}</div>`:''}`:''}
+    <div class="v61-note-actions"><button type="button" data-v61-add="${idx}">+ Событие</button><button type="button" data-v61-history="${idx}" aria-expanded="${v61HistoryOpen.has(key)}">История (${working.length+(step.history||[]).length})</button></div>`;
+ }
+ const eventEditor=v61EventEditor(row,step,idx);
+ const history=v61History(row,step,idx,working);
+ return `<div class="v61-task-shell"><div class="v60-task ${done?'v60-task-done':''} ${info.late?'v60-task-urgent':''}">
+  <input type="checkbox" class="v60-check" data-v60-check="${idx}" aria-label="${done?'Вернуть в работу':'Выполнить'}: ${v56SafeText(step.text)}" ${done?'checked':''}>
+  <div class="v61-task-main"><button type="button" class="v60-task-open" data-v60-step="${idx}" aria-label="Открыть подробности: ${v56SafeText(step.text)}">
+   <span class="v60-task-body"><span class="v60-task-title">${v56SafeText(step.text)}</span><span class="v60-task-meta">${meta}</span></span><span class="v60-task-next" aria-hidden="true">›</span></button>
+   ${extras}
+  </div></div>${eventEditor}${history}
+  ${inline?`<div class="v60-inline-result"><label for="v60ResultValue">Задача завершена. Фактический результат (необязательно)</label><input id="v60ResultValue" type="text" maxlength="2000" placeholder="Например: получен акт сверки №125" value="${v56SafeText(step.actualResult||'')}"><div><button type="button" data-v60-result-save="${idx}">Сохранить результат</button> · <button type="button" data-v60-result-close>Не указывать</button></div></div>`:''}</div>`;
 }
 function v60RenderObject(row,i){
  const opened=v59OpenedObjects.has(v60Key(row));
  const active=v60Order(row);
- const recentDone=row.steps.filter(x=>x.step.done).sort((a,b)=>String(b.step.completedAt||'').localeCompare(String(a.step.completedAt||''))).slice(0,2);
- let all=opened?(v60ShowEveryStep.has(v60Key(row))?row.steps:[...active,...recentDone]):[];
- // Keep a newly completed row visible so the optional result can be entered.
- if(opened&&v60LastDone&&String(v60LastDone.objId)===String(row.obj.id)&&String(v60LastDone.procId)===String(row.proc.id)){
-   const completedInfo=row.steps.find(x=>String(x.step.id)===String(v60LastDone.stepId)&&x.step.done);
-   if(completedInfo&&!all.includes(completedInfo))all=[completedInfo,...all];
- }
+ const completed=row.steps.filter(x=>x.step.done).sort((a,b)=>{
+  const date=x=>v61DateISO(x.step.completedAt)||'0000-00-00';
+  return date(b).localeCompare(date(a));
+ });
  const urgent=row.steps.filter(x=>x.late).length;
- const completed=row.finished;
- const count=urgent?`<span class="v60-critical">${urgent} просроч.</span>`:`<span class="v60-object-count">${completed}/${row.steps.length}</span>`;
- const note=opened&&urgent&&row.steps.some(info=>info.late&&!info.step.blocker)?'<p class="v60-note">Есть просроченные сроки. При открытии процесса можно указать причину и следующее действие.</p>':'';
- const more=opened?`<div class="v60-object-detail"><div class="v60-object-controls"><button type="button" data-v60-add="${i}">+ Новая запись</button>${(row.steps.length>2)?`<button type="button" data-v60-all="${i}">${v60ShowEveryStep.has(v60Key(row))?'Только текущие':'Все задачи ('+row.steps.length+')'}</button>`:''}<button type="button" data-v60-district="${i}">${v60DistrictOf(row.obj,row.proc)==='Район не указан'?'Указать район':'Изменить район'}</button><button type="button" class="v60-more" data-v60-object-menu="${i}" aria-label="Действия с объектом">···</button></div>${note}</div>`:'';
+ const count=urgent?`<span class="v60-critical">${urgent} просроч.</span>`:`<span class="v60-object-count">${row.finished}/${row.steps.length}</span>`;
+ const note=opened&&urgent&&row.steps.some(info=>info.late&&!info.step.blocker)?'<p class="v60-note">Есть просроченные задачи. При открытии процесса можно указать причину и следующее действие.</p>':'';
+ const more=opened?`<div class="v60-object-detail"><div class="v60-object-controls"><button type="button" data-v60-add="${i}">+ Новая запись</button><button type="button" data-v60-district="${i}">${v60DistrictOf(row.obj,row.proc)==='Район не указан'?'Указать район':'Изменить район'}</button><button type="button" class="v60-more" data-v60-object-menu="${i}" aria-label="Действия с объектом">···</button></div>${note}</div>`:'';
+ const activeHtml=active.map(info=>v60RenderStep(row,info)).join('');
+ const doneHtml=completed.length?`<div class="v61-done-label">Завершённые (${completed.length})</div>${completed.map(info=>v60RenderStep(row,info)).join('')}`:'';
  return `<div class="v60-object ${opened?'v60-is-open':''}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">${opened?'⌄':'›'}</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}</div>
-   ${opened?(all.length?`<div class="v60-tasks">${all.map(info=>v60RenderStep(row,info)).join('')}</div>`:`<div class="v60-object-empty">Задач пока нет. Добавьте первую запись.</div>`):''}
-   ${more}</div>`;
+  ${opened?(activeHtml||doneHtml?`<div class="v60-tasks">${activeHtml}${doneHtml}</div>`:`<div class="v60-object-empty">Задач пока нет. Добавьте первую запись.</div>`):''}
+  ${more}</div>`;
 }
 function v56RenderCards(){
  const root=document.getElementById('v56Cards');if(!root)return;
@@ -6154,10 +6259,6 @@ function v60SaveResult(idx){
  const result=String(document.getElementById('v60ResultValue')?.value||'').trim().slice(0,2000);
  if(result!==String(step.actualResult||'')){
   step.actualResult=result;step.updatedAt=getTimestampStr();
-  if(result && (!step.progressEvents||step.progressEvents.length<700)){
-    if(!Array.isArray(step.progressEvents))step.progressEvents=[];
-    step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:'Фактический результат: '+result,reason:'',solution:'',nextAction:'',nextDate:'',doc:''});
-  }
   saveData('Уточнён фактический результат');
  }
  v60LastDone=null;v56RenderCards();showToast('Результат сохранён');
@@ -6256,8 +6357,73 @@ function refreshManagementReport(){v60UpdateReportCandidates();}
 document.getElementById('v60ReportCandidates').addEventListener('click',event=>{
  const b=event.target.closest('button[data-v60-report]');if(b)v60AddReportItem(Number(b.dataset.v60Report));
 });
+
+function v61StartEvent(index,eventId){
+ const x=v60Steps[index];if(!x)return;
+ const key=v61StepKey(x.proc,x.obj,x.step);
+ if(eventId!==null&&!v61WorkingEvents(x.step).some(e=>String(e.id)===String(eventId))){showToast('Запись не найдена');return;}
+ v61Editor={key,id:eventId===null?null:String(eventId)};
+ v56RenderCards();
+ const field=document.querySelector('.v61-editor textarea[data-v61-what]');
+ if(field)field.focus({preventScroll:true});
+}
+function v61ToggleHistory(index){
+ const x=v60Steps[index];if(!x)return;
+ const key=v61StepKey(x.proc,x.obj,x.step);
+ if(v61HistoryOpen.has(key))v61HistoryOpen.delete(key);else v61HistoryOpen.add(key);
+ v56RenderCards();
+}
+function v61SaveEvent(index){
+ if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
+ const x=v60Steps[index];if(!x||!v61Editor||v61Editor.key!==v61StepKey(x.proc,x.obj,x.step))return;
+ const form=document.querySelector('.v61-editor[data-v61-editing="'+index+'"]');if(!form)return;
+ const what=String(form.querySelector('[data-v61-what]').value||'').trim().slice(0,2000);
+ const owner=String(form.querySelector('[data-v61-owner]').value||'').trim().slice(0,160);
+ const dueDate=String(form.querySelector('[data-v61-date]').value||'');
+ if(!what){showToast('Запишите, что произошло');form.querySelector('[data-v61-what]').focus();return;}
+ if(dueDate&&!v55StrictISO(dueDate)){showToast('Укажите корректный срок события');return;}
+ const step=x.step,events=Array.isArray(step.progressEvents)?step.progressEvents:(step.progressEvents=[]);
+ const now=new Date().toISOString();
+ if(v61Editor.id===null){
+  if(events.length>=700){showToast('История процесса слишком велика');return;}
+  events.push({id:createId(),at:now,date:getTodayISO(),what,owner,dueDate,reason:'',solution:'',nextAction:'',nextDate:'',doc:''});
+ }else{
+  const ev=events.find(e=>String(e.id)===v61Editor.id);
+  if(!ev||!v61WorkingEvents(step).some(e=>String(e.id)===v61Editor.id)){showToast('Запись не найдена');return;}
+  if(ev.what===what&&String(ev.owner??step.owner??'')===owner&&v61DateISO(ev.dueDate??step.date??'')===dueDate){v61Editor=null;v56RenderCards();return;}
+  if(!Array.isArray(ev.editTrail))ev.editTrail=[];
+  ev.editTrail.push({at:now,what:ev.what||'',owner:ev.owner===undefined?null:ev.owner,dueDate:ev.dueDate===undefined?null:ev.dueDate});
+  ev.editTrail=ev.editTrail.slice(-30);
+  ev.what=what;ev.owner=owner;ev.dueDate=dueDate;ev.editedAt=now;
+  // ev.at, ev.date and position in history deliberately stay unchanged.
+ }
+ step.updatedAt=getTimestampStr();
+ v61Editor=null;
+ saveData('Событие процесса '+(events.length>0?'сохранено':''));
+ showToast('Событие сохраняется в облако');
+}
+// The details arrow stays unchanged; adding a note there now returns to the inline editor.
+openProcessEvent=function(){
+ const t=v55DetailTarget;
+ if(!t||t.stepId===null)return;
+ closeProcessDetail();
+ const i=v60Steps.findIndex(x=>String(x.proc.id)===String(t.procId)&&String(x.obj.id)===String(t.objId)&&String(x.step.id)===String(t.stepId));
+ if(i>=0){v61StartEvent(i,null);return;}
+ v59OpenedObjects.add(JSON.stringify([String(t.procId),String(t.objId)]));
+ v56RenderCards();
+ const next=v60Steps.findIndex(x=>String(x.proc.id)===String(t.procId)&&String(x.obj.id)===String(t.objId)&&String(x.step.id)===String(t.stepId));
+ if(next>=0)v61StartEvent(next,null);
+};
 document.getElementById('v56Cards').addEventListener('click',event=>{
  let b=event.target.closest('button');if(!b)return;
+ // Inline working-event editor: names and dates belong to the event, not to the task.
+ if(b.hasAttribute('data-v61-add')){v61StartEvent(Number(b.dataset.v61Add),null);return;}
+ if(b.hasAttribute('data-v61-edit')){const i=Number(b.dataset.v61Edit),x=v60Steps[i];if(x){const ev=v61WorkingEvents(x.step)[0];if(ev)v61StartEvent(i,ev.id);}return;}
+ if(b.hasAttribute('data-v61-history')){v61ToggleHistory(Number(b.dataset.v61History));return;}
+ if(b.hasAttribute('data-v61-history-edit')){v61StartEvent(Number(b.dataset.v61HistoryEdit),b.dataset.v61Event);return;}
+ if(b.hasAttribute('data-v61-save')){v61SaveEvent(Number(b.dataset.v61Save));return;}
+ if(b.hasAttribute('data-v61-cancel')){v61Editor=null;v56RenderCards();return;}
+
  if(b.hasAttribute('data-v60-region')){
   const district=v60Regions[Number(b.dataset.v60Region)];if(!district)return;
   if(v60ClosedRegions.has(district))v60ClosedRegions.delete(district);else v60ClosedRegions.add(district);
