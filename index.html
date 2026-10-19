@@ -2402,6 +2402,41 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v614-task-actions button{border:1px solid #e2e8f0;color:#9d4e45;background:#fff;border-radius:6px;padding:7px 10px;min-height:35px;cursor:pointer}
 @media(max-width:600px){.v614-direction{max-width:28%;font-size:10px}}
 </style>
+<style id="v614-task-comments-final">
+/* Task title and metadata occupy a single header row on desktop. */
+.step-unit .step-left-part{flex:1 1 auto;min-width:0;align-items:flex-start}
+.step-unit .v614-task-heading{display:flex;flex:1;align-items:flex-start;justify-content:space-between;gap:10px 22px;min-width:0;flex-wrap:wrap}
+.step-unit .v614-task-heading>.v55-step-title{flex:1 1 215px;min-width:160px;text-align:left;font-size:18px!important;font-weight:650!important;line-height:1.35}
+.step-unit .v614-task-fields{display:flex;flex:0 1 auto;flex-wrap:wrap;gap:4px 15px;align-items:center;min-width:0;justify-content:flex-end;margin-left:auto;padding-top:2px}
+.step-unit .v614-task-fields button{border:0;background:transparent;padding:2px 0;color:#6c7b8c;font-size:14px;min-height:27px;line-height:1.3;text-align:left;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+.step-unit .v614-task-fields strong{color:#30465f;font-weight:600}
+.step-unit .v614-task-fields .v614-date-late strong,.v614-deadline-warning{color:#b0752d}
+.step-unit .step-status-row{padding-left:29px;font-size:13px;gap:5px 11px}
+.v614-comments{margin:3px 0 2px 29px;display:grid;gap:7px;min-width:0}
+.v614-comment-preview{border-left:2px solid #cbd8e9;padding:4px 0 5px 10px;color:#4d5f71;min-width:0}
+.v614-comment-preview small,.v614-comment-history small{display:block;color:#8e9cab;font-size:12px;margin-bottom:2px}
+.v614-comment-preview p,.v614-comment-history p{font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.v614-comment-add{border:0;background:transparent;color:#356bb0;cursor:pointer;font-size:14px;font-weight:600;text-align:left;padding:4px 0;min-height:35px;justify-self:start}
+.v614-comment-history{color:#64788f;font-size:13px}
+.v614-comment-history summary{cursor:pointer;min-height:30px;padding:4px 0;list-style:revert}
+.v614-comment-history-item{padding:7px 2px 7px 8px;border-left:2px solid #e3e9f0;margin:6px 0}
+.v614-comment-editor{background:#f8fafc;border:1px solid #e3eaf3;border-radius:9px;padding:10px;min-width:0}
+.v614-comment-editor[hidden]{display:none!important}
+.v614-comment-editor label{display:block;font-size:13px;font-weight:600;color:#53687c;margin-bottom:5px}
+.v614-comment-editor textarea{width:100%;box-sizing:border-box;min-width:0;min-height:88px;resize:vertical;border:1px solid #d7e0ea;border-radius:7px;background:#fff;padding:9px 10px;font-size:15px;line-height:1.4;color:#29394a}
+.v614-comment-editor-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.v614-comment-editor-actions button{min-height:37px;padding:7px 13px;border-radius:7px;border:1px solid #d7e0ea;background:#fff;color:#4d6278;font-size:14px;cursor:pointer}
+.v614-comment-editor-actions button:first-child{background:#2b65b5;border-color:#2b65b5;color:#fff;font-weight:600}
+#processEventModal #v60EventExpand,#processEventModal #v60EventExtra,#processEventModal #v55EventDone,#processEventModal label[for="v55EventDone"],#processEventModal #v55EventResolvedLabel{display:none!important}
+@media(max-width:760px){
+ .step-unit .v614-task-heading{gap:3px}
+ .step-unit .v614-task-heading>.v55-step-title{flex-basis:100%;min-width:0;font-size:17px!important}
+ .step-unit .v614-task-fields{width:100%;flex:1 1 100%;justify-content:flex-start;margin-left:0;gap:2px 14px}
+ .step-unit .v614-task-fields button{font-size:13px}
+ .v614-comments{margin-left:29px}
+}
+@media(max-width:420px){.v614-comments{margin-left:0}.step-unit .step-status-row{padding-left:0}}
+</style>
 </head>
 <body>
 
@@ -2574,11 +2609,11 @@ body{background:#f8f9fa!important;color:#2c3542!important}
   <!-- V5.5: все подробности видны только после открытия процесса. -->
   <div class="modal-overlay" id="processDetailModal" aria-hidden="true" onclick="if(event.target===this)closeProcessDetail()">
     <section class="modal-box v55-modal v55-process-modal" role="dialog" aria-modal="true" aria-labelledby="v55ProcessTitle" onclick="event.stopPropagation()">
-      <div class="modal-top"><h2 id="v55ProcessTitle">Ход процесса</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="closeProcessDetail()">✕</button></div>
+      <div class="modal-top"><h2 id="v55ProcessTitle">Комментарии</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="closeProcessDetail()">✕</button></div>
       <div id="v55ProcessBody" class="v55-detail-top"></div>
       <div class="v55-actions">
         <button type="button" onclick="editProcessFromDetail()">Изменить запись</button>
-        <button type="button" class="primary" id="v55AddEventBtn" onclick="openProcessEvent()">+ Что произошло?</button>
+        <button type="button" class="primary" id="v55AddEventBtn" onclick="v614AddCommentFromDetail()">+ Комментарий</button>
       </div>
     </section>
   </div>
@@ -2586,10 +2621,10 @@ body{background:#f8f9fa!important;color:#2c3542!important}
   <!-- V5.5: событие с причиной, решением и датой следующего шага. -->
   <div class="modal-overlay" id="processEventModal" aria-hidden="true" onclick="if(event.target===this)closeProcessEvent()">
     <section class="modal-box v55-modal" role="dialog" aria-modal="true" aria-labelledby="v55EventTitle" onclick="event.stopPropagation()">
-      <div class="modal-top"><h2 id="v55EventTitle">Что произошло?</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="closeProcessEvent()">✕</button></div>
-      <p class="v55-subtitle">Запишите факт. Причину и следующий шаг можно дополнить позднее.</p>
+      <div class="modal-top"><h2 id="v55EventTitle">Новый комментарий</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="closeProcessEvent()">✕</button></div>
+      <p class="v55-subtitle">Кратко напишите, что произошло и какие были изменения.</p>
       <form class="v55-fields" onsubmit="event.preventDefault();saveProcessEvent()">
-        <label for="v55EventWhat">Что произошло? <textarea id="v55EventWhat" maxlength="2000" required placeholder="Направлено письмо №125 в НАО"></textarea></label>
+        <label for="v55EventWhat">Комментарий <textarea id="v55EventWhat" maxlength="2000" required placeholder="Например: направлено письмо, получен ответ, изменился срок..."></textarea></label>
         <div id="v60EventExtra" class="v60-event-extra" hidden><label for="v55EventReason">Почему нет результата? <small>Заполняйте только когда причина действительно известна</small><textarea id="v55EventReason" maxlength="2000" placeholder="НАО запросило дополнительные документы"></textarea></label>
         <label for="v55EventSolution">Что делаем для решения? <textarea id="v55EventSolution" maxlength="2000" placeholder="Направить уточнённые материалы"></textarea></label>
         <label for="v55EventNext">Что будет дальше? <input id="v55EventNext" maxlength="1000" placeholder="Получить ответ НАО"></label>
@@ -2597,7 +2632,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
         <label for="v55EventDoc">Документ / № письма (при наличии) <input id="v55EventDoc" maxlength="500" placeholder="Исх. №125 от 16.10.2026"></label>
         </div><button type="button" id="v60EventExpand" class="v60-event-expand" onclick="v60ToggleEventExtra()" aria-expanded="false">+ Дополнительные поля: причина, действие, дата контроля</button><label class="v55-check-label" for="v55EventResolved" id="v55EventResolvedLabel"><input id="v55EventResolved" type="checkbox"> Проблема устранена, работа продолжается</label>
         <label class="v55-check-label" for="v55EventDone"><input id="v55EventDone" type="checkbox"> Результат получен — завершить задачу</label>
-        <div class="v55-actions"><button type="button" onclick="closeProcessEvent()">Отмена</button><button type="submit" class="primary">Записать в историю</button></div>
+        <div class="v55-actions"><button type="button" onclick="closeProcessEvent()">Отмена</button><button type="submit" class="primary">Сохранить комментарий</button></div>
       </form>
     </section>
   </div>
@@ -4746,48 +4781,32 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     function openProcessDetail(procId,objId,stepId){
       const step=v55Step({procId,objId,stepId});if(!step)return;
       v55DetailTarget={procId,objId,stepId};
-      const obj=v55Obj(procId,objId);
-      v55El('v55ProcessTitle').textContent=step.text;
+      v55El('v55ProcessTitle').textContent='Комментарии · '+step.text;
       const body=v55El('v55ProcessBody');body.replaceChildren();
       const make=(tag,cls,text,parent=body)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;parent.appendChild(el);return el;};
-      const note=(cls,title,value,empty='Не записано')=>{
-        const card=make('div','v55-progress-card '+cls);
-        make('strong','',title,card);make('div',value?'': 'muted',value||empty,card);return card;
-      };
       const tags=make('div','v55-detail-tags');
-      make('span','',step.done?'Выполнено':step.blocker?'Есть проблема':step.workflowStatus==='waiting'?'Ожидание':'В работе',tags);
-      if(step.owner)make('span','','Ответственный: '+step.owner,tags);
-      if(step.date)make('span','','Срок: '+String(step.date).replace(/^до\s*/i,''),tags);
-      if(step.completedAt)make('span','','Выполнено: '+step.completedAt,tags);
-      note('','Что делаем',step.text);
-      note('','Ожидаемый результат',step.expectedResult);
-      if(step.done&&step.actualResult)note('','Полученный результат',step.actualResult);
-      for(const previous of [...(Array.isArray(step.previousCompletions)?step.previousCompletions:[])].reverse().slice(0,10)){
-        note('','Предыдущее завершение'+(previous.completedAt?' · '+v55DateRu(previous.completedAt):''),previous.actualResult||'Результат не указан');
-      }
-      const events=Array.isArray(step.progressEvents)?step.progressEvents:[];
-      const last=events.length?events[events.length-1]:null;
-      if(!step.done&&(step.blocker||(!last?.resolved&&last?.reason)))note('problem','Почему нет результата',step.blocker||last.reason);
-      if(last?.solution)note('action','Что делаем для решения',last.solution);
-      if(step.nextAction)note('next','Следующее действие',step.nextAction+(step.nextDate?' · '+v55DateRu(step.nextDate):''));
+      make('span','',step.owner?'Ответственный: '+step.owner:'Ответственный не указан',tags);
+      make('span','',step.date?'Срок: '+String(step.date).replace(/^до\s*/i,''):'Срок не указан',tags);
+      const events=v614ManualEvents(step);
       if(events.length){
-        make('div','v55-section-label','Что произошло');const list=make('div','v55-journal');
-        for(const ev of [...events].reverse()){
+        make('div','v55-section-label','Ваши комментарии');
+        const list=make('div','v55-journal');
+        for(const ev of events){
           const item=make('div','v55-event',undefined,list);
           make('div','v55-event-date',v55DateRu(ev.date)||ev.date||'',item);
           make('p','',ev.what,item);
           if(ev.doc)make('p','','Документ: '+ev.doc,item);
           if(ev.reason)make('p','','Причина: '+ev.reason,item);
           if(ev.solution)make('p','','Решение: '+ev.solution,item);
-          if(ev.nextAction)make('p','','Следующее: '+ev.nextAction+(ev.nextDate?' ('+v55DateRu(ev.nextDate)+')':''),item);
         }
-      }else make('p','v55-subtitle','Записей о ходе процесса пока нет. Добавьте первое событие.');
-      const old=(step.history||[]).filter(h=>!events.some(ev=>ev.reason && String(h.text||'').includes(ev.reason)));
+      }else make('p','v55-subtitle','Комментариев пока нет. Вы можете добавить первый.');
+      const old=Array.isArray(step.history)?step.history:[];
       if(old.length){
-        const details=make('details','v55-old-history');make('summary','','Ранее записанные замечания ('+old.length+')',details);
+        const details=make('details','v55-old-history');
+        make('summary','','Ранее записанные замечания ('+old.length+')',details);
         for(const h of [...old].reverse())make('p','',''+h.date+' — '+h.text+(h.doc?' · '+h.doc:''),details);
       }
-      v55El('v55AddEventBtn').disabled=!!step.done;
+      v55El('v55AddEventBtn').disabled=false;
       v55OpenModal('processDetailModal');
     }
     function closeProcessDetail(){v55CloseModal('processDetailModal');}
@@ -4982,6 +5001,65 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     function handleFileImport(e){Backups.previewFile(e);}
 
 
+
+// 6.1.4: plain user comments; service audit records are not shown as comments.
+function v614ManualEvents(step){
+ const list=Array.isArray(step?.progressEvents)?step.progressEvents:[];
+ return list.map((ev,i)=>({ev,i})).filter(({ev})=>ev&&String(ev.what||'').trim()&&!ev.created&&!ev.editChange&&!ev.completionChange&&!ev.systemChange&&!/^Фактический результат:/i.test(String(ev.what||'')))
+  .sort((a,b)=>(Date.parse(b.ev.at||b.ev.date||'')||0)-(Date.parse(a.ev.at||a.ev.date||'')||0)||b.i-a.i).map(x=>x.ev);
+}
+function v614CommentSection(step,procId,objId){
+ const comments=v614ManualEvents(step);
+ const snippet=ev=>`<div class="v614-comment-preview"><small>${escapeHtml(v55DateRu(ev.date)||ev.date||'')}</small><p>${escapeHtml(ev.what||'')}</p></div>`;
+ const history=comments.length>1?`<details class="v614-comment-history"><summary>Все комментарии (${comments.length})</summary>${comments.map(ev=>`<div class="v614-comment-history-item"><small>${escapeHtml(v55DateRu(ev.date)||ev.date||'')}</small><p>${escapeHtml(ev.what||'')}</p></div>`).join('')}</details>`:'';
+ return `<div class="v614-comments" aria-label="Комментарии к задаче">
+  ${comments.length?snippet(comments[0]):''}
+  ${history}
+  <button type="button" class="v614-comment-add" aria-expanded="false" onclick="v614ToggleCommentEditor(event)">+ Комментарий</button>
+  <div class="v614-comment-editor" hidden>
+   <label>Что произошло или изменилось?</label>
+   <textarea maxlength="2000" data-v614-comment-text placeholder="Например: 19.10.2026 направлен запрос в НАО. Ожидаем ответ."></textarea>
+   <div class="v614-comment-editor-actions"><button type="button" onclick="v614SaveComment(event,${jsId(procId)},${jsId(objId)},${jsId(step.id)})">Сохранить</button><button type="button" onclick="v614HideCommentEditor(event)">Отмена</button></div>
+  </div>
+ </div>`;
+}
+function v614ToggleCommentEditor(event){
+ const button=event.currentTarget;
+ const editor=button.closest('.v614-comments')?.querySelector('.v614-comment-editor');if(!editor)return;
+ const open=editor.hidden;editor.hidden=!open;button.setAttribute('aria-expanded',String(open));
+ if(open)editor.querySelector('textarea')?.focus();
+}
+function v614HideCommentEditor(event){
+ const comments=event.currentTarget.closest('.v614-comments');if(!comments)return;
+ const editor=comments.querySelector('.v614-comment-editor');if(editor)editor.hidden=true;
+ comments.querySelector('.v614-comment-add')?.setAttribute('aria-expanded','false');
+}
+function v614SaveComment(event,procId,objId,stepId){
+ if(!readyForEditing||conflictRemote){showToast('Сначала подключитесь к облаку или разрешите конфликт');return;}
+ const step=v55Step({procId,objId,stepId});if(!step){showToast('Задача не найдена');return;}
+ const field=event.currentTarget.closest('.v614-comment-editor')?.querySelector('textarea[data-v614-comment-text]');
+ const text=v55Text(field?.value,2000);if(!text){showToast('Напишите комментарий');field?.focus();return;}
+ if(!Array.isArray(step.progressEvents))step.progressEvents=[];
+ if(step.progressEvents.length>=700){showToast('Достигнут предел комментариев для задачи');return;}
+ step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:text,manualComment:true});
+ step.updatedAt=getTimestampStr();
+ saveData('Добавлен комментарий к задаче');
+ showToast('Комментарий сохраняется в облаке');
+}
+function v614AddCommentFromDetail(){
+ const target=v55DetailTarget;
+ closeProcessDetail();
+ const key=JSON.stringify([String(target.procId),String(target.objId),String(target.stepId)]);
+ const unit=[...document.querySelectorAll('.step-unit[data-v614-task-key]')].find(el=>el.getAttribute('data-v614-task-key')===key);
+ const button=unit?.querySelector('.v614-comment-add');
+ if(button){v614ToggleCommentEditor({currentTarget:button});return;}
+ // Compatibility fallback when opened from an alternate list of objects.
+ for(const name of ['v55EventWhat','v55EventReason','v55EventSolution','v55EventNext','v55EventWhen','v55EventDoc'])v55El(name).value='';
+ v55El('v55EventDone').checked=false;v55El('v55EventResolved').checked=false;
+ v55El('v60EventExtra').hidden=true;v55El('v55EventResolvedLabel').hidden=true;
+ v55OpenModal('processEventModal');v55El('v55EventWhat').focus();
+}
+
         function render() {
       try {
         const root = document.getElementById('processesRoot');
@@ -5173,16 +5251,22 @@ body{background:#f8f9fa!important;color:#2c3542!important}
                           const hist = s.history || [];
 
                           return `
-                            <div class="step-unit ${s.done ? 'done' : ''} ${hasBlock ? 'blocked' : ''} ${s.id===currentActiveStepId ? 'current' : ''}">
+                            <div class="step-unit ${s.done ? 'done' : ''} ${hasBlock ? 'blocked' : ''} ${s.id===currentActiveStepId ? 'current' : ''}" data-v614-task-key="${escapeHtml(JSON.stringify([String(proc.id),String(obj.id),String(s.id)]))}">
                               <div class="step-top-bar">
                                 <div class="step-left-part">
                                   <input type="checkbox" id="chk-${s.id}" class="step-check" aria-label="Выполнено: ${escapeHtml(s.text)}" ${s.done ? 'checked' : ''} onchange="toggleStep(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
-                                  <button type="button" class="step-text v55-step-title" onclick="openProcessDetail(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Открыть ход процесса">${escapeHtml(s.text)}</button>
+                                  <div class="v614-task-heading">
+                                    <button type="button" class="step-text v55-step-title" onclick="openProcessDetail(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Открыть комментарии">${escapeHtml(s.text)}</button>
+                                    <div class="v614-task-fields" aria-label="Ответственный и срок задачи">
+                                      <button type="button" class="v614-owner-inline" onclick="openEntryWizard(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Изменить ответственного">Ответственный: <strong>${escapeHtml(s.owner&&String(s.owner).trim()?s.owner:'—')}</strong></button>
+                                      <button type="button" class="v614-date-inline ${dateMeta.cls==='overdue'?'v614-date-late':''}" onclick="openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Изменить срок">Срок: <strong>${escapeHtml(s.date?String(s.date).replace(/^до\s*/i,''):'—')}</strong></button>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div class="step-menu-controls" onclick="event.stopPropagation()">
                                   <button type="button" class="step-del-btn" onclick="toggleMenuGeneric(event, 'smenu-${s.id}')" aria-label="Действия с этапом" aria-haspopup="dialog" aria-expanded="false" title="Действия с этапом">···</button>
                                   <div class="obj-dropdown-menu" id="smenu-${s.id}">
-                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openProcessDetail(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Ход процесса</button>
+                                    <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openProcessDetail(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Комментарии</button>
                                     <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openEntryWizard(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Изменить запись</button>
                                     ${!s.date ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Назначить срок</button>` : ''}
                                     <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openStepDetails(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Ответственный, документ и статус</button>
@@ -5198,14 +5282,11 @@ body{background:#f8f9fa!important;color:#2c3542!important}
                                 ${s.done ? `<span class="step-state step-state-done">Сделано</span>` :
                                   hasBlock ? `<button type="button" class="step-state step-state-blocked" onclick="openRiskModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Замечание активно</button>` :
                                   s.workflowStatus==='waiting' ? `<span class="step-state step-state-wait">Ожидание</span>` : `<span class="step-state step-state-active">В работе</span>`}
-                                ${s.date ? `<button type="button" class="step-date-minimal ${dateMeta.cls==='overdue'?'is-late':''}" onclick="openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Изменить срок">${escapeHtml(s.done ? 'Срок: '+s.date : dateMeta.cls==='overdue'?'Просрочено: '+String(s.date).replace(/^до\s+/i,'') : 'До '+String(s.date).replace(/^до\s+/i,''))}</button>` : ''}
-                                ${s.done && s.completedAt ? `<span class="step-completed-at">${escapeHtml(s.completedAt)}</span>` : ''}
-                                ${s.owner && String(s.owner).trim() ? `<span class="step-owner-visible">Ответственный: <strong>${escapeHtml(s.owner)}</strong></span>` : ''}
+                                ${dateMeta.cls==='overdue'&&!s.done ? `<span class="v614-deadline-warning">Срок просрочен</span>` : ''}
+                                ${s.done && s.completedAt ? `<span class="step-completed-at">Выполнено ${escapeHtml(s.completedAt)}</span>` : ''}
                               </div>
 
-                              <div class="v55-step-compact-note">
-                                <button type="button" class="v55-open-progress" onclick="openProcessDetail(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Ход процесса${(s.progressEvents||[]).length ? ' · '+s.progressEvents.length : ''}${hasBlock?' · Есть проблема':''}</button>
-                              </div>
+                              ${v614CommentSection(s,proc.id,obj.id)}
                             </div>
                           `;
                         }).join('')}
