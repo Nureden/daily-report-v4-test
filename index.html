@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Мой блокнот 6.1: компактная последняя рабочая запись, событие и история прямо под процессом; сохранено облачное API и модель данных. -->
+<!-- Мой блокнот 6.1.1: единые стрелки раскрытия, меню удаления ошибочных событий с подтверждением; облачная модель и отчёт сохранены. -->
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой блокнот 6.0 — Рабочий блокнот</title>
+  <title>Мой блокнот 6.1.1 — Рабочий блокнот</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2366,6 +2366,17 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v61-task-shell .v60-check{width:20px;height:20px;flex:0 0 20px;margin:3px 0 0}
 .v61-task-shell:has(.v60-task-done) .v60-check{margin:0}
 @media(max-width:380px){.v61-editor-grid{grid-template-columns:1fr}.v61-note-actions{gap:11px}}
+</style>
+<style id="v611-controls">
+/* Use one identical chevron glyph and rotate only the expanded ones. */
+.v60-region-chevron,.v60-object-arrow{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 15px;width:15px!important;height:21px;font-size:19px!important;line-height:1!important;font-weight:400!important;color:#9ba6b0;transform:rotate(0deg);transform-origin:center center;transition:transform .15s ease}
+.v60-region-toggle[aria-expanded="true"] .v60-region-chevron,.v60-object-toggle[aria-expanded="true"] .v60-object-arrow{transform:rotate(90deg)}
+@media(prefers-reduced-motion:reduce){.v60-region-chevron,.v60-object-arrow{transition:none}}
+.v60-region{min-width:0!important;width:100%!important}
+/* Explicit history actions instead of a popover that can misbehave in Telegram Web. */
+.v611-history-ops{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:2px}
+.v611-history-ops button{min-height:28px;padding:4px 1px!important;border:0;background:transparent;font-size:11.5px;color:#55738f;cursor:pointer}
+.v611-history-ops button.v611-delete{color:#a75f5f}
 </style>
 </head>
 <body>
@@ -6122,10 +6133,13 @@ function v61History(row,step,idx,working){
  const entries=working.map(e=>{
    const full=[e.what,e.reason?'Причина: '+e.reason:'',e.solution?'Решение: '+e.solution:'',e.nextAction?'Дальше: '+e.nextAction:'',e.doc?'Документ: '+e.doc:''].filter(Boolean).join('\n');
    const attributes=[e.owner||'',e.dueDate?'до '+v56DateShort(e.dueDate):''].filter(Boolean).join(' · ');
-   return `<div class="v61-history-item"><div class="v61-history-caption">${v56SafeText(v56DateShort(e.date||e.at||''))}${attributes?' · '+v56SafeText(attributes):''}</div><div class="v61-history-text">${v56SafeText(full)}</div><button type="button" data-v61-history-edit="${idx}" data-v61-event="${v56SafeText(e.id)}">Изменить</button></div>`;
+   const token=v56SafeText(e.id);
+   return `<div class="v61-history-item"><div class="v61-history-caption">${v56SafeText(v56DateShort(e.date||e.at||''))}${attributes?' · '+v56SafeText(attributes):''}</div><div class="v61-history-text">${v56SafeText(full)}</div><div class="v611-history-ops"><button type="button" data-v61-history-edit="${idx}" data-v61-event="${token}">Изменить</button><button type="button" class="v611-delete" data-v611-delete="${idx}" data-v611-event="${token}">Удалить</button></div></div>`;
  });
- for(const h of [...old].reverse()){
-  entries.push(`<div class="v61-history-item"><div class="v61-history-caption">${v56SafeText(h.date||'Ранее')}</div><div class="v61-history-text">${v56SafeText(h.text||'')}</div></div>`);
+ // Old remarks use the original index, so only the selected legacy note is deleted.
+ for(let k=old.length-1;k>=0;k--){
+   const h=old[k];
+   entries.push(`<div class="v61-history-item"><div class="v61-history-caption">${v56SafeText(h.date||'Ранее')}</div><div class="v61-history-text">${v56SafeText(h.text||'')}</div><div class="v611-history-ops"><button type="button" class="v611-delete" data-v611-delete="${idx}" data-v611-legacy="${k}">Удалить</button></div></div>`);
  }
  return `<div class="v61-history" aria-label="Вся история процесса">${entries.join('')||'<div class="v61-history-empty">История пока пуста</div>'}</div>`;
 }
@@ -6167,7 +6181,7 @@ function v60RenderObject(row,i){
  const more=opened?`<div class="v60-object-detail"><div class="v60-object-controls"><button type="button" data-v60-add="${i}">+ Новая запись</button><button type="button" data-v60-district="${i}">${v60DistrictOf(row.obj,row.proc)==='Район не указан'?'Указать район':'Изменить район'}</button><button type="button" class="v60-more" data-v60-object-menu="${i}" aria-label="Действия с объектом">···</button></div>${note}</div>`:'';
  const activeHtml=active.map(info=>v60RenderStep(row,info)).join('');
  const doneHtml=completed.length?`<div class="v61-done-label">Завершённые (${completed.length})</div>${completed.map(info=>v60RenderStep(row,info)).join('')}`:'';
- return `<div class="v60-object ${opened?'v60-is-open':''}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">${opened?'⌄':'›'}</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}</div>
+ return `<div class="v60-object ${opened?'v60-is-open':''}"><div class="v60-object-head"><button class="v60-object-toggle" type="button" data-v60-toggle="${i}" aria-expanded="${opened}"><span class="v60-object-arrow" aria-hidden="true">›</span><span class="v60-object-name">${v56SafeText(v60DisplayObjectName(row))}</span></button>${count}</div>
   ${opened?(activeHtml||doneHtml?`<div class="v60-tasks">${activeHtml}${doneHtml}</div>`:`<div class="v60-object-empty">Задач пока нет. Добавьте первую запись.</div>`):''}
   ${more}</div>`;
 }
@@ -6202,7 +6216,7 @@ function v56RenderCards(){
   const entries=groups.get(district);
   const id=v60Regions.push(district)-1;
   const folded=v60ClosedRegions.has(district)&&!query;
-  html.push(`<section class="v60-region"><div class="v60-region-head"><button type="button" data-v60-region="${id}" class="v60-region-toggle" aria-expanded="${!folded}"><span class="v60-region-chevron" aria-hidden="true">${folded?'›':'⌄'}</span><span>${v56SafeText(district)}</span><span class="v60-region-count">${entries.length}</span></button><button type="button" data-v60-create-object="${id}" class="v60-region-add" title="Добавить объект" aria-label="Добавить объект в ${v56SafeText(district)}">+</button></div><div class="v60-region-body" ${folded?'hidden':''}>${entries.map(({row,i})=>v60RenderObject(row,i)).join('')}</div></section>`);
+  html.push(`<section class="v60-region"><div class="v60-region-head"><button type="button" data-v60-region="${id}" class="v60-region-toggle" aria-expanded="${!folded}"><span class="v60-region-chevron" aria-hidden="true">›</span><span>${v56SafeText(district)}</span><span class="v60-region-count">${entries.length}</span></button><button type="button" data-v60-create-object="${id}" class="v60-region-add" title="Добавить объект" aria-label="Добавить объект в ${v56SafeText(district)}">+</button></div><div class="v60-region-body" ${folded?'hidden':''}>${entries.map(({row,i})=>v60RenderObject(row,i)).join('')}</div></section>`);
  }
  // Users can always create the first region's object, even on a brand-new database.
  if(!ordered.length||!ordered.includes('Район не указан')){
@@ -6373,6 +6387,44 @@ function v61ToggleHistory(index){
  if(v61HistoryOpen.has(key))v61HistoryOpen.delete(key);else v61HistoryOpen.add(key);
  v56RenderCards();
 }
+function v611DeleteHistory(index,eventId,legacyIndex){
+ if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
+ const link=v60Steps[index];if(!link)return;
+ const procId=String(link.proc.id),objId=String(link.obj.id),stepId=String(link.step.id);
+ const legacy=legacyIndex!==null&&legacyIndex!==undefined;
+ const oldItems=legacy?link.step.history:link.step.progressEvents;
+ const position=legacy?Number(legacyIndex):Array.isArray(oldItems)?oldItems.findIndex(e=>String(e.id)===String(eventId)):-1;
+ if(!Array.isArray(oldItems)||!Number.isInteger(position)||position<0||position>=oldItems.length){showToast('Запись не найдена');return;}
+ const oldText=String(legacy?oldItems[position].text||'':oldItems[position].what||'').trim();
+ const label=oldText.length>90?oldText.slice(0,90)+'…':oldText;
+ askConfirm('Удалить эту запись из истории?\n\n'+label+'\n\nЭто действие сохранится в истории изменений.',()=>{
+  if(!readyForEditing){showToast('Нет подключения к облаку');return;}
+  // Resolve live state again after confirmation, not a stale pointer from the DOM.
+  const p=state.find(p=>String(p.id)===procId);
+  const obj=p?.objects.find(o=>String(o.id)===objId);
+  const step=obj?.steps.find(st=>String(st.id)===stepId);
+  if(!step){showToast('Процесс не найден');return;}
+  const list=legacy?step.history:step.progressEvents;
+  if(!Array.isArray(list)){showToast('История не найдена');return;}
+  const at=legacy?position:list.findIndex(e=>String(e.id)===String(eventId));
+  if(at<0||at>=list.length){showToast('Запись уже отсутствует');return;}
+  const item=list[at];
+  // Protect against intervening changes while the confirmation dialog was open.
+  if(String(legacy?item.text||'':item.what||'').trim()!==oldText){showToast('Запись изменилась. Откройте историю снова.');return;}
+  list.splice(at,1);
+  // Legacy remarks can be linked to a live blocker: do not recreate the removed
+  // entry during normalization or leave a ghost warning for the deleted remark.
+  if(legacy&&item.active&&step.blocker&&String(step.blocker)===String(item.text)){
+   const remaining=[...list].reverse().find(h=>h.active);
+   step.blocker=remaining?String(remaining.text||''):null;
+  }
+  const key=v61StepKey(p,obj,step);
+  if(v61Editor?.key===key)v61Editor=null;
+  step.updatedAt=getTimestampStr();
+  saveData('Удалена ошибочная запись истории по задаче: '+String(step.text||'').slice(0,100));
+  showToast('Запись удалена; идёт сохранение');
+ });
+}
 function v61SaveEvent(index){
  if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
  const x=v60Steps[index];if(!x||!v61Editor||v61Editor.key!==v61StepKey(x.proc,x.obj,x.step))return;
@@ -6421,6 +6473,7 @@ document.getElementById('v56Cards').addEventListener('click',event=>{
  if(b.hasAttribute('data-v61-edit')){const i=Number(b.dataset.v61Edit),x=v60Steps[i];if(x){const ev=v61WorkingEvents(x.step)[0];if(ev)v61StartEvent(i,ev.id);}return;}
  if(b.hasAttribute('data-v61-history')){v61ToggleHistory(Number(b.dataset.v61History));return;}
  if(b.hasAttribute('data-v61-history-edit')){v61StartEvent(Number(b.dataset.v61HistoryEdit),b.dataset.v61Event);return;}
+ if(b.hasAttribute('data-v611-delete')){v611DeleteHistory(Number(b.dataset.v611Delete),b.hasAttribute('data-v611-event')?b.dataset.v611Event:null,b.hasAttribute('data-v611-legacy')?b.dataset.v611Legacy:null);return;}
  if(b.hasAttribute('data-v61-save')){v61SaveEvent(Number(b.dataset.v61Save));return;}
  if(b.hasAttribute('data-v61-cancel')){v61Editor=null;v56RenderCards();return;}
 
