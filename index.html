@@ -2413,18 +2413,17 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .step-unit .v614-task-fields .v614-date-late strong,.v614-deadline-warning{color:#b0752d}
 .step-unit .step-status-row{padding-left:29px;font-size:13px;gap:5px 11px}
 .v614-comments{margin:3px 0 2px 29px;display:grid;gap:7px;min-width:0}
-.v614-comment-preview{border-left:2px solid #cbd8e9;padding:4px 0 5px 10px;color:#4d5f71;min-width:0}
-.v614-comment-preview small,.v614-comment-history small{display:block;color:#8e9cab;font-size:12px;margin-bottom:2px}
+.v614-comment-label{font-size:13px;font-weight:600;color:#63758a;margin:0}
+.v614-comment-list{display:grid;gap:11px;min-width:0}
+.v614-comment-item{border-left:2px solid #d6e1ef;padding:4px 0 6px 10px;color:#4d5f71;min-width:0}
+.v614-comment-item small{display:block;color:#8e9cab;font-size:12px;margin-bottom:2px}
 .v614-comment-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;min-width:0}
 .v614-comment-actions{display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap}
 .v614-comment-actions button{border:0;background:transparent;padding:5px 4px;min-height:32px;color:#5b7594;font-size:12px;font-weight:600;cursor:pointer}
 .v614-comment-actions button.v614-comment-delete{color:#a35e5e}
 .v614-comment-actions button:focus-visible{outline:2px solid #597a9a;outline-offset:1px;border-radius:4px}
-.v614-comment-preview p,.v614-comment-history p{font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.v614-comment-item p{font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
 .v614-comment-add{border:0;background:transparent;color:#356bb0;cursor:pointer;font-size:14px;font-weight:600;text-align:left;padding:4px 0;min-height:35px;justify-self:start}
-.v614-comment-history{color:#64788f;font-size:13px}
-.v614-comment-history summary{cursor:pointer;min-height:30px;padding:4px 0;list-style:revert}
-.v614-comment-history-item{padding:7px 2px 7px 8px;border-left:2px solid #e3e9f0;margin:6px 0}
 .v614-comment-editor{background:#f8fafc;border:1px solid #e3eaf3;border-radius:9px;padding:10px;min-width:0}
 .v614-comment-editor[hidden]{display:none!important}
 .v614-comment-editor label{display:block;font-size:13px;font-weight:600;color:#53687c;margin-bottom:5px}
@@ -5018,11 +5017,12 @@ function v614CommentSection(step,procId,objId){
  // Only explicitly user-written comments are editable. Legacy structured audit events remain read-only.
  const actions=ev=>ev.manualComment===true?`<span class="v614-comment-actions"><button type="button" title="Изменить комментарий" onclick="v614BeginEditComment(event,${jsId(procId)},${jsId(objId)},${jsId(step.id)},${jsId(ev.id)})">Изменить</button><button type="button" class="v614-comment-delete" title="Удалить комментарий" onclick="v614RequestDeleteComment(event,${jsId(procId)},${jsId(objId)},${jsId(step.id)},${jsId(ev.id)})">Удалить</button></span>`:'';
  const heading=ev=>`<div class="v614-comment-top"><small>${escapeHtml(v55DateRu(ev.date)||ev.date||'')}${ev.editedAt?' · изменён':''}</small>${actions(ev)}</div>`;
- const snippet=ev=>`<div class="v614-comment-preview">${heading(ev)}<p>${escapeHtml(ev.what||'')}</p></div>`;
- const history=comments.length>1?`<details class="v614-comment-history"><summary>Все комментарии (${comments.length})</summary>${comments.map(ev=>`<div class="v614-comment-history-item">${heading(ev)}<p>${escapeHtml(ev.what||'')}</p></div>`).join('')}</details>`:'';
+ // One permanently visible chronological list: each stored event is rendered exactly once.
+ // Never deduplicate by text: two separate, genuine notes can legitimately have identical wording.
+ const items=comments.map(ev=>`<div class="v614-comment-item">${heading(ev)}<p>${escapeHtml(ev.what||'')}</p></div>`).join('');
  return `<div class="v614-comments" aria-label="Комментарии к задаче">
-  ${comments.length?snippet(comments[0]):''}
-  ${history}
+  <div class="v614-comment-label">Комментарии</div>
+  <div class="v614-comment-list">${items}</div>
   <button type="button" class="v614-comment-add" aria-expanded="false" onclick="v614ToggleCommentEditor(event)">+ Комментарий</button>
   <div class="v614-comment-editor" hidden>
    <label data-v614-comment-editor-title>Что произошло или изменилось?</label>
