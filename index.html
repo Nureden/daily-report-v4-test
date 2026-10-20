@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой блокнот 6.1.4 — Рабочий блокнот</title>
+  <title>Мой блокнот — Работа и личное</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2437,6 +2437,70 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 }
 @media(max-width:420px){.v614-comments{margin-left:0}.step-unit .step-status-row{padding-left:0}}
 </style>
+<style id="personal-notebook-styles">
+/* Personal notebook: isolated view, no work data or Supabase state mutations. */
+.personal-spaces{display:flex;gap:4px;align-items:center;width:max-content;max-width:100%;padding:4px;background:#e9edf3;border-radius:13px;margin:13px 0 12px}
+.personal-spaces button{font:700 16px/1.2 'Roboto Condensed',sans-serif;border:0;border-radius:10px;background:transparent;color:#64758a;padding:11px 25px;min-height:42px;cursor:pointer}
+.personal-spaces button[aria-pressed="true"]{background:#fff;color:#18273a;box-shadow:0 1px 5px rgba(20,35,55,.09)}
+#personalWorkspace[hidden]{display:none!important}
+body.is-personal #personalWorkspace{display:block!important}
+body.is-personal .v56-bottom-nav,body.is-personal #v56LegacyWorkspace,body.is-personal #v56Fab,body.is-personal #v59Digest,body.is-personal #legacyMigrateBanner,body.is-personal #filterBanner,body.is-personal .dash-controls,body.is-personal .metrics-ribbon,body.is-personal #syncDetails,body.is-personal #syncTag{display:none!important}
+body.is-personal #onlineLock{display:none!important}
+body.is-personal .dashboard-panel{margin-bottom:0!important}
+#personalWorkspace{margin-top:13px;margin-bottom:65px;color:#283748}
+.pn-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:12px 0 18px}
+.pn-top h2{font-size:25px;font-weight:700;margin:0 0 4px;color:#1b2a3b}
+.pn-sub{font-size:14px;color:#8492a3;margin:0}
+.pn-primary{border:0;background:#eaf2ff;color:#245ab0;cursor:pointer;min-height:42px;border-radius:11px;padding:11px 16px;font-weight:700;font-size:15px}
+.pn-secondary{border:1px solid #dfe6ee;color:#536b84;background:#fff;border-radius:9px;padding:9px 14px;cursor:pointer;min-height:38px;font-size:14px}
+.pn-safe-note{font-size:13px;color:#8b6e35;display:flex;gap:7px;align-items:center;margin:0 0 13px;line-height:1.4}
+.pn-toolbar{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;margin:0 0 15px}
+.pn-search{flex:1;min-width:175px;border:1px solid #e0e6ed;border-radius:10px;background:white;padding:11px 13px;font-size:15px;color:#213448;outline-offset:2px}
+.pn-empty{color:#8b96a3;padding:22px 18px;font-size:15px}
+.pn-direction{background:white;border:1px solid #e4e9ef;border-radius:15px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 2px rgba(30,40,60,.02)}
+.pn-direction-head{display:flex;align-items:center;gap:9px;padding:15px 14px;min-height:57px}
+.pn-fold{border:0;background:none;cursor:pointer;text-align:left;display:flex;gap:12px;align-items:center;flex:1;min-width:0;color:#243447;font-size:20px;font-weight:700}
+.pn-fold-icon{color:#8799ac;font-size:14px;flex:0 0 12px}
+.pn-count{font-size:12px;color:#6b7f94;background:#f2f4f6;border-radius:20px;padding:2px 8px;font-weight:600;white-space:nowrap}
+.pn-icon{background:none;border:0;color:#7890a9;cursor:pointer;font-size:18px;padding:8px;min-width:34px;min-height:35px;border-radius:6px}
+.pn-icon:hover,.pn-text-action:hover{background:#f1f5fa}
+.pn-direction-content{border-top:1px solid #edf0f4;padding:2px 17px 14px 36px}
+.pn-task{padding:13px 0 15px;border-bottom:1px solid #edf0f3}
+.pn-task-top{display:flex;align-items:flex-start;gap:11px}
+.pn-check{width:20px;height:20px;flex:0 0 20px;margin:4px 0 0;accent-color:#3066b9;cursor:pointer}
+.pn-task-body{flex:1;min-width:0}
+.pn-task-title{font-size:18px;color:#253448;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+.pn-task-title.done{color:#8c98a7;text-decoration:line-through}
+.pn-date{display:inline-block;color:#8293a5;font-size:13px;margin-top:5px}
+.pn-task-actions{display:flex;gap:1px;flex-wrap:wrap;align-items:center}
+.pn-text-action{background:none;border:0;color:#416b9c;cursor:pointer;padding:5px 7px;min-height:32px;font-size:13px;font-weight:600;border-radius:6px}
+.pn-text-action.danger{color:#a5554d}
+.pn-comments{margin:10px 0 0 31px;display:grid;gap:10px}
+.pn-comment{border-left:2px solid #dbe5f1;padding:2px 0 4px 12px;display:grid;gap:5px}
+.pn-comment-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pn-comment-time{color:#8a99a9;font-size:12px}
+.pn-comment-content{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;color:#334a62;line-height:1.4}
+.pn-add-comment{background:none;border:0;color:#326cb5;cursor:pointer;font-size:14px;font-weight:700;text-align:left;padding:7px 0;justify-self:start;min-height:35px}
+.pn-comment-editor{border:1px solid #dfe7f0;border-radius:10px;background:#f8fafc;padding:10px;display:grid;gap:9px}
+.pn-comment-editor textarea,.pn-dialog textarea{width:100%;min-height:92px;resize:vertical;border:1px solid #d9e2ec;background:white;border-radius:8px;padding:10px 11px;font-size:15px;color:#283a50;box-sizing:border-box;line-height:1.45}
+.pn-editor-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.pn-add-task{background:transparent;border:1px dashed #d5e1f0;border-radius:8px;color:#557eac;width:100%;min-height:41px;margin:14px 0 0;cursor:pointer;font-weight:600;font-size:14px}
+.pn-tools{margin-top:16px;border:1px solid #ebeff4;border-radius:11px;padding:12px 14px;color:#72869b;font-size:14px}
+.pn-tools summary{cursor:pointer;font-weight:600;color:#62768b}
+.pn-tools-buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.pn-modal{position:fixed;inset:0;background:rgba(22,35,53,.46);z-index:25000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
+.pn-modal[hidden]{display:none!important}
+.pn-dialog{background:#fff;box-shadow:0 15px 55px rgba(0,0,0,.17);max-width:490px;width:100%;max-height:90vh;overflow:auto;border-radius:15px;padding:22px;box-sizing:border-box}
+.pn-dialog h3{font-size:22px;margin:0 0 16px;color:#1b2d42}
+.pn-dialog form{display:grid;gap:13px}
+.pn-dialog label{display:grid;gap:6px;font-size:14px;font-weight:600;color:#576c83}
+.pn-dialog input{min-height:40px;padding:9px 11px;border:1px solid #d9e2eb;border-radius:8px;box-sizing:border-box;width:100%;font-size:16px;color:#2a3e51;background:white}
+.pn-dialog-buttons{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:5px}
+.pn-dialog-description{color:#61758a;font-size:15px;white-space:pre-wrap;line-height:1.5;margin-bottom:14px}
+.pn-feedback{font-size:13px;min-height:16px;color:#8c6e35}
+.pn-modal .pn-primary.danger{background:#b04c4c;color:white}
+@media(max-width:650px){.personal-spaces{margin:9px 0}.personal-spaces button{font-size:15px;padding:9px 20px}.pn-top h2{font-size:22px}.pn-direction-head{padding:12px 9px}.pn-fold{font-size:19px;gap:7px}.pn-direction-content{padding:0 11px 11px 12px}.pn-task-title{font-size:17px}.pn-task-top{gap:7px}.pn-task-actions{gap:0}.pn-text-action{font-size:12px;padding:5px 4px}.pn-comments{margin-left:25px}.pn-comment{padding-left:9px}.pn-comment-content{font-size:14px}}
+</style>
 </head>
 <body>
 
@@ -2486,6 +2550,11 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       <button type="button" class="kpi-expand-btn" id="kpiExpandBtn" aria-controls="metricsExtra" aria-expanded="false" onclick="toggleMobileKpis(this)">Все показатели</button>
 
       <div class="sync-details" id="syncDetails" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="personal-spaces" id="notebookSpaces" role="group" aria-label="Выбор блокнота">
+      <button type="button" id="pnWorkTab" aria-pressed="true" onclick="PersonalNotebook.show('work')">Работа</button>
+      <button type="button" id="pnPersonalTab" aria-pressed="false" onclick="PersonalNotebook.show('personal')">Личное</button>
     </div>
 
     <nav class="v56-bottom-nav" aria-label="Разделы блокнота">
@@ -2553,12 +2622,22 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     <div class="registry-card" id="processesRoot"></div>
     </section>
 
+    <section id="personalWorkspace" hidden aria-label="Личный блокнот">
+      <div class="pn-top"><div><h2>Личные дела</h2><p class="pn-sub">Направления, задачи и комментарии</p></div><button class="pn-primary" type="button" data-p-action="newDirection">+ Направление</button></div>
+      <div class="pn-safe-note" id="pnSaveNotice" role="status">Подключение личного облака…</div>
+      <div class="pn-toolbar"><button type="button" class="pn-secondary" data-p-action="syncNow" title="Проверить личное облако">↻ Обновить</button><input class="pn-search" id="pnSearch" placeholder="Найти задачу или комментарий…" aria-label="Поиск личных записей" maxlength="120"></div>
+      <div id="pnDirections"></div>
+      <details class="pn-tools"><summary>Резервная копия личных записей</summary><div class="pn-tools-buttons"><button class="pn-secondary" type="button" data-p-action="copyBackup">Копировать JSON</button><button class="pn-secondary" type="button" data-p-action="restoreBackup">Вставить JSON</button></div><p>Рабочие данные сюда не входят. JSON можно сохранить отдельно для резервной копии. Синхронизация личных записей настраивается в том же проекте Supabase.</p></details>
+    </section>
+
     <!-- Служебные действия доступны из настроек в верхней панели. -->
 
 
     <button type="button" id="v56Fab" class="v56-fab" onclick="showToast('Откройте нужный объект')" aria-label="Добавить новую запись" title="Новая запись" hidden>+ Запись</button>
   </div>
 
+
+  <div class="pn-modal" id="pnModal" hidden aria-hidden="true"><div class="pn-dialog" role="dialog" aria-modal="true" aria-labelledby="pnModalTitle"><h3 id="pnModalTitle"></h3><div id="pnModalContents"></div></div></div>
 
   <!-- V5.5: запись из пяти вопросов; тот же формат этапа и серверное хранилище. -->
   <div class="modal-overlay" id="entryWizardModal" aria-hidden="true" onclick="if(event.target===this)closeEntryWizard()">
@@ -2687,6 +2766,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     <div id="onlineLock" role="alertdialog" aria-modal="true" aria-labelledby="onlineLockMessage" style="display:none">
       <div class="lock-panel"><div class="lock-icon">☁</div><h2>Мой онлайн-блокнот</h2><p id="onlineLockMessage">Подключение к облаку…</p>
         <button class="btn-m-primary" type="button" onclick="loadData()">Повторить подключение</button>
+        <button class="pn-secondary" type="button" onclick="PersonalNotebook.show('personal')">Открыть личный блокнот без облака</button>
         <p class="subtle-hint">Ваша старая база и локальные копии не удаляются.</p>
       </div>
     </div>
@@ -6918,5 +6998,336 @@ v56Screen='projects';
     document.getElementById('reportTo').value=getTodayISO();
     loadData();
   </script>
+<script id="personal-notebook-module">
+/* Personal workspace v2: isolated data, synchronized via dedicated Edge Function in existing Supabase project. */
+const PersonalNotebook=(()=>{
+  'use strict';
+  const schema='personal-notebook-v1';
+  const userId=String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id||'local');
+  const storageKey='daily_report_personal_'+userId+'_v1';
+  const defaultData=()=>({schema,directions:['Стройка','Общение','Движняки'].map(name=>({id:newId(),name,tasks:[]}))});
+  const el=id=>document.getElementById(id);
+  function newId(){return typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'pn-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);}
+  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function dateLabel(str){if(!str)return '';const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(str);return m?`${m[3]}.${m[2]}.${m[1]}`:String(str);}
+  function timeLabel(str){const d=new Date(str);return Number.isFinite(d.getTime())?d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';}
+  function getData(){try{const raw=localStorage.getItem(storageKey);if(!raw)return defaultData();const parsed=JSON.parse(raw);validate(parsed);return parsed;}catch(e){console.warn('Personal notebook: invalid or inaccessible storage',e);return defaultData();}}
+  function validate(d){
+    if(!d||d.schema!==schema||!Array.isArray(d.directions)||d.directions.length>120)throw Error('Неверный формат личного блокнота');
+    const ids=new Set();let tasks=0,notes=0;
+    const unique=v=>{if(typeof v!=='string'||v.length<1||v.length>120||ids.has(v))throw Error('Неверные идентификаторы');ids.add(v);};
+    for(const g of d.directions){if(!g||typeof g.name!=='string'||g.name.length<1||g.name.length>100||!Array.isArray(g.tasks))throw Error('Неверное направление');unique(g.id);tasks+=g.tasks.length;if(tasks>1500)throw Error('Слишком много задач');
+      for(const t of g.tasks){if(!t||typeof t.title!=='string'||t.title.length<1||t.title.length>300||typeof t.done!=='boolean'||typeof t.due!=='string'||(t.due&&!/^\d{4}-\d{2}-\d{2}$/.test(t.due))||!Array.isArray(t.comments))throw Error('Неверная задача');unique(t.id);notes+=t.comments.length;if(notes>12000)throw Error('Слишком много комментариев');
+        for(const c of t.comments){if(!c||typeof c.text!=='string'||!c.text.trim()||c.text.length>5000||typeof c.createdAt!=='string')throw Error('Неверный комментарий');unique(c.id);}
+      }
+    }
+    return d;
+  }
+  let state=getData(), expanded=new Set(state.directions.map(d=>d.id)), editor=null, modal=null, query='';
+  const group=id=>state.directions.find(x=>x.id===id);
+  const task=(g,t)=>group(g)?.tasks.find(x=>x.id===t);
+  const comment=(g,t,c)=>task(g,t)?.comments.find(x=>x.id===c);
+  function feedback(message,error=false){const node=el('pnSaveNotice');node.textContent=message;node.style.color=error?'#ad4343':'#8b6e35';}
+  function notify(msg){const t=el('toastMsg');if(t){t.textContent=msg;t.style.display='block';setTimeout(()=>{t.style.display='none';},2200);}else feedback(msg);}
+  // Personal space uses a separate table in the SAME Supabase project.
+  // All writes use Telegram initData validation on the Edge Function and revision CAS.
+  const syncMetaKey=storageKey+'_sync_v2';
+  const recoveryKey=storageKey+'_recovery';
+  const cloudOrigin=String(window.NOTEBOOK_CONFIG?.supabaseUrl||'').trim().replace(/\/$/,'');
+  const cloudEndpoint=cloudOrigin+'/functions/v1/personal-notebook';
+  const hasTelegramAuth=!!window.Telegram?.WebApp?.initData;
+  const cloudEnabled=/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(cloudOrigin)&&hasTelegramAuth;
+  const clone=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
+  const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const hasPersonalRecords=d=>!!d?.directions?.some(g=>g.tasks?.length||!['Стройка','Общение','Движняки'].includes(g.name)) || (d?.directions?.length||0)!==3;
+  function readSyncMeta(){
+    try{const raw=localStorage.getItem(syncMetaKey);if(raw){const m=JSON.parse(raw);const base=m.base===null?null:validate(m.base);return {revision:Number.isSafeInteger(m.revision)&&m.revision>=0?m.revision:0,base,pending:!!m.pending};}}
+    catch(e){console.warn('Cannot read personal cloud metadata',e);}
+    // Previously local-only personal data are marked pending and migrated, never overwritten.
+    return {revision:0,base:null,pending:hasPersonalRecords(state)};
+  }
+  let cloudMeta=readSyncMeta(), cloudStarted=false, cloudBusy=false, cloudConflict=null;
+  let saveDelay=null, retryDelay=1500, refreshTimer=null;
+  function persistPersonal(){
+    localStorage.setItem(storageKey,JSON.stringify(state));
+    localStorage.setItem(syncMetaKey,JSON.stringify(cloudMeta));
+  }
+  function cloudNotice(message,isError=false){feedback(message,isError);}
+  function keepRecovery(data){
+    try{localStorage.setItem(recoveryKey,JSON.stringify({createdAt:new Date().toISOString(),data}));}
+    catch(e){console.warn('Personal recovery slot unavailable',e);}
+  }
+  async function cloudRequest(body){
+    if(!cloudEnabled)throw Error('Для облака откройте приложение через Telegram и проверьте config.js');
+    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),18000);
+    try{
+      const response=await fetch(cloudEndpoint,{method:'POST',cache:'no-store',signal:controller.signal,
+        headers:{'Content-Type':'application/json','X-Telegram-Init-Data':window.Telegram.WebApp.initData},
+        body:JSON.stringify(body)});
+      let json;try{json=await response.json();}catch{throw Error('Облачный сервер не ответил JSON');}
+      if(response.status===409 && json?.conflict)return json;
+      if(!response.ok||!json?.ok)throw Error(json?.error||'Ошибка облака HTTP '+response.status);
+      return json;
+    }catch(e){if(e?.name==='AbortError')throw Error('Тайм-аут облака');throw e;}
+    finally{clearTimeout(timeout);}
+  }
+  function mergeThreeWay(base,local,remote){
+    const errors=[];
+    const eq=same;
+    const choose=(b,l,r,path)=>{
+      if(eq(l,r))return clone(l);
+      if(eq(l,b))return clone(r);
+      if(eq(r,b))return clone(l);
+      errors.push(path);
+      return clone(l); // Only persisted if the user explicitly keeps their side.
+    };
+    const mergeList=(b=[],l=[],r=[],path,kind)=>{
+      const bm=new Map(b.map(x=>[String(x.id),x]));
+      const lm=new Map(l.map(x=>[String(x.id),x]));
+      const rm=new Map(r.map(x=>[String(x.id),x]));
+      return [...new Set([...r.map(x=>String(x.id)),...l.map(x=>String(x.id)),...b.map(x=>String(x.id))])].flatMap(id=>{
+        const bv=bm.get(id),lv=lm.get(id),rv=rm.get(id);
+        if(!lv && !rv)return [];
+        if(!bv)return [clone(lv||rv)];
+        if(!lv){if(eq(bv,rv))return [];errors.push(path+'/'+id+'/удаление');return [clone(rv)];}
+        if(!rv){if(eq(bv,lv))return [];errors.push(path+'/'+id+'/удаление');return [clone(lv)];}
+        return [mergeNode(bv,lv,rv,path+'/'+id,kind)];
+      });
+    };
+    const mergeNode=(b,l,r,path,kind)=>{
+      const out={...clone(r)};
+      const fields=kind==='direction'?['name']:kind==='task'?['title','due','done','createdAt']:['text','createdAt','updatedAt'];
+      for(const key of fields) {
+        const val=choose(b?.[key],l?.[key],r?.[key],path+'/'+key);
+        if(val===undefined)delete out[key];else out[key]=val;
+      }
+      if(kind==='direction')out.tasks=mergeList(b.tasks,l.tasks,r.tasks,path+'/tasks','task');
+      if(kind==='task')out.comments=mergeList(b.comments,l.comments,r.comments,path+'/comments','comment');
+      return out;
+    };
+    const merged={schema,directions:mergeList(base?.directions||[],local.directions,remote.directions,'directions','direction')};
+    validate(merged);
+    return {data:merged,conflicts:errors};
+  }
+  // One-time import of v1 local-only data, grouping equal default direction names.
+  function mergeLegacyLocal(local,remote){
+    const data=clone(remote);
+    for(const dir of local.directions){
+      const matching=data.directions.find(g=>g.id===dir.id||g.name.trim().toLocaleLowerCase('ru')===dir.name.trim().toLocaleLowerCase('ru'));
+      if(!matching){data.directions.push(clone(dir));continue;}
+      const taskIds=new Set(matching.tasks.map(t=>t.id));
+      for(const t of dir.tasks)if(!taskIds.has(t.id))matching.tasks.push(clone(t));
+    }
+    validate(data);
+    return data;
+  }
+  function useRemote(data,revision){
+    state=clone(data||defaultData());validate(state);
+    cloudMeta={revision,base:clone(data),pending:false};
+    persistPersonal();expanded=new Set(state.directions.map(g=>g.id));editor=null;render();
+    cloudNotice('✓ Личное · сохранено в облаке');
+  }
+  function showCloudConflict(){
+    cloudNotice('⚠ Одновременные изменения на двух устройствах. Выберите вариант.',true);
+    if(!document.body.classList.contains('is-personal'))return;
+    el('pnModalTitle').textContent='Конфликт личных записей';
+    el('pnModalContents').innerHTML='<p class="pn-dialog-description">Одна запись была изменена на двух устройствах. Независимые изменения сохранены. Что оставить в спорных полях?</p><div class="pn-dialog-buttons"><button type="button" class="pn-secondary" data-p-action="copyBackup">Копировать мои JSON</button><button type="button" class="pn-secondary" data-p-action="acceptCloud">Облачные</button><button type="button" class="pn-primary" data-p-action="keepLocal">Мои изменения</button></div>';
+    el('pnModal').hidden=false;el('pnModal').setAttribute('aria-hidden','false');modal={kind:'cloudConflict'};
+  }
+  function resolveRemote(remote,revision){
+    validate(remote);
+    if(!cloudMeta.pending){useRemote(remote,revision);return;}
+    let merged;
+    if(!cloudMeta.base){merged={data:mergeLegacyLocal(state,remote),conflicts:[]};}
+    else merged=mergeThreeWay(cloudMeta.base,state,remote);
+    if(merged.conflicts.length){
+      cloudConflict={...merged,remote:clone(remote),revision};keepRecovery(state);showCloudConflict();return;
+    }
+    state=merged.data;
+    cloudMeta={revision,base:clone(remote),pending:!same(state,remote)};
+    persistPersonal();render();
+    cloudNotice(cloudMeta.pending?'Изменения объединены · сохраняю в облако':'✓ Личное · синхронизировано');
+    if(cloudMeta.pending)queuePersonalSave(150);
+  }
+  async function refreshPersonalCloud(userRequested=false){
+    if(!cloudEnabled){cloudNotice('⚠ Личное сохранено только на устройстве · облако недоступно',true);return;}
+    if(cloudBusy||cloudConflict)return;
+    cloudBusy=true;
+    try{
+      const response=await cloudRequest({action:'load'});
+      const remote=response.data;
+      const remoteRev=Number(response.revision)||0;
+      if(remote!==null)validate(remote);
+      if(remote===null){
+        if(cloudMeta.pending){cloudMeta.revision=0;cloudMeta.base=null;queuePersonalSave(100);}
+        else cloudNotice('✓ Личное облако подключено · записей пока нет');
+      }else if(remoteRev!==cloudMeta.revision || cloudMeta.base===null){
+        resolveRemote(remote,remoteRev);
+      }else if(userRequested)cloudNotice(cloudMeta.pending?'Сохранение ожидает отправки':'✓ Личное · сохранено в облаке');
+    }catch(e){cloudNotice('⚠ Личные записи на устройстве · облако: '+e.message,true);}
+    finally{cloudBusy=false;if(cloudMeta.pending&&!cloudConflict)queuePersonalSave(1000);}
+  }
+  function queuePersonalSave(delay=350){
+    if(saveDelay)clearTimeout(saveDelay);
+    if(!cloudEnabled){cloudNotice('⚠ Личные записи только на устройстве · облачная синхронизация недоступна',true);return;}
+    if(cloudConflict)return;
+    saveDelay=setTimeout(()=>{saveDelay=null;void flushPersonalCloud();},delay);
+  }
+  async function flushPersonalCloud(){
+    if(cloudBusy||cloudConflict||!cloudMeta.pending||!cloudEnabled)return;
+    cloudBusy=true;
+    const snapshot=clone(state),expected=cloudMeta.revision;
+    try{
+      const result=await cloudRequest({action:'save',data:snapshot,expectedRevision:expected});
+      if(result.conflict){
+        const remote=result.data||defaultData();validate(remote);
+        const merged=cloudMeta.base?mergeThreeWay(cloudMeta.base,state,remote):{data:mergeLegacyLocal(state,remote),conflicts:[]};
+        if(merged.conflicts.length){cloudConflict={...merged,remote:clone(remote),revision:Number(result.revision)};keepRecovery(state);showCloudConflict();}
+        else {
+          state=merged.data;cloudMeta={revision:Number(result.revision),base:clone(remote),pending:!same(state,remote)};
+          persistPersonal();render();cloudNotice('Объединяю изменения с другого устройства');
+        }
+      } else {
+        cloudMeta={revision:Number(result.revision),base:snapshot,pending:!same(state,snapshot)};
+        localStorage.setItem(syncMetaKey,JSON.stringify(cloudMeta));
+        retryDelay=1500;
+        cloudNotice(cloudMeta.pending?'Сохраняю новые изменения…':'✓ Личное · сохранено в облаке');
+      }
+    }catch(e){
+      cloudNotice('⚠ Сохранено на устройстве, но не в облако: '+e.message,true);
+      retryDelay=Math.min(retryDelay*2,30000);
+    }finally{
+      cloudBusy=false;
+      if(cloudMeta.pending&&!cloudConflict)queuePersonalSave(retryDelay);
+    }
+  }
+  function resolveCloudChoice(which){
+    if(!cloudConflict)return;
+    const {data,remote,revision}=cloudConflict;
+    cloudConflict=null;closeModal();
+    if(which==='cloud'){
+      keepRecovery(state);useRemote(remote,revision);
+      cloudNotice('✓ Принята облачная версия · ваша предыдущая копия сохранена локально');
+      return;
+    }
+    state=data;cloudMeta={revision,base:clone(remote),pending:true};
+    persistPersonal();render();queuePersonalSave(100);
+  }
+  function startPersonalCloud(){
+    if(cloudStarted)return;cloudStarted=true;
+    if(!cloudEnabled){cloudNotice('⚠ Личные записи сохраняются только на этом устройстве. Для облака нужен Telegram и серверный модуль.',true);return;}
+    cloudNotice('Подключение к личному облаку…');
+    void refreshPersonalCloud();
+    refreshTimer=setInterval(()=>{if(document.visibilityState==='visible'&&!cloudBusy&&!cloudConflict)void refreshPersonalCloud();},20000);
+  }
+  window.addEventListener('online',()=>{if(cloudMeta.pending)queuePersonalSave(100);else void refreshPersonalCloud();});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void refreshPersonalCloud();});
+
+  function commit(modify){const previous=JSON.stringify(state),was=clone(cloudMeta);try{modify();validate(state);cloudMeta.pending=true;persistPersonal();render();cloudNotice('Личное · сохранено на устройстве, отправляю в облако…');queuePersonalSave(300);return true;}
+    catch(err){state=JSON.parse(previous);cloudMeta=was;try{persistPersonal();}catch(e){}render();cloudNotice('Не удалось сохранить личные данные: '+err.message,true);return false;}}
+  function findMatches(g,t){if(!query)return true;const q=query.toLocaleLowerCase('ru');return (g.name+' '+t.title+' '+(t.comments||[]).map(c=>c.text).join(' ')).toLocaleLowerCase('ru').includes(q);}
+  function render(){
+    const root=el('pnDirections');if(!root)return;
+    const q=query.toLocaleLowerCase('ru');let visible=0;
+    root.innerHTML=state.directions.map(g=>{
+      const matching=g.tasks.filter(t=>findMatches(g,t));const groupMatches=g.name.toLocaleLowerCase('ru').includes(q);
+      if(query&&!matching.length&&!groupMatches)return '';
+      visible++;const open=expanded.has(g.id)||!!query;
+      const itemList=(query&&!groupMatches?matching:g.tasks).map(t=>{
+        const comments=[...t.comments].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+        const commentRows=comments.map(c=>`<div class="pn-comment"><div class="pn-comment-top"><span class="pn-comment-time">${esc(timeLabel(c.createdAt))}${c.updatedAt?' · изменён':''}</span><span><button type="button" class="pn-text-action" data-p-action="editComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}" data-p-comment="${esc(c.id)}">Изменить</button><button type="button" class="pn-text-action danger" data-p-action="deleteComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}" data-p-comment="${esc(c.id)}">Удалить</button></span></div><div class="pn-comment-content">${esc(c.text)}</div></div>`).join('');
+        const editing=editor?.dir===g.id&&editor.task===t.id;
+        const composer=editing?`<div class="pn-comment-editor"><textarea id="pnCommentInput" maxlength="5000" placeholder="Напишите, что произошло или что изменилось…" aria-label="Текст комментария">${esc(editor.text)}</textarea><div class="pn-editor-buttons"><button type="button" class="pn-primary" data-p-action="saveComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Сохранить</button><button type="button" class="pn-secondary" data-p-action="cancelComment">Отмена</button></div></div>`:'';
+        return `<article class="pn-task"><div class="pn-task-top"><input type="checkbox" class="pn-check" data-p-action="toggleTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}" ${t.done?'checked':''} aria-label="Выполнить задачу"><div class="pn-task-body"><div class="pn-task-title ${t.done?'done':''}">${esc(t.title)}</div>${t.due?`<span class="pn-date">Срок: ${esc(dateLabel(t.due))}</span>`:''}</div><div class="pn-task-actions"><button type="button" class="pn-text-action" data-p-action="editTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Изменить</button><button type="button" class="pn-text-action danger" data-p-action="deleteTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Удалить</button></div></div><div class="pn-comments">${commentRows}${composer}<button type="button" class="pn-add-comment" data-p-action="newComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">+ Комментарий</button></div></article>`;
+      }).join('');
+      return `<section class="pn-direction"><div class="pn-direction-head"><button type="button" class="pn-fold" data-p-action="toggleDir" data-p-dir="${esc(g.id)}" aria-expanded="${open}"><span class="pn-fold-icon">${open?'▼':'▶'}</span><span>${esc(g.name)}</span><span class="pn-count">${g.tasks.length}</span></button><button type="button" class="pn-icon" data-p-action="editDirection" data-p-dir="${esc(g.id)}" title="Изменить направление" aria-label="Изменить направление">✎</button><button type="button" class="pn-icon" data-p-action="deleteDirection" data-p-dir="${esc(g.id)}" title="Удалить направление" aria-label="Удалить направление">×</button></div>${open?`<div class="pn-direction-content">${itemList||'<div class="pn-empty">Пока нет задач</div>'}<button type="button" class="pn-add-task" data-p-action="newTask" data-p-dir="${esc(g.id)}">+ Добавить задачу</button></div>`:''}</section>`;
+    }).join('');
+    if(!visible)root.innerHTML='<div class="pn-empty">Совпадений нет. Попробуйте другой запрос или добавьте направление.</div>';
+  }
+  function show(which){
+    const personal=which==='personal';document.body.classList.toggle('is-personal',personal);
+    el('personalWorkspace').hidden=!personal;
+    el('pnWorkTab').setAttribute('aria-pressed',String(!personal));el('pnPersonalTab').setAttribute('aria-pressed',String(personal));
+    const caption=document.querySelector('.v56-brand-caption');if(caption)caption.textContent=personal?'Личные дела':'Объекты и поручения';
+    if(personal){render();startPersonalCloud();if(cloudConflict)showCloudConflict();}else if(typeof v56SetScreen==='function'){v56SetScreen('projects');}
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+  function closeModal(){el('pnModal').hidden=true;el('pnModal').setAttribute('aria-hidden','true');el('pnModalContents').innerHTML='';modal=null;}
+  function openForm(kind,gid='',tid=''){
+    const g=group(gid),t=task(gid,tid),dirMode=kind==='newDirection'||kind==='editDirection';
+    const original=dirMode?g?.name:t?.title;modal={kind,gid,tid};
+    el('pnModalTitle').textContent=({newDirection:'Новое направление',editDirection:'Изменить направление',newTask:'Новая задача',editTask:'Изменить задачу'})[kind];
+    el('pnModalContents').innerHTML=`<form id="pnForm"><label>${dirMode?'Название направления':'Название задачи'}<input id="pnTitle" type="text" maxlength="${dirMode?100:300}" required placeholder="${dirMode?'Например: Стройка':'Что нужно сделать?'}" value="${esc(original||'')}"></label>${dirMode?'':'<label>Срок (необязательно)<input id="pnDue" type="date" value="'+esc(t?.due||'')+'"></label>'}<div class="pn-dialog-buttons"><button type="button" class="pn-secondary" data-p-action="closeModal">Отмена</button><button type="submit" class="pn-primary">Сохранить</button></div></form>`;
+    el('pnModal').hidden=false;el('pnModal').setAttribute('aria-hidden','false');el('pnTitle').focus();
+  }
+  function openConfirm(kind,gid,tid,cid){const titles={deleteDirection:'Удалить направление?',deleteTask:'Удалить задачу?',deleteComment:'Удалить комментарий?',restoreSure:'Восстановить личные записи?'};
+    modal={kind,gid,tid,cid, ...(kind==='restoreSure'?{restorePayload:pendingImport}:{})};el('pnModalTitle').textContent=titles[kind];
+    const label=kind==='deleteDirection'?`Направление «${group(gid)?.name||''}» и все его задачи и комментарии будут удалены.`:kind==='deleteTask'?`Задача «${task(gid,tid)?.title||''}» и все её комментарии будут удалены.`:kind==='deleteComment'?'Этот комментарий будет удалён.':'Текущие личные направления, задачи и комментарии будут заменены данными из вставленного JSON. Рабочий блокнот не затрагивается.';
+    el('pnModalContents').innerHTML=`<p class="pn-dialog-description">${esc(label)}</p><div class="pn-dialog-buttons"><button type="button" class="pn-secondary" data-p-action="closeModal">Отмена</button><button type="button" class="pn-primary danger" data-p-action="confirm">${kind==='restoreSure'?'Восстановить':'Удалить'}</button></div>`;
+    el('pnModal').hidden=false;el('pnModal').setAttribute('aria-hidden','false');
+  }
+  let pendingImport=null;
+  function editComment(gid,tid,cid){const c=comment(gid,tid,cid);if(!c)return;expanded.add(gid);editor={dir:gid,task:tid,id:cid,text:c.text};render();el('pnCommentInput')?.focus();}
+  function newComment(gid,tid){expanded.add(gid);editor={dir:gid,task:tid,id:null,text:''};render();el('pnCommentInput')?.focus();}
+  function saveComment(gid,tid){const text=el('pnCommentInput')?.value.trim();if(!text){notify('Введите текст комментария');return;}if(text.length>5000)return;
+    const currentEditor=editor;if(!currentEditor||currentEditor.dir!==gid||currentEditor.task!==tid)return;
+    if(commit(()=>{const t=task(gid,tid);if(currentEditor.id){const c=comment(gid,tid,currentEditor.id);if(!c)throw Error('Комментарий не найден');c.text=text;c.updatedAt=new Date().toISOString();}else{t.comments.unshift({id:newId(),text,createdAt:new Date().toISOString()});}}))editor=null;
+    render();
+  }
+  function handleAction(action,gid,tid,cid){
+    if(action==='newDirection')return openForm('newDirection');
+    if(action==='toggleDir'){expanded.has(gid)?expanded.delete(gid):expanded.add(gid);return render();}
+    if(action==='editDirection')return openForm('editDirection',gid);
+    if(action==='deleteDirection')return openConfirm(action,gid);
+    if(action==='newTask')return openForm('newTask',gid);
+    if(action==='editTask')return openForm('editTask',gid,tid);
+    if(action==='deleteTask')return openConfirm(action,gid,tid);
+    if(action==='newComment')return newComment(gid,tid);
+    if(action==='editComment')return editComment(gid,tid,cid);
+    if(action==='deleteComment')return openConfirm(action,gid,tid,cid);
+    if(action==='saveComment')return saveComment(gid,tid);
+    if(action==='cancelComment'){editor=null;return render();}
+    if(action==='closeModal')return closeModal();
+    if(action==='confirm')return confirmModal();
+    if(action==='copyBackup')return copyBackup();
+    if(action==='restoreBackup')return restoreModal();
+    if(action==='syncNow')return void refreshPersonalCloud(true);
+    if(action==='keepLocal')return resolveCloudChoice('local');
+    if(action==='acceptCloud')return resolveCloudChoice('cloud');
+  }
+  function submitForm(){if(!modal)return;const {kind,gid,tid}=modal;const title=el('pnTitle').value.trim();if(!title){notify('Введите название');return;}const due=el('pnDue')?.value||'';
+    const ok=commit(()=>{
+      if(kind==='newDirection'){const g={id:newId(),name:title,tasks:[]};state.directions.push(g);expanded.add(g.id);}
+      if(kind==='editDirection')group(gid).name=title;
+      if(kind==='newTask'){group(gid).tasks.push({id:newId(),title,due,done:false,createdAt:new Date().toISOString(),comments:[]});expanded.add(gid);}
+      if(kind==='editTask'){Object.assign(task(gid,tid),{title,due});}
+    });if(ok)closeModal();
+  }
+  function confirmModal(){if(!modal)return;const {kind,gid,tid,cid,restorePayload}=modal;
+    const ok=commit(()=>{
+      if(kind==='deleteDirection')state.directions=state.directions.filter(g=>g.id!==gid);
+      if(kind==='deleteTask')group(gid).tasks=group(gid).tasks.filter(t=>t.id!==tid);
+      if(kind==='deleteComment')task(gid,tid).comments=task(gid,tid).comments.filter(c=>c.id!==cid);
+      if(kind==='restoreSure'){validate(restorePayload);state=JSON.parse(JSON.stringify(restorePayload));expanded=new Set(state.directions.map(g=>g.id));}
+    });if(ok){editor=null;closeModal();render();}
+  }
+  async function copyBackup(){const value=JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2);let ok=false;
+    try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);ok=true;}}catch(e){}
+    if(!ok){const ta=document.createElement('textarea');ta.value=value;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{ok=!!document.execCommand('copy');}catch(e){}ta.remove();}
+    if(ok){notify('Личный JSON скопирован');return;}
+    modal={kind:'manualCopy'};el('pnModalTitle').textContent='Скопируйте личный JSON';el('pnModalContents').innerHTML='<label>Выделите и скопируйте текст<textarea id="pnManualCopy" readonly></textarea></label><div class="pn-dialog-buttons"><button type="button" class="pn-secondary" data-p-action="closeModal">Закрыть</button></div>';el('pnModal').hidden=false;el('pnModal').setAttribute('aria-hidden','false');el('pnManualCopy').value=value;el('pnManualCopy').select();
+  }
+  function restoreModal(){modal={kind:'restoreInput'};el('pnModalTitle').textContent='Вставить резервную копию';el('pnModalContents').innerHTML='<form id="pnRestoreForm"><label>JSON личного блокнота<textarea id="pnRestoreText" required placeholder="Вставьте JSON личного блокнота"></textarea></label><p class="pn-feedback" id="pnRestoreFeedback">Будут заменены только личные записи.</p><div class="pn-dialog-buttons"><button type="button" class="pn-secondary" data-p-action="closeModal">Отмена</button><button class="pn-primary" type="submit">Проверить JSON</button></div></form>';el('pnModal').hidden=false;el('pnModal').setAttribute('aria-hidden','false');el('pnRestoreText').focus();}
+  function submitRestore(){try{const text=el('pnRestoreText').value;if(text.length>12000000)throw Error('Слишком большой файл');const incoming=JSON.parse(text);validate(incoming);pendingImport=incoming;openConfirm('restoreSure');}catch(e){el('pnRestoreFeedback').textContent='Ошибка: '+e.message;}}
+  document.addEventListener('click',e=>{if(!e.target.closest('#personalWorkspace,#pnModal'))return;const b=e.target.closest('button[data-p-action]');if(!b)return;handleAction(b.dataset.pAction,b.dataset.pDir,b.dataset.pTask,b.dataset.pComment);});
+  document.addEventListener('change',e=>{const t=e.target;if(t.dataset.pAction==='toggleTask'){const gid=t.dataset.pDir,tid=t.dataset.pTask;commit(()=>task(gid,tid).done=t.checked);}});
+  document.addEventListener('submit',e=>{if(e.target.id==='pnForm'){e.preventDefault();submitForm();}if(e.target.id==='pnRestoreForm'){e.preventDefault();submitRestore();}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el('pnModal').hidden)closeModal();});
+  el('pnModal').addEventListener('click',e=>{if(e.target===el('pnModal'))closeModal();});
+  el('pnSearch').addEventListener('input',e=>{query=e.target.value.trim().slice(0,120);render();});
+  window.addEventListener('storage',e=>{if(e.key===storageKey){try{const parsed=JSON.parse(e.newValue);validate(parsed);state=parsed;expanded=new Set(state.directions.map(g=>g.id));editor=null;render();feedback('Личные записи обновлены из другой вкладки этого браузера.');}catch(err){feedback('Ошибка чтения данных другой вкладки',true);}}});
+  render();startPersonalCloud();return {show};
+})();
+</script>
 </body>
 </html>
