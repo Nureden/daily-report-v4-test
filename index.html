@@ -2507,31 +2507,6 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     </div>
 
     <!-- Version 5.8: calm notebook layout; existing storage schema is unchanged. -->
-    <section id="v56Workspace" class="v56-workspace" aria-label="Рабочий блокнот" hidden>
-      <div class="v56-heading-row" hidden>
-        <h1 id="v56Heading">Объекты</h1><p id="v56Subheading"></p>
-        <button type="button" id="v56LegacyButton" hidden>Дополнительно</button>
-      </div>
-      <div class="v59-tools">
-        <div class="v56-search-wrap">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
-          <input id="v56Search" type="search" aria-label="Поиск объектов, процессов, ответственных, документов и событий" placeholder="Найти объект или задачу…" autocomplete="off" oninput="v56SearchChanged(this.value)">
-          <button type="button" id="v56ClearSearch" class="v56-search-clear" onclick="v56ClearSearch()" aria-label="Очистить поиск" hidden>×</button>
-        </div>
-        <label class="v59-filter-label"><span class="sr-only">Статус объекта</span>
-          <select id="v59Filter" aria-label="Фильтр объектов" onchange="v59SetFilter(this.value)">
-            <option value="all">Все состояния</option>
-            <option value="late">Просрочено</option>
-            <option value="waiting">Ожидание</option>
-            <option value="active">В работе</option>
-            <option value="done">Завершено</option>
-          </select>
-        </label>
-      </div>
-      <div class="v56-group-list" id="v56Cards" aria-live="polite"></div>
-      <button type="button" id="v56More" class="v56-more" onclick="v56LoadMore()" hidden>Показать ещё</button>
-      <p class="v60-footer-note">Нужная задача всегда находится внутри своего объекта. Чтобы добавить объект, откройте соответствующий район.</p>
-    </section>
     <section id="v56LegacyWorkspace" class="v56-legacy-workspace">
       <div class="v56-legacy-intro"><div><h2>Структура объектов</h2><p>Направления, объекты, этапы и настройки</p></div><button type="button" class="v56-structure-link" onclick="v56ToggleStructure()">К объектам</button></div>
     <!-- КОМПАКТНАЯ ШАПКА РЕЕСТРА -->
@@ -6066,12 +6041,8 @@ function v59FocusAttention(){
 }
 
 function v59OpenStructure(){
-  // Rare maintenance operations: archives, reordering and workflow templates.
-  v56Legacy=true;
-  document.getElementById('v56Workspace').hidden=true;
-  document.getElementById('v56LegacyWorkspace').hidden=false;
-  render();
-  window.scrollTo({top:0,behavior:'instant'});
+  // Maintenance also uses the approved structure registry, never a second UI.
+  v56SetScreen('projects');
 }
 
 function v59Insight(info){
@@ -6179,23 +6150,24 @@ function v56RenderCards(){
     if(!more.hidden)more.textContent=`Ещё ${filtered.length-v56Limit} объектов`;}
 }
 
+// One approved interface: all object navigation returns to the structure registry.
 function v56SetScreen(screen){
-  v56Screen=screen==='today'?'today':'projects';v59AttentionOnly=false;v56Legacy=false;
-  const main=document.getElementById('v56Workspace'),legacy=document.getElementById('v56LegacyWorkspace');
-  main.hidden=false;legacy.hidden=true;v56Status='all';v56Limit=30;
-  v56RenderCards();window.scrollTo({top:0,behavior:'instant'});
+  v56Screen='projects';v59AttentionOnly=false;v56Legacy=true;
+  const registry=document.getElementById('v56LegacyWorkspace');
+  if(registry)registry.hidden=false;
+  v56Status='all';v56Limit=30;
+  render();
+  window.scrollTo({top:0,behavior:'instant'});
 }
 function v56SearchChanged(value){v56Query=String(value||'').trim().toLowerCase();v56Limit=30;v56RenderCards();}
 function v56ClearSearch(){v56Query='';document.getElementById('v56Search').value='';v56RenderCards();document.getElementById('v56Search').focus();}
 function v56ClearAllFilters(){v56Query='';v56Status='all';v56Screen='projects';document.getElementById('v56Search').value='';v56SetScreen('projects');}
 function v56LoadMore(){v56Limit+=30;v56RenderCards();}
+// Compatibility with old callbacks: never show the retired alternative screen.
 function v56ToggleStructure(){
-  v56Legacy=!v56Legacy;
-  document.getElementById('v56Workspace').hidden=v56Legacy;
-  document.getElementById('v56LegacyWorkspace').hidden=!v56Legacy;
-  if(!v56Legacy)v56RenderCards();
-  const btn=document.getElementById('v56LegacyButton');if(btn)btn.textContent=v56Legacy?'К объектам':'Полный реестр';
-  window.scrollTo({top:0,behavior:'instant'});
+  const registry=document.getElementById('v56LegacyWorkspace');
+  if(registry)registry.hidden=false;
+  document.getElementById('processesRoot')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 // Earlier v5.9 click listener removed: v6.1 handler below owns #v56Cards.
@@ -6807,7 +6779,7 @@ openProcessEvent=function(){
  const next=v60Steps.findIndex(x=>String(x.proc.id)===String(t.procId)&&String(x.obj.id)===String(t.objId)&&String(x.step.id)===String(t.stepId));
  if(next>=0)v61StartEvent(next,null);
 };
-document.getElementById('v56Cards').addEventListener('click',event=>{
+document.getElementById('v56Cards')?.addEventListener('click',event=>{
  let b=event.target.closest('button');if(!b)return;
  // Inline working-event editor: names and dates belong to the event, not to the task.
  if(b.hasAttribute('data-v61-add')){v61StartEvent(Number(b.dataset.v61Add),null);return;}
@@ -6853,7 +6825,7 @@ document.getElementById('v56Cards').addEventListener('click',event=>{
  if(b.hasAttribute('data-v60-result-save')){v60SaveResult(Number(b.dataset.v60ResultSave));return;}
  if(b.hasAttribute('data-v60-result-close')){v60CloseResult();return;}
 });
-document.getElementById('v56Cards').addEventListener('change',event=>{
+document.getElementById('v56Cards')?.addEventListener('change',event=>{
  const input=event.target.closest('input[data-v60-check]');if(!input)return;
  const x=v60Steps[Number(input.dataset.v60Check)];if(!x)return;
  if(!readyForEditing){showToast('Нет подключения к облаку');v56RenderCards();return;}
