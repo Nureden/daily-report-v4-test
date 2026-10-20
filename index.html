@@ -1240,7 +1240,6 @@ body{background:var(--bg);font-size:14px;letter-spacing:0;padding:15px 12px 125p
 
 /* 3.2 usability refinements */
 .item-header{min-height:34px}
-.item-title-wrap{min-width:0}
 .summary-status-inline{font-size:10px;font-weight:700;border-radius:6px;padding:4px 7px;white-space:nowrap}
 .step-owner-compact{display:inline-flex;align-items:center;gap:4px;max-width:210px;border:0;background:#f5f7fb;color:#62758e;font-size:11px;border-radius:6px;padding:5px 8px;cursor:pointer}
 .step-owner-compact:hover{color:#2563eb;background:#edf4ff}
@@ -1884,7 +1883,6 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 .btn-icon-refresh,.settings-trigger,.btn-ai-compact{height:36px!important;min-height:36px!important;border-radius:11px!important;border:1px solid var(--v56-border)!important;background:#fff!important;box-shadow:none!important;color:#3d638d!important;padding:5px 10px!important;font-size:17px!important}
 .btn-ai-compact{font-size:13px!important;color:#61748b!important}
 .settings-trigger{width:36px!important;padding:0!important}
-.metrics-ribbon,.kpi-expand-btn{display:none!important}
 .sync-details{min-height:17px!important;margin:0 0 1px!important;font-size:11px!important;color:#99a5b6!important;opacity:.8}
 .filter-active-banner{display:none!important}
 .v56-workspace{padding:12px 0 24px}
@@ -1935,7 +1933,6 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 .v56-more{width:100%;margin-top:20px}
 .v56-more[hidden]{display:none!important}
 .v56-legacy-workspace{margin-top:14px}
-.v56-legacy-workspace[hidden]{display:none!important}
 .v56-legacy-intro{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}
 .v56-bottom-nav{display:flex;align-items:center;justify-content:space-around;gap:5px;position:fixed;bottom:0;left:0;right:0;max-width:970px;margin:0 auto;background:rgba(255,255,255,.98);border:1px solid #e8ecf4;border-bottom:0;border-radius:15px 15px 0 0;box-shadow:0 -3px 18px rgba(38,60,99,.06);padding:8px 12px max(10px,env(safe-area-inset-bottom));z-index:250}
 .v56-bottom-nav button{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;flex:1;border:0;background:transparent;min-height:51px;color:#8495ad;cursor:pointer;font-size:12px;font-weight:600}
@@ -1957,7 +1954,7 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 .v55-detail-tags{gap:8px 14px!important}
 .v55-event{background:#fbfcff!important;border-left:2px solid #3674eb!important;border-radius:2px 11px 11px 2px!important}
 @media(min-width:740px){.v56-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v56-bottom-nav{position:sticky;bottom:auto;top:0;border-radius:13px;border:1px solid #e6ebf3;margin:14px auto 0;z-index:30;box-shadow:none}.v56-fab{bottom:25px}body{padding-bottom:35px!important}}
-@media(max-width:700px){body{padding:0 13px 110px!important}.dashboard-panel{padding-top:14px!important}.dash-title{font-size:19px!important}.btn-ai-compact{display:none!important}.v56-heading-row h1{font-size:23px!important}.v56-heading-row{align-items:flex-start}.v56-structure-link{font-size:12px;max-width:133px;white-space:normal;text-align:center}.v56-task-card{padding:13px 11px}.v56-task-title{font-size:16px}.v56-badge{font-size:11px}.v56-bottom-nav{max-width:100%;border-radius:0;padding:6px 6px max(7px,env(safe-area-inset-bottom))}.v56-bottom-nav button{font-size:11px;min-height:50px}.v56-fab{bottom:85px;right:18px;width:53px;height:53px}.v55-modal{border-radius:20px 20px 0 0!important}#processDetailModal .v55-process-modal{padding-bottom:calc(24px + env(safe-area-inset-bottom))!important}}
+@media(max-width:700px){body{padding:0 13px 110px!important}.dash-title{font-size:19px!important}.btn-ai-compact{display:none!important}.v56-heading-row h1{font-size:23px!important}.v56-heading-row{align-items:flex-start}.v56-structure-link{font-size:12px;max-width:133px;white-space:normal;text-align:center}.v56-task-card{padding:13px 11px}.v56-task-title{font-size:16px}.v56-badge{font-size:11px}.v56-bottom-nav{max-width:100%;border-radius:0;padding:6px 6px max(7px,env(safe-area-inset-bottom))}.v56-bottom-nav button{font-size:11px;min-height:50px}.v56-fab{bottom:85px;right:18px;width:53px;height:53px}.v55-modal{border-radius:20px 20px 0 0!important}#processDetailModal .v55-process-modal{padding-bottom:calc(24px + env(safe-area-inset-bottom))!important}}
 @media(max-width:365px){.v56-task-card{gap:7px}.v56-task-top{flex-wrap:wrap}.v56-task-title{flex:1 1 100%}.v56-badge{align-self:flex-start}.v56-heading-row h1{font-size:21px!important}.v56-structure-link{max-width:112px}}
 @media(prefers-reduced-motion:reduce){.v56-task-card{transition:none}}
 </style>
@@ -2003,7 +2000,6 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 <style id="v58-notebook-ui">
 /* V5.8: minimalist notebook. Presentation only; no schema or network changes. */
 :root{--v58-ink:#27334a;--v58-muted:#778294;--v58-line:#e5e8ed;--v58-blue:#2465c1}
-html,body,body *,button,input,textarea,select,option{font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif!important}
 body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 60px!important;font-size:15px!important}
 .app-container{max-width:800px!important}
 .dashboard-panel{padding:18px 0 2px!important}
@@ -2101,7 +2097,7 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
  .v56-fab{bottom:calc(14px + env(safe-area-inset-bottom))!important;right:14px!important}
 }
 @media(max-width:355px){.v58-direction-alert{display:none}.v58-object-head{gap:5px}.v58-status{font-size:11px}.v56-filter-bar button{padding:6px 7px!important}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media(prefers-reduced-motion:reduce){}
 </style>
 
 <style id="v56-state-fix">#v56Workspace[hidden]{display:none!important}#v56LegacyWorkspace[hidden]{display:none!important}</style>
@@ -2992,7 +2988,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
     const DEVICE_KEY = STORAGE_KEY + '_device';
     const CLOUD_MANIFEST_KEY = 'mv2_manifest';
     const CLOUD_SLOT_PREFIXES = ['mv2a_', 'mv2b_'];
-    const MAX_RETRIES = 3;
+    
 
     if (tg) {
       try {
@@ -3139,17 +3135,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       return { cls: 'date-normal', text: `📅 ${dateStr}` };
     }
 
-    function formatDeadlineChip(step, meta) {
-      if (!step?.date) return '+ Срок';
-      const date = String(step.date).replace(/^до\s+/i,'');
-      if (step.done) return 'Срок: '+date;
-      if (meta.cls==='overdue') {
-        const m=String(meta.text).match(/\d+/);
-        return 'до '+date+' · +'+(m?m[0]:'?')+' дн.';
-      }
-      if (meta.cls==='urgent') return 'до '+date+' · '+String(meta.text).replace(/[🟠🟡⏰]/gu,'').trim();
-      return 'до '+date;
-    }
+    
 
     function shortenStepName(name) {
       if (!name) return '';
@@ -3522,7 +3508,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       return id.slice(0,8)+'-'+id.slice(8,12)+'-4'+id.slice(13,16)+'-a'+id.slice(17,20)+'-'+id.slice(20,32);
     }
     const ONLINE_CACHE_KEY='projects_online_v4_pending';
-    const ONLINE_BASE_KEY='projects_online_v4_base';
+    
     const ONLINE_MAX_REQUEST_MS=20000;
     const onlineEndpoint=String(window.NOTEBOOK_CONFIG?.supabaseUrl||'').trim().replace(/\/$/,'')+'/functions/v1/notebook';
     const onlineConfigured=/^https:\/\/[a-z0-9-]+\.supabase\.co\/functions\/v1\/notebook$/i.test(onlineEndpoint);
@@ -3944,7 +3930,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       });
     }
 
-    function normalizeStateHistory(arr){return Model.normalize(arr);}
+    
 
         function setReportMode(m) {
       reportMode = m;
@@ -3955,13 +3941,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       showToast(m === 'executive' ? "⚡ Режим: Фокус в работе" : "📋 Режим: Полный реестр");
     }
 
-    function toggleHistoryVisibility(stepId) {
-      expandedHistoryStepMap[stepId] = !expandedHistoryStepMap[stepId];
-      const body=document.getElementById('history-older-'+stepId);
-      const button=document.getElementById('history-toggle-'+stepId);
-      if(body) body.hidden=!expandedHistoryStepMap[stepId];
-      if(button) button.textContent=(expandedHistoryStepMap[stepId]?'Скрыть историю':'История замечаний')+' ('+ (body?.dataset.count||'0') +')';
-    }
+    
 
     function toggleObjShowAllSteps(objId) {
       expandedAllStepsObjMap[objId] = !expandedAllStepsObjMap[objId];
@@ -4280,19 +4260,7 @@ body{background:#f8f9fa!important;color:#2c3542!important}
       saveData();
     }
 
-    function openEditStepModal(procId, objId, stepId) {
-      const p = state.find(x => String(x.id) === String(procId));
-      const obj = p?.objects.find(o => String(o.id) === String(objId));
-      const step = obj?.steps.find(s => String(s.id) === String(stepId));
-      if (!step) return;
-
-      showTextModal("✏️ Описание этапа", step.text, (newText) => {
-        step.text = newText;
-        step.updatedAt = getTimestampStr();
-        saveData();
-        showToast("Этап обновлен");
-      });
-    }
+    
 
     function openDateModal(procId, objId, stepId) {
       activeModalTarget = { procId, objId, stepId };
@@ -6026,24 +5994,8 @@ function v57FilterRows(row){
   if(v56Status==='active'&&!['active','blocked'].includes(row.status))return false;
   return true;
 }
-function v57StatusText(row){
-  return row.status==='done'?'Выполнено':row.status==='late'?'Просрочено':row.status==='blocked'?'Проблема':row.status==='waiting'?'Ожидание':'В работе';
-}
-function v57StepHtml(row,info){
-  const idx=v57RenderedSteps.push({proc:row.proc,obj:row.obj,step:info.step})-1;
-  const s=info.step;
-  const mark=s.done?'✓':info.late||info.blocked?'!':info.waiting?'◷':'•';
-  const meta=[];
-  if(s.owner)meta.push(v56SafeText(s.owner));
-  if(s.date)meta.push((s.done?'Срок ':'До ')+v56SafeText(v56DateShort(s.date)));
-  if(!s.done&&s.nextDate&&!s.date)meta.push('Далее '+v56SafeText(v56DateShort(s.nextDate)));
-  const detail=meta.length?`<span class="v58-step-meta">${meta.join('<span class="v58-meta-sep">·</span>')}</span>`:'';
-  return `<button type="button" class="v58-step v58-${info.status}" data-v57-step="${idx}" aria-label="Открыть процесс: ${v56SafeText(s.text)}">
-    <span class="v58-step-mark" aria-hidden="true">${mark}</span>
-    <span class="v58-step-body"><span class="v58-step-title">${v56SafeText(s.text)}</span>${detail}</span>
-    <span class="v58-step-chevron" aria-hidden="true">›</span>
-  </button>`;
-}
+
+
 function v57ShowSteps(row){
   const all=row.steps;
   if(!all.length)return [];
@@ -6069,10 +6021,7 @@ function v57ShowSteps(row){
 // V5.8: one direction = one section; one object = one compact row.
 const v58CollapsedDirections=new Set();
 let v58GroupRefs=[];
-function v58ObjectCount(n){
-  const a=Math.abs(n)%100,b=a%10;
-  return n+' '+(a>10&&a<15?'объектов':b===1?'объект':b>=2&&b<=4?'объекта':'объектов');
-}
+
 // V5.9 — real unified notebook: one list, one open object, no duplicate daily register.
 const v59OpenedObjects=new Set();
 let v59CurrentObject=null;
@@ -6108,33 +6057,14 @@ function v59Metadata(step){
   if(!step.done&&step.nextDate&&!step.date)out.push(`<span>Следующее ${v56SafeText(v56DateShort(step.nextDate))}</span>`);
   return out.join('<span class="v59-meta-sep">·</span>');
 }
-function v59OpenObject(idx){
-  const row=v57VisibleObjects[Number(idx)];if(!row)return;
-  const key=v57ObjectKey(row.proc,row.obj);
-  if(v59OpenedObjects.has(key))v59OpenedObjects.delete(key);
-  else{v59OpenedObjects.clear();v59OpenedObjects.add(key);}
-  v56RenderCards();
-}
+
 function v59SetFilter(filter){v56Status=filter;v56Limit=30;v59AttentionOnly=false;v56RenderCards();}
 function v59FocusAttention(){
   v56Screen='today';v56Status='all';v59AttentionOnly=true;v56Query='';
   const search=document.getElementById('v56Search');if(search)search.value='';
   v56RenderCards();
 }
-function v59AddObject(procId){
-  const proc=state.find(x=>String(x.id)===String(procId));
-  if(!proc||!readyForEditing){showToast('Дождитесь подключения к облаку');return;}
-  showTextModal('Новый объект','',(value)=>{
-    const name=String(value||'').trim().slice(0,300);if(!name)return;
-    if((proc.objects||[]).some(o=>!o.archived&&String(o.title||'').trim().toLowerCase()===name.toLowerCase())){
-      showToast('Такой объект уже существует');return;
-    }
-    const obj={id:createId(),title:name,archived:false,collapsed:false,steps:[]};
-    proc.objects.push(obj);v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));
-    v58CollapsedDirections.delete(String(proc.id));
-    saveData('Добавлен объект');showToast('Объект создан');
-  });
-}
+
 function v59OpenStructure(){
   // Rare maintenance operations: archives, reordering and workflow templates.
   v56Legacy=true;
@@ -6143,11 +6073,7 @@ function v59OpenStructure(){
   render();
   window.scrollTo({top:0,behavior:'instant'});
 }
-function v59ResetView(){
-  v56Legacy=false;document.getElementById('v56Workspace').hidden=false;
-  document.getElementById('v56LegacyWorkspace').hidden=true;
-  v56RenderCards();window.scrollTo({top:0,behavior:'instant'});
-}
+
 function v59Insight(info){
   const step=info?.step;if(!step||step.done)return '';
   let tip='';
@@ -6252,7 +6178,7 @@ function v56RenderCards(){
   const more=document.getElementById('v56More');if(more){more.hidden=filtered.length<=v56Limit;
     if(!more.hidden)more.textContent=`Ещё ${filtered.length-v56Limit} объектов`;}
 }
-function v56SetFilter(filter){v59SetFilter(filter);}
+
 function v56SetScreen(screen){
   v56Screen=screen==='today'?'today':'projects';v59AttentionOnly=false;v56Legacy=false;
   const main=document.getElementById('v56Workspace'),legacy=document.getElementById('v56LegacyWorkspace');
@@ -6271,7 +6197,7 @@ function v56ToggleStructure(){
   const btn=document.getElementById('v56LegacyButton');if(btn)btn.textContent=v56Legacy?'К объектам':'Полный реестр';
   window.scrollTo({top:0,behavior:'instant'});
 }
-function v56OpenSettings(e){toggleSettings(e);}
+
 // Earlier v5.9 click listener removed: v6.1 handler below owns #v56Cards.
 
 // VERSION 6.0 — one day-to-day notebook, grouped by administrative district.
@@ -6369,14 +6295,7 @@ function v612Move(row,delta){
  const district=v60DistrictOf(row.obj,row.proc),list=v612DistrictRows(district),pos=v612ObjectIndex(list,row);
  return v612Reorder(row,pos+delta);
 }
-function v612DragTo(source,target,after){
- if(v60DistrictOf(source.obj,source.proc)!==v60DistrictOf(target.obj,target.proc)){showToast('Перетаскивайте объекты внутри одного района');return false;}
- const rows=v612DistrictRows(v60DistrictOf(source.obj,source.proc));
- const from=v612ObjectIndex(rows,source),dest=v612ObjectIndex(rows,target);
- if(from<0||dest<0||from===dest)return false;
- let to=dest+(after?1:0);if(to>from)to--;
- return v612Reorder(source,to);
-}
+
 
 // V6.1: one-row working notes. Store owner/deadline on the EVENT, never on the parent task.
 let v61Editor=null;
