@@ -2471,7 +2471,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
 .pn-task-body{flex:1;min-width:0}
 .pn-task-title{font-size:18px;color:#253448;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
 .pn-task-title.done{color:#8c98a7;text-decoration:line-through}
-.pn-date{display:inline-block;color:#8293a5;font-size:13px;margin-top:5px}
+.pn-date{display:inline-block;color:#8293a5;font-size:13px;margin-top:5px}.pn-due-date{margin-left:12px}
 .pn-task-actions{display:flex;gap:1px;flex-wrap:wrap;align-items:center}
 .pn-text-action{background:none;border:0;color:#416b9c;cursor:pointer;padding:5px 7px;min-height:32px;font-size:13px;font-weight:600;border-radius:6px}
 .pn-text-action.danger{color:#a5554d}
@@ -7010,6 +7010,8 @@ const PersonalNotebook=(()=>{
   function newId(){return typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'pn-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);}
   function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function dateLabel(str){if(!str)return '';const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(str);return m?`${m[3]}.${m[2]}.${m[1]}`:String(str);}
+  function localDateISO(value){const d=value?new Date(value):new Date();if(!Number.isFinite(d.getTime()))return '';return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+  function personalTaskDate(t){return t.date||localDateISO(t.createdAt)||localDateISO();}
   function timeLabel(str){const d=new Date(str);return Number.isFinite(d.getTime())?d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';}
   function getData(){try{const raw=localStorage.getItem(storageKey);if(!raw)return defaultData();const parsed=JSON.parse(raw);validate(parsed);return parsed;}catch(e){console.warn('Personal notebook: invalid or inaccessible storage',e);return defaultData();}}
   function validate(d){
@@ -7017,7 +7019,7 @@ const PersonalNotebook=(()=>{
     const ids=new Set();let tasks=0,notes=0;
     const unique=v=>{if(typeof v!=='string'||v.length<1||v.length>120||ids.has(v))throw Error('Неверные идентификаторы');ids.add(v);};
     for(const g of d.directions){if(!g||typeof g.name!=='string'||g.name.length<1||g.name.length>100||!Array.isArray(g.tasks))throw Error('Неверное направление');unique(g.id);tasks+=g.tasks.length;if(tasks>1500)throw Error('Слишком много задач');
-      for(const t of g.tasks){if(!t||typeof t.title!=='string'||t.title.length<1||t.title.length>300||typeof t.done!=='boolean'||typeof t.due!=='string'||(t.due&&!/^\d{4}-\d{2}-\d{2}$/.test(t.due))||!Array.isArray(t.comments))throw Error('Неверная задача');unique(t.id);notes+=t.comments.length;if(notes>12000)throw Error('Слишком много комментариев');
+      for(const t of g.tasks){if(!t||typeof t.title!=='string'||t.title.length<1||t.title.length>300||typeof t.done!=='boolean'||typeof t.due!=='string'||(t.due&&!/^\d{4}-\d{2}-\d{2}$/.test(t.due))||(t.date!==undefined&&(typeof t.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(t.date)))||!Array.isArray(t.comments))throw Error('Неверная задача');unique(t.id);notes+=t.comments.length;if(notes>12000)throw Error('Слишком много комментариев');
         for(const c of t.comments){if(!c||typeof c.text!=='string'||!c.text.trim()||c.text.length>5000||typeof c.createdAt!=='string')throw Error('Неверный комментарий');unique(c.id);}
       }
     }
@@ -7096,7 +7098,7 @@ const PersonalNotebook=(()=>{
     };
     const mergeNode=(b,l,r,path,kind)=>{
       const out={...clone(r)};
-      const fields=kind==='direction'?['name']:kind==='task'?['title','due','done','createdAt']:['text','createdAt','updatedAt'];
+      const fields=kind==='direction'?['name']:kind==='task'?['title','date','due','done','createdAt']:['text','createdAt','updatedAt'];
       for(const key of fields) {
         const val=choose(b?.[key],l?.[key],r?.[key],path+'/'+key);
         if(val===undefined)delete out[key];else out[key]=val;
@@ -7238,7 +7240,7 @@ const PersonalNotebook=(()=>{
         const commentRows=comments.map(c=>`<div class="pn-comment"><div class="pn-comment-top"><span class="pn-comment-time">${esc(timeLabel(c.createdAt))}${c.updatedAt?' · изменён':''}</span><span><button type="button" class="pn-text-action" data-p-action="editComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}" data-p-comment="${esc(c.id)}">Изменить</button><button type="button" class="pn-text-action danger" data-p-action="deleteComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}" data-p-comment="${esc(c.id)}">Удалить</button></span></div><div class="pn-comment-content">${esc(c.text)}</div></div>`).join('');
         const editing=editor?.dir===g.id&&editor.task===t.id;
         const composer=editing?`<div class="pn-comment-editor"><textarea id="pnCommentInput" maxlength="5000" placeholder="Напишите, что произошло или что изменилось…" aria-label="Текст комментария">${esc(editor.text)}</textarea><div class="pn-editor-buttons"><button type="button" class="pn-primary" data-p-action="saveComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Сохранить</button><button type="button" class="pn-secondary" data-p-action="cancelComment">Отмена</button></div></div>`:'';
-        return `<article class="pn-task"><div class="pn-task-top"><input type="checkbox" class="pn-check" data-p-action="toggleTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}" ${t.done?'checked':''} aria-label="Выполнить задачу"><div class="pn-task-body"><div class="pn-task-title ${t.done?'done':''}">${esc(t.title)}</div>${t.due?`<span class="pn-date">Срок: ${esc(dateLabel(t.due))}</span>`:''}</div><div class="pn-task-actions"><button type="button" class="pn-text-action" data-p-action="editTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Изменить</button><button type="button" class="pn-text-action danger" data-p-action="deleteTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Удалить</button></div></div><div class="pn-comments">${commentRows}${composer}<button type="button" class="pn-add-comment" data-p-action="newComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">+ Комментарий</button></div></article>`;
+        return `<article class="pn-task"><div class="pn-task-top"><input type="checkbox" class="pn-check" data-p-action="toggleTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}" ${t.done?'checked':''} aria-label="Выполнить задачу"><div class="pn-task-body"><div class="pn-task-title ${t.done?'done':''}">${esc(t.title)}</div><span class="pn-date">Дата: ${esc(dateLabel(personalTaskDate(t)))}</span>${t.due?`<span class="pn-date pn-due-date">Срок: ${esc(dateLabel(t.due))}</span>`:''}</div><div class="pn-task-actions"><button type="button" class="pn-text-action" data-p-action="editTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Изменить</button><button type="button" class="pn-text-action danger" data-p-action="deleteTask" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">Удалить</button></div></div><div class="pn-comments">${commentRows}${composer}<button type="button" class="pn-add-comment" data-p-action="newComment" data-p-dir="${esc(g.id)}" data-p-task="${esc(t.id)}">+ Комментарий</button></div></article>`;
       }).join('');
       return `<section class="pn-direction"><div class="pn-direction-head"><button type="button" class="pn-fold" data-p-action="toggleDir" data-p-dir="${esc(g.id)}" aria-expanded="${open}"><span class="pn-fold-icon">${open?'▼':'▶'}</span><span>${esc(g.name)}</span><span class="pn-count">${g.tasks.length}</span></button><button type="button" class="pn-icon" data-p-action="editDirection" data-p-dir="${esc(g.id)}" title="Изменить направление" aria-label="Изменить направление">✎</button><button type="button" class="pn-icon" data-p-action="deleteDirection" data-p-dir="${esc(g.id)}" title="Удалить направление" aria-label="Удалить направление">×</button></div>${open?`<div class="pn-direction-content">${itemList||'<div class="pn-empty">Пока нет задач</div>'}<button type="button" class="pn-add-task" data-p-action="newTask" data-p-dir="${esc(g.id)}">+ Добавить задачу</button></div>`:''}</section>`;
     }).join('');
@@ -7257,7 +7259,7 @@ const PersonalNotebook=(()=>{
     const g=group(gid),t=task(gid,tid),dirMode=kind==='newDirection'||kind==='editDirection';
     const original=dirMode?g?.name:t?.title;modal={kind,gid,tid};
     el('pnModalTitle').textContent=({newDirection:'Новое направление',editDirection:'Изменить направление',newTask:'Новая задача',editTask:'Изменить задачу'})[kind];
-    el('pnModalContents').innerHTML=`<form id="pnForm"><label>${dirMode?'Название направления':'Название задачи'}<input id="pnTitle" type="text" maxlength="${dirMode?100:300}" required placeholder="${dirMode?'Например: Стройка':'Что нужно сделать?'}" value="${esc(original||'')}"></label>${dirMode?'':'<label>Срок (необязательно)<input id="pnDue" type="date" value="'+esc(t?.due||'')+'"></label>'}<div class="pn-dialog-buttons"><button type="button" class="pn-secondary" data-p-action="closeModal">Отмена</button><button type="submit" class="pn-primary">Сохранить</button></div></form>`;
+    el('pnModalContents').innerHTML=`<form id="pnForm"><label>${dirMode?'Название направления':'Название задачи'}<input id="pnTitle" type="text" maxlength="${dirMode?100:300}" required placeholder="${dirMode?'Например: Стройка':'Что нужно сделать?'}" value="${esc(original||'')}"></label>${dirMode?'':'<label>Дата задачи (обязательно)<input id="pnDate" type="date" required value="'+esc(t?personalTaskDate(t):localDateISO())+'"></label><label>Срок (необязательно)<input id="pnDue" type="date" value="'+esc(t?.due||'')+'"></label>'}<div class="pn-dialog-buttons"><button type="button" class="pn-secondary" data-p-action="closeModal">Отмена</button><button type="submit" class="pn-primary">Сохранить</button></div></form>`;
     el('pnModal').hidden=false;el('pnModal').setAttribute('aria-hidden','false');el('pnTitle').focus();
   }
   function openConfirm(kind,gid,tid,cid){const titles={deleteDirection:'Удалить направление?',deleteTask:'Удалить задачу?',deleteComment:'Удалить комментарий?',restoreSure:'Восстановить личные записи?'};
@@ -7295,12 +7297,12 @@ const PersonalNotebook=(()=>{
     if(action==='keepLocal')return resolveCloudChoice('local');
     if(action==='acceptCloud')return resolveCloudChoice('cloud');
   }
-  function submitForm(){if(!modal)return;const {kind,gid,tid}=modal;const title=el('pnTitle').value.trim();if(!title){notify('Введите название');return;}const due=el('pnDue')?.value||'';
+  function submitForm(){if(!modal)return;const {kind,gid,tid}=modal;const title=el('pnTitle').value.trim();if(!title){notify('Введите название');return;}const due=el('pnDue')?.value||'';const date=el('pnDate')?.value||'';if((kind==='newTask'||kind==='editTask')&&!/^\d{4}-\d{2}-\d{2}$/.test(date)){notify('Укажите дату задачи');return;}
     const ok=commit(()=>{
       if(kind==='newDirection'){const g={id:newId(),name:title,tasks:[]};state.directions.push(g);expanded.add(g.id);}
       if(kind==='editDirection')group(gid).name=title;
-      if(kind==='newTask'){group(gid).tasks.push({id:newId(),title,due,done:false,createdAt:new Date().toISOString(),comments:[]});expanded.add(gid);}
-      if(kind==='editTask'){Object.assign(task(gid,tid),{title,due});}
+      if(kind==='newTask'){group(gid).tasks.push({id:newId(),title,date,due,done:false,createdAt:new Date().toISOString(),comments:[]});expanded.add(gid);}
+      if(kind==='editTask'){Object.assign(task(gid,tid),{title,date,due});}
     });if(ok)closeModal();
   }
   function confirmModal(){if(!modal)return;const {kind,gid,tid,cid,restorePayload}=modal;
