@@ -2415,6 +2415,11 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v614-comments{margin:3px 0 2px 29px;display:grid;gap:7px;min-width:0}
 .v614-comment-preview{border-left:2px solid #cbd8e9;padding:4px 0 5px 10px;color:#4d5f71;min-width:0}
 .v614-comment-preview small,.v614-comment-history small{display:block;color:#8e9cab;font-size:12px;margin-bottom:2px}
+.v614-comment-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;min-width:0}
+.v614-comment-actions{display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap}
+.v614-comment-actions button{border:0;background:transparent;padding:5px 4px;min-height:32px;color:#5b7594;font-size:12px;font-weight:600;cursor:pointer}
+.v614-comment-actions button.v614-comment-delete{color:#a35e5e}
+.v614-comment-actions button:focus-visible{outline:2px solid #597a9a;outline-offset:1px;border-radius:4px}
 .v614-comment-preview p,.v614-comment-history p{font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
 .v614-comment-add{border:0;background:transparent;color:#356bb0;cursor:pointer;font-size:14px;font-weight:600;text-align:left;padding:4px 0;min-height:35px;justify-self:start}
 .v614-comment-history{color:#64788f;font-size:13px}
@@ -5010,41 +5015,97 @@ function v614ManualEvents(step){
 }
 function v614CommentSection(step,procId,objId){
  const comments=v614ManualEvents(step);
- const snippet=ev=>`<div class="v614-comment-preview"><small>${escapeHtml(v55DateRu(ev.date)||ev.date||'')}</small><p>${escapeHtml(ev.what||'')}</p></div>`;
- const history=comments.length>1?`<details class="v614-comment-history"><summary>Все комментарии (${comments.length})</summary>${comments.map(ev=>`<div class="v614-comment-history-item"><small>${escapeHtml(v55DateRu(ev.date)||ev.date||'')}</small><p>${escapeHtml(ev.what||'')}</p></div>`).join('')}</details>`:'';
+ // Only explicitly user-written comments are editable. Legacy structured audit events remain read-only.
+ const actions=ev=>ev.manualComment===true?`<span class="v614-comment-actions"><button type="button" title="Изменить комментарий" onclick="v614BeginEditComment(event,${jsId(procId)},${jsId(objId)},${jsId(step.id)},${jsId(ev.id)})">Изменить</button><button type="button" class="v614-comment-delete" title="Удалить комментарий" onclick="v614RequestDeleteComment(event,${jsId(procId)},${jsId(objId)},${jsId(step.id)},${jsId(ev.id)})">Удалить</button></span>`:'';
+ const heading=ev=>`<div class="v614-comment-top"><small>${escapeHtml(v55DateRu(ev.date)||ev.date||'')}${ev.editedAt?' · изменён':''}</small>${actions(ev)}</div>`;
+ const snippet=ev=>`<div class="v614-comment-preview">${heading(ev)}<p>${escapeHtml(ev.what||'')}</p></div>`;
+ const history=comments.length>1?`<details class="v614-comment-history"><summary>Все комментарии (${comments.length})</summary>${comments.map(ev=>`<div class="v614-comment-history-item">${heading(ev)}<p>${escapeHtml(ev.what||'')}</p></div>`).join('')}</details>`:'';
  return `<div class="v614-comments" aria-label="Комментарии к задаче">
   ${comments.length?snippet(comments[0]):''}
   ${history}
   <button type="button" class="v614-comment-add" aria-expanded="false" onclick="v614ToggleCommentEditor(event)">+ Комментарий</button>
   <div class="v614-comment-editor" hidden>
-   <label>Что произошло или изменилось?</label>
-   <textarea maxlength="2000" data-v614-comment-text placeholder="Например: 19.10.2026 направлен запрос в НАО. Ожидаем ответ."></textarea>
-   <div class="v614-comment-editor-actions"><button type="button" onclick="v614SaveComment(event,${jsId(procId)},${jsId(objId)},${jsId(step.id)})">Сохранить</button><button type="button" onclick="v614HideCommentEditor(event)">Отмена</button></div>
+   <label data-v614-comment-editor-title>Что произошло или изменилось?</label>
+   <textarea maxlength="2000" data-v614-comment-text placeholder="Например: направлен запрос в НАО. Ожидаем ответ."></textarea>
+   <div class="v614-comment-editor-actions"><button type="button" data-v614-comment-save onclick="v614SaveComment(event,${jsId(procId)},${jsId(objId)},${jsId(step.id)})">Сохранить</button><button type="button" onclick="v614HideCommentEditor(event)">Отмена</button></div>
   </div>
  </div>`;
+}
+function v614ResetCommentEditor(editor){
+ if(!editor)return;
+ editor.dataset.editId='';
+ const field=editor.querySelector('textarea[data-v614-comment-text]');if(field)field.value='';
+ const label=editor.querySelector('[data-v614-comment-editor-title]');if(label)label.textContent='Что произошло или изменилось?';
+ const save=editor.querySelector('[data-v614-comment-save]');if(save)save.textContent='Сохранить';
 }
 function v614ToggleCommentEditor(event){
  const button=event.currentTarget;
  const editor=button.closest('.v614-comments')?.querySelector('.v614-comment-editor');if(!editor)return;
- const open=editor.hidden;editor.hidden=!open;button.setAttribute('aria-expanded',String(open));
+ const open=editor.hidden;
+ if(open)v614ResetCommentEditor(editor);
+ editor.hidden=!open;button.setAttribute('aria-expanded',String(open));
  if(open)editor.querySelector('textarea')?.focus();
 }
 function v614HideCommentEditor(event){
  const comments=event.currentTarget.closest('.v614-comments');if(!comments)return;
- const editor=comments.querySelector('.v614-comment-editor');if(editor)editor.hidden=true;
+ const editor=comments.querySelector('.v614-comment-editor');
+ if(editor){editor.hidden=true;v614ResetCommentEditor(editor);}
  comments.querySelector('.v614-comment-add')?.setAttribute('aria-expanded','false');
+}
+function v614BeginEditComment(event,procId,objId,stepId,commentId){
+ if(!readyForEditing||conflictRemote){showToast('Сначала подключитесь к облаку или разрешите конфликт');return;}
+ const step=v55Step({procId,objId,stepId});
+ const ev=step?.progressEvents?.find(item=>String(item.id)===String(commentId)&&item.manualComment===true);
+ if(!ev){showToast('Комментарий не найден или доступен только для чтения');return;}
+ const group=event.currentTarget.closest('.v614-comments');
+ const editor=group?.querySelector('.v614-comment-editor');if(!editor)return;
+ editor.dataset.editId=String(commentId);
+ editor.querySelector('[data-v614-comment-editor-title]').textContent='Редактирование комментария';
+ editor.querySelector('[data-v614-comment-save]').textContent='Сохранить изменения';
+ const field=editor.querySelector('textarea[data-v614-comment-text]');field.value=String(ev.what||'');
+ editor.hidden=false;group.querySelector('.v614-comment-add')?.setAttribute('aria-expanded','true');
+ field.focus();field.setSelectionRange(field.value.length,field.value.length);
 }
 function v614SaveComment(event,procId,objId,stepId){
  if(!readyForEditing||conflictRemote){showToast('Сначала подключитесь к облаку или разрешите конфликт');return;}
  const step=v55Step({procId,objId,stepId});if(!step){showToast('Задача не найдена');return;}
- const field=event.currentTarget.closest('.v614-comment-editor')?.querySelector('textarea[data-v614-comment-text]');
- const text=v55Text(field?.value,2000);if(!text){showToast('Напишите комментарий');field?.focus();return;}
+ const editor=event.currentTarget.closest('.v614-comment-editor');
+ const field=editor?.querySelector('textarea[data-v614-comment-text]');
+ const content=v55Text(field?.value,2000);if(!content){showToast('Напишите комментарий');field?.focus();return;}
  if(!Array.isArray(step.progressEvents))step.progressEvents=[];
- if(step.progressEvents.length>=700){showToast('Достигнут предел комментариев для задачи');return;}
- step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:text,manualComment:true});
+ const editId=editor?.dataset.editId||'';
+ let action='Добавлен комментарий к задаче';
+ if(editId){
+  const entry=step.progressEvents.find(ev=>String(ev.id)===editId&&ev.manualComment===true);
+  if(!entry){showToast('Комментарий не найден или изменён на другом устройстве');return;}
+  if(entry.what===content){v614HideCommentEditor({currentTarget:event.currentTarget});return;}
+  entry.what=content;
+  entry.editedAt=new Date().toISOString();
+  action='Отредактирован комментарий к задаче';
+ }else{
+  if(step.progressEvents.length>=700){showToast('Достигнут предел комментариев для задачи');return;}
+  step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:content,manualComment:true});
+ }
  step.updatedAt=getTimestampStr();
- saveData('Добавлен комментарий к задаче');
- showToast('Комментарий сохраняется в облаке');
+ saveData(action);
+ showToast('Изменения отправляются в облако');
+}
+function v614RequestDeleteComment(event,procId,objId,stepId,commentId){
+ if(!readyForEditing||conflictRemote){showToast('Сначала подключитесь к облаку или разрешите конфликт');return;}
+ const step=v55Step({procId,objId,stepId});
+ const ev=step?.progressEvents?.find(item=>String(item.id)===String(commentId)&&item.manualComment===true);
+ if(!ev){showToast('Комментарий не найден или доступен только для чтения');return;}
+ askConfirm('Удалить этот комментарий? Удаление сохранится в истории изменений.',()=>{
+  if(!readyForEditing||conflictRemote){showToast('Сохранение недоступно');return;}
+  const current=v55Step({procId,objId,stepId});
+  if(!current||!Array.isArray(current.progressEvents)){showToast('Задача не найдена');return;}
+  const index=current.progressEvents.findIndex(item=>String(item.id)===String(commentId)&&item.manualComment===true);
+  if(index<0){showToast('Комментарий уже отсутствует');return;}
+  current.progressEvents.splice(index,1);
+  current.updatedAt=getTimestampStr();
+  saveData('Удалён комментарий к задаче');
+  showToast('Удаление отправляется в облако');
+ });
 }
 function v614AddCommentFromDetail(){
  const target=v55DetailTarget;
