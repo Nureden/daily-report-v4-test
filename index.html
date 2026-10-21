@@ -12,7 +12,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style id="v52-unified-styles">
+  <style id="notebook-unified-styles">
+/* Original style section: v52-unified-styles */
+
     :root {
       --bg: #f8fafc;
       --surface: #ffffff;
@@ -1859,17 +1861,9 @@ button:focus-visible,summary:focus-visible{outline:2px solid #3978d6;outline-off
  .v55-actions button{flex:1}
  .v55-open-progress{font-size:14px}
 }
-</style>
 
+/* Original style section: v56-modern-interface */
 
-
-
-
-
-
-
-
-<style id="v56-modern-interface">
 /* The visual shell is new; the old registry and all existing data functions remain intact. */
 :root{--v56-blue:#1765eb;--v56-border:#e7ebf2;--v56-slate:#72819b;--v56-shadow:0 2px 11px rgba(25,48,90,.045)}
 html,body,body *,button,input,textarea,select,option{font-family:"Roboto Condensed", "Arial Narrow",Arial,sans-serif!important}
@@ -1957,9 +1951,9 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 @media(max-width:700px){body{padding:0 13px 110px!important}.dash-title{font-size:19px!important}.btn-ai-compact{display:none!important}.v56-heading-row h1{font-size:23px!important}.v56-heading-row{align-items:flex-start}.v56-structure-link{font-size:12px;max-width:133px;white-space:normal;text-align:center}.v56-task-card{padding:13px 11px}.v56-task-title{font-size:16px}.v56-badge{font-size:11px}.v56-bottom-nav{max-width:100%;border-radius:0;padding:6px 6px max(7px,env(safe-area-inset-bottom))}.v56-bottom-nav button{font-size:11px;min-height:50px}.v56-fab{bottom:85px;right:18px;width:53px;height:53px}.v55-modal{border-radius:20px 20px 0 0!important}#processDetailModal .v55-process-modal{padding-bottom:calc(24px + env(safe-area-inset-bottom))!important}}
 @media(max-width:365px){.v56-task-card{gap:7px}.v56-task-top{flex-wrap:wrap}.v56-task-title{flex:1 1 100%}.v56-badge{align-self:flex-start}.v56-heading-row h1{font-size:21px!important}.v56-structure-link{max-width:112px}}
 @media(prefers-reduced-motion:reduce){.v56-task-card{transition:none}}
-</style>
 
-<style id="v57-object-layout">
+/* Original style section: v57-object-layout */
+
 /* V5.7: object is the primary unit of navigation. A single column at every width. */
 .v56-group-list{gap:23px!important}
 .v56-direction-group{gap:9px!important}
@@ -1996,8 +1990,9 @@ body{background:#f6f8fc!important;color:#1c2940!important;padding:0 16px 110px!i
 .v57-no-steps{font-size:13px;color:#8b99a9;padding:11px 0 3px}
 @media(max-width:700px){.v57-object-card{padding:13px 12px;gap:9px}.v57-object-name{font-size:17px}.v57-object-status{font-size:11px}.v57-step{gap:8px;padding:9px 0}.v57-step-title{font-size:15.5px}.v57-object-meta{font-size:12.5px}.v57-object-tools button{font-size:12.5px}}
 @media(max-width:365px){.v57-object-top{gap:5px}.v57-object-status{white-space:normal;text-align:center;max-width:91px}.v57-step-status{font-size:10px}}
-</style>
-<style id="v58-notebook-ui">
+
+/* Original style section: v58-notebook-ui */
+
 /* V5.8: minimalist notebook. Presentation only; no schema or network changes. */
 :root{--v58-ink:#27334a;--v58-muted:#778294;--v58-line:#e5e8ed;--v58-blue:#2465c1}
 body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 60px!important;font-size:15px!important}
@@ -2098,11 +2093,11 @@ body{background:#f8f9fb!important;color:var(--v58-ink)!important;padding:0 16px 
 }
 @media(max-width:355px){.v58-direction-alert{display:none}.v58-object-head{gap:5px}.v58-status{font-size:11px}.v56-filter-bar button{padding:6px 7px!important}}
 @media(prefers-reduced-motion:reduce){}
-</style>
 
-<style id="v56-state-fix">#v56Workspace[hidden]{display:none!important}#v56LegacyWorkspace[hidden]{display:none!important}</style>
+/* Original style section: v56-state-fix */
+#v56Workspace[hidden]{display:none!important}#v56LegacyWorkspace[hidden]{display:none!important}
+/* Original style section: v59-one-notebook */
 
-<style id="v59-one-notebook">
 /* V5.9 — The working list is the product. No traffic-light badges or second routine list. */
 :root{--n59-ink:#202b39;--n59-muted:#7c8796;--n59-accent:#24466e;--n59-border:#e9edf1;--n59-risk:#b24648}
 html,body,body *,button,input,textarea,select,option{font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif!important}
@@ -2229,8 +2224,9 @@ body{background:#fafbfc!important;padding:0 14px 64px!important;color:var(--n59-
  .v59-digest-open{display:none}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-</style>
-<style id="v60-unified-notebook">
+
+/* Original style section: v60-unified-notebook */
+
 :root{--font-ui:"Roboto Condensed",Arial,sans-serif!important}
 html body,html body *{font-family:"Roboto Condensed",Arial,sans-serif!important}
 body{background:#f8f9fa!important;color:#2c3542!important}
@@ -2299,8 +2295,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v60-report-legacy button{padding:6px 0;background:transparent;border:0;color:#8293a4;font-size:12px;cursor:pointer}
 .mgmt-controls label:has(#managementReportScope){display:none!important}
 @media(max-width:430px){.dash-title{font-size:24px!important}.v60-object{padding:0 11px}.v60-region-head{padding:11px}.v60-region-toggle{font-size:17px}.v60-object-head{gap:5px}.v60-object-name{font-size:16px}.v60-tasks{padding-left:15px}.v60-object-detail{padding-left:15px}.v60-object-count{font-size:11px}.v60-check{height:21px;width:21px;flex-basis:21px}}
-</style>
-<style id="v601-folded-styles">
+
+/* Original style section: v601-folded-styles */
+
 /* Compact notebook: districts visible, objects/tasks folded until explicitly opened. */
 .v60-object:not(.v60-is-open) .v60-object-head{padding:6px 0}
 .v60-object:not(.v60-is-open) .v60-object-toggle{min-height:32px}
@@ -2311,13 +2308,15 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v60-task-done .v60-task-meta{font-size:11px!important;white-space:nowrap;flex:0 0 auto;line-height:1.3}
 .v60-task-done .v60-task-next{font-size:14px}
 @media(max-width:430px){.v60-task-done .v60-task-meta{max-width:45%;overflow:hidden;text-overflow:ellipsis}}
-</style>
-<style id="v60-extra-css">.v56-legacy-workspace{display:block!important} .v56-legacy-workspace[hidden]{display:none!important}.v60-region-pick{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:12px 3px;color:#929fac;font-size:13px}.v60-region-pick select{flex:1;min-width:140px;max-width:220px;background:#fff;border:1px solid #e7ebef;border-radius:8px;padding:8px 9px;color:#5d7083}.v60-region-pick button{background:#fff;border:1px solid #e3e8ed;border-radius:8px;color:#58718a;cursor:pointer;padding:8px 10px}.v60-report-candidates{flex:0 0 auto!important;min-height:166px!important;height:190px!important;max-height:190px!important;overflow-y:auto!important;overflow-x:hidden!important;padding-right:4px}
+
+/* Original style section: v60-extra-css */
+.v56-legacy-workspace{display:block!important} .v56-legacy-workspace[hidden]{display:none!important}.v60-region-pick{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:12px 3px;color:#929fac;font-size:13px}.v60-region-pick select{flex:1;min-width:140px;max-width:220px;background:#fff;border:1px solid #e7ebef;border-radius:8px;padding:8px 9px;color:#5d7083}.v60-region-pick button{background:#fff;border:1px solid #e3e8ed;border-radius:8px;color:#58718a;cursor:pointer;padding:8px 10px}.v60-report-candidates{flex:0 0 auto!important;min-height:166px!important;height:190px!important;max-height:190px!important;overflow-y:auto!important;overflow-x:hidden!important;padding-right:4px}
 .mgmt-filters label:has(#managementReportScope){display:none!important}
 #managementReportModal .mgmt-sheet{overscroll-behavior:contain}
 @media(max-width:690px){.v60-report-candidates{height:166px!important;max-height:166px!important;min-height:166px!important} #managementReportModal .mgmt-sheet{max-height:94dvh!important}}
-</style>
-<style id="v61-compact-journal-styles">
+
+/* Original style section: v61-compact-journal-styles */
+
 /* One-line latest note, full event history on demand. Do not shrink touch targets. */
 .v61-task-shell{min-width:0;border-bottom:1px solid #f2f3f5;padding:4px 0}
 .v61-task-shell:last-child{border-bottom:0}
@@ -2362,8 +2361,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v61-task-shell .v60-check{width:20px;height:20px;flex:0 0 20px;margin:3px 0 0}
 .v61-task-shell:has(.v60-task-done) .v60-check{margin:0}
 @media(max-width:380px){.v61-editor-grid{grid-template-columns:1fr}.v61-note-actions{gap:11px}}
-</style>
-<style id="v611-controls">
+
+/* Original style section: v611-controls */
+
 /* Use one identical chevron glyph and rotate only the expanded ones. */
 .v60-region-chevron,.v60-object-arrow{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 15px;width:15px!important;height:21px;font-size:19px!important;line-height:1!important;font-weight:400!important;color:#9ba6b0;transform:rotate(0deg);transform-origin:center center;transition:transform .15s ease}
 .v60-region-toggle[aria-expanded="true"] .v60-region-chevron,.v60-object-toggle[aria-expanded="true"] .v60-object-arrow{transform:rotate(90deg)}
@@ -2373,8 +2373,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v611-history-ops{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:2px}
 .v611-history-ops button{min-height:28px;padding:4px 1px!important;border:0;background:transparent;font-size:11.5px;color:#55738f;cursor:pointer}
 .v611-history-ops button.v611-delete{color:#a75f5f}
-</style>
-<style id="v612-order-style">
+
+/* Original style section: v612-order-style */
+
 /* Reordering is available from a collapsed object too. All buttons remain finger-friendly. */
 .v60-object-head{position:relative}
 .v612-move-grip{border:0;background:transparent;color:#a3adb7;flex:0 0 29px;min-height:38px;font-size:17px;cursor:grab;touch-action:none;user-select:none;display:inline-flex;align-items:center;justify-content:center;padding:0}
@@ -2390,15 +2391,17 @@ body{background:#f8f9fa!important;color:#2c3542!important}
 .v60-object.v612-drag-origin{opacity:.55}
 .v60-object.v612-drag-target{outline:2px dashed #9ab0c3;outline-offset:-2px}
 @media(max-width:430px){.v612-move-grip{flex-basis:24px;min-height:38px}.v612-menu-button{flex-basis:30px;min-width:30px}.v612-object-actions{padding-left:0}}
-</style>
-<style id="v614-safety-and-layout">
+
+/* Original style section: v614-safety-and-layout */
+
 .v614-direction{font:500 11px/1.2 'Roboto Condensed',sans-serif;color:#8a97a5;margin-left:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:33%}
 .v614-task-menu-button{flex:0 0 32px;min-height:36px;border:0;background:none;color:#8897a5;font-size:18px;cursor:pointer}
 .v614-task-actions{display:flex;justify-content:flex-end;padding:3px 4px 8px 35px}
 .v614-task-actions button{border:1px solid #e2e8f0;color:#9d4e45;background:#fff;border-radius:6px;padding:7px 10px;min-height:35px;cursor:pointer}
 @media(max-width:600px){.v614-direction{max-width:28%;font-size:10px}}
-</style>
-<style id="v614-task-comments-final">
+
+/* Original style section: v614-task-comments-final */
+
 /* Task title and metadata occupy a single header row on desktop. */
 .step-unit .step-left-part{flex:1 1 auto;min-width:0;align-items:flex-start}
 .step-unit .v614-task-heading{display:flex;flex:1;align-items:flex-start;justify-content:space-between;gap:10px 22px;min-width:0;flex-wrap:wrap}
@@ -2436,8 +2439,9 @@ body{background:#f8f9fa!important;color:#2c3542!important}
  .v614-comments{margin-left:29px}
 }
 @media(max-width:420px){.v614-comments{margin-left:0}.step-unit .step-status-row{padding-left:0}}
-</style>
-<style id="personal-notebook-styles">
+
+/* Original style section: personal-notebook-styles */
+
 /* Personal notebook: isolated view, no work data or Supabase state mutations. */
 .personal-spaces{display:flex;gap:4px;align-items:center;width:max-content;max-width:100%;padding:4px;background:#e9edf3;border-radius:13px;margin:13px 0 12px}
 .personal-spaces button{font:700 16px/1.2 'Roboto Condensed',sans-serif;border:0;border-radius:10px;background:transparent;color:#64758a;padding:11px 25px;min-height:42px;cursor:pointer}
@@ -2500,7 +2504,34 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
 .pn-feedback{font-size:13px;min-height:16px;color:#8c6e35}
 .pn-modal .pn-primary.danger{background:#b04c4c;color:white}
 @media(max-width:650px){.personal-spaces{margin:9px 0}.personal-spaces button{font-size:15px;padding:9px 20px}.pn-top h2{font-size:22px}.pn-direction-head{padding:12px 9px}.pn-fold{font-size:19px;gap:7px}.pn-direction-content{padding:0 11px 11px 12px}.pn-task-title{font-size:17px}.pn-task-top{gap:7px}.pn-task-actions{gap:0}.pn-text-action{font-size:12px;padding:5px 4px}.pn-comments{margin-left:25px}.pn-comment{padding-left:9px}.pn-comment-content{font-size:14px}}
+
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
 
@@ -2643,7 +2674,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
   <div class="modal-overlay" id="entryWizardModal" aria-hidden="true" onclick="if(event.target===this)closeEntryWizard()">
     <section class="modal-box v55-modal" role="dialog" aria-modal="true" aria-labelledby="v55WizardTitle" onclick="event.stopPropagation()">
       <div class="modal-top"><h2 id="v55WizardTitle">Новая запись</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="closeEntryWizard()">✕</button></div>
-      <p class="v55-subtitle">Пять коротких ответов — и запись появится в нужном объекте.</p>
+      <p class="v55-subtitle">Шесть коротких ответов — и запись появится в нужном объекте.</p>
       <form id="v55EntryForm" class="v55-fields" onsubmit="event.preventDefault();saveEntryWizard()">
         <label for="v55What">1. Что нужно сделать? <input id="v55What" maxlength="1000" required placeholder="Получить акт сверки НАО"></label>
         <div id="v55WhereControls" class="v55-fields">
@@ -2652,9 +2683,9 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
           <label id="v55NewObjectLabel" for="v55NewObject" hidden>Название нового объекта <input id="v55NewObject" maxlength="300" placeholder="Жылыой — Дорога Сарыкамыс"></label>
         </div>
         <p id="v55WhereFixed" class="v55-subtitle" hidden></p>
-        <label for="v55Owner">2. Кто отвечает? <input id="v55Owner" maxlength="160" placeholder="Жукенов / НАО / подрядчик"></label><label for="v60Action">3. Что конкретно нужно сделать? <input id="v60Action" maxlength="1000" placeholder="Направить запрос, получить подпись"></label>
-        <label for="v55Result">4. Какой результат должен быть? <input id="v55Result" maxlength="1000" placeholder="Подписанный акт сверки"></label>
-        <label for="v55Date">5. Когда нужен результат? <input id="v55Date" type="date"></label>
+        <label for="v55Owner">3. Кто отвечает? <input id="v55Owner" maxlength="160" placeholder="Жукенов / НАО / подрядчик"></label><label for="v60Action">4. Что конкретно нужно сделать? <input id="v60Action" maxlength="1000" placeholder="Направить запрос, получить подпись"></label>
+        <label for="v55Result">5. Какой результат должен быть? <input id="v55Result" maxlength="1000" placeholder="Подписанный акт сверки"></label>
+        <label for="v55Date">6. Когда нужен результат? <input id="v55Date" type="date"></label>
         <div class="v55-actions"><button type="button" onclick="closeEntryWizard()">Отмена</button><button class="primary" type="submit">Сохранить запись</button></div>
       </form>
     </section>
@@ -3459,7 +3490,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
             const bv=bm.get(id),lv=lm.get(id),rv=rm.get(id);
             if(!lv&&!rv)return null;
             if(!bv){if(!lv)return clone(rv);if(!rv)return clone(lv);return entityMerge({},lv,rv,path+'/'+id,childProp);}
-            if(!lv){if(same(rv,bv))return null;conflicts.push(path+'/'+id+' удаление/редактирование');return clone(rv);}
+            if(!lv){if(same(rv,bv))return null;conflicts.push(path+'/'+id+' удаление/редактирование');return null;}
             if(!rv){if(same(lv,bv))return null;conflicts.push(path+'/'+id+' редактирование/удаление');return clone(lv);}
             return entityMerge(bv,lv,rv,path+'/'+id,childProp);
           }).filter(Boolean);
@@ -4101,7 +4132,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function moveProcess(procId, direction) {
-      const idx = state.findIndex(p => p.id === procId);
+      const idx = state.findIndex(p => String(p.id) === String(procId));
       if (idx < 0) return;
       const newIdx = idx + direction;
       if (newIdx < 0 || newIdx >= state.length) return;
@@ -4112,7 +4143,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function editProcessTitle(procId) {
-      const p = state.find(x => x.id === procId);
+      const p = state.find(x => String(x.id) === String(procId));
       if (!p) return;
       showTextModal("✏️ Название направления", p.title, (newTitle) => {
         p.title = newTitle;
@@ -4122,17 +4153,17 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function deleteProcess(procId) {
-      const p = state.find(x => x.id === procId);
+      const p = state.find(x => String(x.id) === String(procId));
       if (!p) return;
       askConfirm(`Удалить направление «${p.title}» со всеми объектами?`, () => {
-        state = state.filter(x => x.id !== procId);
+        state = state.filter(x => String(x.id) !== String(procId));
         saveData();
         showToast("Направление удалено");
       });
     }
 
     function toggleProcessCollapse(procId) {
-      const p = state.find(x => x.id === procId);
+      const p = state.find(x => String(x.id) === String(procId));
       if (p) {
         p.collapsed = !p.collapsed;
         render();
@@ -4140,7 +4171,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function toggleObjectCollapse(procId, objId) {
-      const p = state.find(x => x.id === procId);
+      const p = state.find(x => String(x.id) === String(procId));
       if (!p) return;
       const obj = p.objects.find(o => o.id === objId);
       if (!obj) return;
@@ -4238,7 +4269,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     });
 
     function moveObject(procId, objId, direction) {
-      const p = state.find(x => x.id === procId);
+      const p = state.find(x => String(x.id) === String(procId));
       if (!p) return;
       const idx = p.objects.findIndex(o => o.id === objId);
       if (idx < 0) return;
@@ -4251,20 +4282,20 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function deleteObject(procId, objId) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
       if (!p || !obj) return;
 
       askConfirm(`Удалить объект «${obj.title}»?`, () => {
-        p.objects = p.objects.filter(o => o.id !== objId);
+        p.objects = p.objects.filter(o => String(o.id) !== String(objId));
         saveData();
         showToast("Объект удален");
       });
     }
 
     function editObjectTitle(procId, objId) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
       if (!obj) return;
 
       showTextModal("✏️ Название объекта / участка", obj.title, (newTitle) => {
@@ -4275,37 +4306,48 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function cloneObject(procId, objId) {
-      const p = state.find(x => x.id === procId);
-      const src = p?.objects.find(o => o.id === objId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const src = p?.objects.find(o => String(o.id) === String(objId));
       if (!p || !src) return;
 
       showTextModal("📋 Копирование объекта", src.title + " (Копия)", (newTitle) => {
         const nowTs = getTimestampStr();
-        p.objects.push({
+        // Copy planning information; never transfer execution history or completion state.
+        const copy = {
+          ...Model.clone(src),
           id: createId(),
           title: newTitle,
           archived: false,
-          collapsed: false,
-          steps: (src.steps || []).map((s, i) => ({
+          collapsed: true,
+          steps: (src.steps || []).filter(s => !s.canceled).map(s => ({
+            ...Model.clone(s),
             id: createId(),
-            text: s.text,
-            date: s.date,
             done: false,
+            completedAt: null,
+            canceled: false,
+            canceledAt: '',
             blocker: null,
             history: [],
+            progressEvents: [],
+            actualResult: '',
             updatedAt: nowTs
           }))
-        });
-        saveData();
+        };
+        // Avoid duplicate manual-order values when objects have a custom sort order.
+        const orders = p.objects.map(o => o.manualOrder).filter(Number.isSafeInteger);
+        if (orders.length && Math.max(...orders) < 100000) copy.manualOrder = Math.max(...orders) + 1;
+        else delete copy.manualOrder;
+        p.objects.push(copy);
+        saveData('Создана копия объекта');
         showToast("Скопировано");
       });
     }
 
     function moveStep(procId, objId, stepId, direction) {
-      const p = state.find(x => x.id === procId);
-      const obj = p?.objects.find(o => o.id === objId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
       if (!obj || !obj.steps) return;
-      const idx = obj.steps.findIndex(s => s.id === stepId);
+      const idx = obj.steps.findIndex(s => String(s.id) === String(stepId));
       if (idx < 0) return;
       const newIdx = idx + direction;
       if (newIdx < 0 || newIdx >= obj.steps.length) return;
@@ -4601,9 +4643,9 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function clearBlocker(procId, objId, stepId) {
-      const p = state.find(x => x.id == procId);
-      const obj = p?.objects.find(o => o.id == objId);
-      const step = obj?.steps.find(s => s.id == stepId);
+      const p = state.find(x => String(x.id) === String(procId));
+      const obj = p?.objects.find(o => String(o.id) === String(objId));
+      const step = obj?.steps.find(s => String(s.id) === String(stepId));
       if (!step) return;
 
       step.blocker = null;
@@ -4660,7 +4702,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function createObjectWithTemplate(procId, tplKey) {
-      const p = state.find(x => x.id === procId);
+      const p = state.find(x => String(x.id) === String(procId));
       if (!p) return;
 
       const titlePlaceholder = tplKey === 'empty' ? "Новый объект" : 
@@ -4910,7 +4952,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important}
     }
 
     function toggleArchiveView(procId) {
-      const p = state.find(x => x.id === procId);
+      const p = state.find(x => String(x.id) === String(procId));
       if (p) {
         p.showArchive = !p.showArchive;
         render();
@@ -5054,6 +5096,44 @@ function v614CommentSection(step,procId,objId){
   </div>
  </div>`;
 }
+// Keep unsaved comment drafts outside replaceable DOM. No cloud writes until Save.
+const v614CommentDrafts = new Map();
+function v614CommentDraftKey(element){
+ return element?.closest('.step-unit[data-v614-task-key]')?.getAttribute('data-v614-task-key') || '';
+}
+function v614CaptureCommentDrafts(){
+ document.querySelectorAll('#processesRoot .step-unit[data-v614-task-key]').forEach(unit=>{
+  const key=unit.getAttribute('data-v614-task-key');
+  const editor=unit.querySelector('.v614-comment-editor');
+  if(!key||!editor||editor.hidden)return;
+  const field=editor.querySelector('textarea[data-v614-comment-text]');
+  if(!field)return;
+  const active=document.activeElement===field;
+  v614CommentDrafts.set(key,{
+   text:field.value,editId:editor.dataset.editId||'',active,
+   start:active?field.selectionStart:null,end:active?field.selectionEnd:null
+  });
+ });
+}
+function v614RestoreCommentDrafts(){
+ document.querySelectorAll('#processesRoot .step-unit[data-v614-task-key]').forEach(unit=>{
+  const draft=v614CommentDrafts.get(unit.getAttribute('data-v614-task-key'));
+  if(!draft)return;
+  const group=unit.querySelector('.v614-comments');
+  const editor=group?.querySelector('.v614-comment-editor');
+  const field=editor?.querySelector('textarea[data-v614-comment-text]');
+  if(!editor||!field)return;
+  editor.hidden=false;editor.dataset.editId=draft.editId;
+  field.value=draft.text;
+  group.querySelector('.v614-comment-add')?.setAttribute('aria-expanded','true');
+  editor.querySelector('[data-v614-comment-editor-title]').textContent=draft.editId?'Редактирование комментария':'Что произошло или изменилось?';
+  editor.querySelector('[data-v614-comment-save]').textContent=draft.editId?'Сохранить изменения':'Сохранить';
+  if(draft.active){
+   field.focus({preventScroll:true});
+   try{field.setSelectionRange(draft.start,draft.end);}catch(e){}
+  }
+ });
+}
 function v614ResetCommentEditor(editor){
  if(!editor)return;
  editor.dataset.editId='';
@@ -5072,7 +5152,7 @@ function v614ToggleCommentEditor(event){
 function v614HideCommentEditor(event){
  const comments=event.currentTarget.closest('.v614-comments');if(!comments)return;
  const editor=comments.querySelector('.v614-comment-editor');
- if(editor){editor.hidden=true;v614ResetCommentEditor(editor);}
+ if(editor){v614CommentDrafts.delete(v614CommentDraftKey(editor));editor.hidden=true;v614ResetCommentEditor(editor);}
  comments.querySelector('.v614-comment-add')?.setAttribute('aria-expanded','false');
 }
 function v614BeginEditComment(event,procId,objId,stepId,commentId){
@@ -5110,6 +5190,8 @@ function v614SaveComment(event,procId,objId,stepId){
   step.progressEvents.push({id:createId(),at:new Date().toISOString(),date:getTodayISO(),what:content,manualComment:true});
  }
  step.updatedAt=getTimestampStr();
+ v614CommentDrafts.delete(v614CommentDraftKey(editor));
+ if(editor)editor.hidden=true;
  saveData(action);
  showToast('Изменения отправляются в облако');
 }
@@ -5148,6 +5230,7 @@ function v614AddCommentFromDetail(){
       try {
         const root = document.getElementById('processesRoot');
         if (!root) return;
+        v614CaptureCommentDrafts();
         root.innerHTML = '';
 
         let totalDone = 0;
@@ -5227,7 +5310,7 @@ function v614AddCommentFromDetail(){
               </div>
               <div class="folder-right-tools" onclick="event.stopPropagation()">
                 <button class="btn-row-menu" onclick="toggleMenuGeneric(event, 'fmenu-${proc.id}')" title="Действия с направлением">···</button>
-                <div class="obj-dropdown-menu" id="fmenu-${proc.id}">
+                <div class="obj-dropdown-menu" id="fmenu-${escapeHtml(String(proc.id))}">
                   <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editProcessTitle(${jsId(proc.id)})">✏️ Переименовать</button>
                   ${procIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveProcess(${jsId(proc.id)}, -1)">⬆️ Вверх</button>` : ''}
                   ${procIdx < state.length - 1 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveProcess(${jsId(proc.id)}, 1)">⬇️ Вниз</button>` : ''}
@@ -5291,7 +5374,7 @@ function v614AddCommentFromDetail(){
                       </div>
                       <div class="item-menu-controls" onclick="event.stopPropagation()">
                         <button type="button" class="btn-item-more" onclick="toggleMenuGeneric(event, 'omenu-${obj.id}')" aria-label="Меню объекта" title="Меню объекта">···</button>
-                        <div class="obj-dropdown-menu" id="omenu-${obj.id}">
+                        <div class="obj-dropdown-menu" id="omenu-${escapeHtml(String(obj.id))}">
                           <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editObjectTitle(${jsId(proc.id)},${jsId(obj.id)})">✏️ Переименовать</button>
                           <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); cloneObject(${jsId(proc.id)},${jsId(obj.id)})">📋 Копировать</button>
                           ${objIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveObject(${jsId(proc.id)}, ${jsId(obj.id)}, -1)">⬆️ Вверх</button>` : ''}
@@ -5338,7 +5421,7 @@ function v614AddCommentFromDetail(){
                             <div class="step-unit ${s.done ? 'done' : ''} ${hasBlock ? 'blocked' : ''} ${s.id===currentActiveStepId ? 'current' : ''}" data-v614-task-key="${escapeHtml(JSON.stringify([String(proc.id),String(obj.id),String(s.id)]))}">
                               <div class="step-top-bar">
                                 <div class="step-left-part">
-                                  <input type="checkbox" id="chk-${s.id}" class="step-check" aria-label="Выполнено: ${escapeHtml(s.text)}" ${s.done ? 'checked' : ''} onchange="toggleStep(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
+                                  <input type="checkbox" id="chk-${escapeHtml(String(s.id))}" class="step-check" aria-label="Выполнено: ${escapeHtml(s.text)}" ${s.done ? 'checked' : ''} onchange="toggleStep(${jsId(proc.id)}, ${jsId(obj.id)}, ${jsId(s.id)})">
                                   <div class="v614-task-heading">
                                     <button type="button" class="step-text v55-step-title" onclick="openProcessDetail(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})" title="Открыть комментарии">${escapeHtml(s.text)}</button>
                                     <div class="v614-task-fields" aria-label="Ответственный и срок задачи">
@@ -5438,7 +5521,8 @@ function v614AddCommentFromDetail(){
         document.getElementById('mDone').textContent = totalDone;
         document.getElementById('mPlan').textContent = totalPlan;
         document.getElementById('mTotal').textContent = totalActiveObjs;
-        v56RenderCards();
+        v614RestoreCommentDrafts();
+        // The retired #v56Cards view is absent; skip its no-op renderer.
       } catch(err) {
         console.error("Render fatal error:", err);
       }
@@ -7091,7 +7175,7 @@ const PersonalNotebook=(()=>{
         const bv=bm.get(id),lv=lm.get(id),rv=rm.get(id);
         if(!lv && !rv)return [];
         if(!bv)return [clone(lv||rv)];
-        if(!lv){if(eq(bv,rv))return [];errors.push(path+'/'+id+'/удаление');return [clone(rv)];}
+        if(!lv){if(eq(bv,rv))return [];errors.push(path+'/'+id+'/удаление');return [];}
         if(!rv){if(eq(bv,lv))return [];errors.push(path+'/'+id+'/удаление');return [clone(lv)];}
         return [mergeNode(bv,lv,rv,path+'/'+id,kind)];
       });
