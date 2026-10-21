@@ -13,6 +13,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style id="notebook-unified-styles">
+  /* Design tokens (same values as V5). */
+  :root{--done: #059669;--done-bg: #ecfdf5;--done-border: #a7f3d0;--danger: #dc2626;--danger-bg: #fef2f2;--danger-border: #fecaca;--ai: #7c3aed;--neutral-dark: #0f172a;--amber:#bb741d;--amber-bg:#fff7e9;--amber-border:#f8dcaa;--surface-subtle: #f8f8fa;--text-subtle: #8e8e93;--brand-border: #d6eaff;--radius-sm: 11px;--bg:#f6f7f9;--surface:#fff;--text-main:#202329;--text-muted:#737983;--border:#e7e9ed;--border-subtle:#eff0f2;--brand:#2369d8;--brand-light:#edf4ff;--radius-card:16px;--font-process-condensed:var(--font-ui);--v56-blue:#1765eb;--v56-border:#e7ebf2;--v56-slate:#72819b;--v56-shadow:0 2px 11px rgba(25,48,90,.045);--v58-ink:#27334a;--v58-muted:#778294;--v58-line:#e5e8ed;--v58-blue:#2465c1;--n59-ink:#202b39;--n59-muted:#7c8796;--n59-accent:#24466e;--n59-border:#e9edf1;--n59-risk:#b24648;--font-ui:"Roboto Condensed",Arial,sans-serif!important;}
+
 
     * {
       box-sizing: border-box;
@@ -799,7 +802,7 @@
 .floating-bar{border-radius:14px;}
 .fab-btn{padding:11px 7px;border-radius:9px;font-size:12px;}
 
-@media (max-width:700px){}
+
 @media (max-width:420px){body{padding:7px 7px 110px}.dashboard-panel{padding:12px 11px}.dash-title{font-size:17px}.brand-mark{width:29px;height:29px}.folder-left{font-size:13px}.item-title{font-size:13px}.item-header{gap:3px}.progress-pill{font-size:10px}.report-period{gap:5px}}
 
 /* 3.2 usability refinements */
@@ -1344,7 +1347,7 @@ body{padding:0 14px 64px!important;}
 
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 
-:root{--done: #059669;--done-bg: #ecfdf5;--done-border: #a7f3d0;--danger: #dc2626;--danger-bg: #fef2f2;--danger-border: #fecaca;--ai: #7c3aed;--neutral-dark: #0f172a;--amber:#bb741d;--amber-bg:#fff7e9;--amber-border:#f8dcaa;--surface-subtle: #f8f8fa;--text-subtle: #8e8e93;--brand-border: #d6eaff;--radius-sm: 11px;--bg:#f6f7f9;--surface:#fff;--text-main:#202329;--text-muted:#737983;--border:#e7e9ed;--border-subtle:#eff0f2;--brand:#2369d8;--brand-light:#edf4ff;--radius-card:16px;--font-process-condensed:var(--font-ui);--v56-blue:#1765eb;--v56-border:#e7ebf2;--v56-slate:#72819b;--v56-shadow:0 2px 11px rgba(25,48,90,.045);--v58-ink:#27334a;--v58-muted:#778294;--v58-line:#e5e8ed;--v58-blue:#2465c1;--n59-ink:#202b39;--n59-muted:#7c8796;--n59-accent:#24466e;--n59-border:#e9edf1;--n59-risk:#b24648;--font-ui:"Roboto Condensed",Arial,sans-serif!important;}
+
 html body,html body *{font-family:"Roboto Condensed",Arial,sans-serif!important;}
 body{background:#f8f9fa!important;color:#2c3542!important;}
 .app-container{max-width:820px!important;}
@@ -1373,7 +1376,7 @@ body{background:#f8f9fa!important;color:#2c3542!important;}
 @media (max-width:430px){.dash-title{font-size:24px!important}}
 
 /* Compact notebook: districts visible, objects/tasks folded until explicitly opened. */
-@media (max-width:430px){}
+
 
 .v56-legacy-workspace{display:block!important;} .v56-legacy-workspace[hidden]{display:none!important;}.v60-report-candidates{flex:0 0 auto!important;min-height:166px!important;height:190px!important;max-height:190px!important;overflow-y:auto!important;overflow-x:hidden!important;padding-right:4px;}
 .mgmt-filters label:has(#managementReportScope){display:none!important;}
@@ -1383,17 +1386,17 @@ body{background:#f8f9fa!important;color:#2c3542!important;}
 /* One-line latest note, full event history on demand. Do not shrink touch targets. */
 .v61-editor{margin:6px 0 10px 28px;border:1px solid #e8edf0;border-radius:9px;background:#f9fafb;padding:11px;display:grid;gap:9px;min-width:0;}
 .v61-editor-field input,.v61-editor-field textarea{display:block;width:100%;min-width:0;border:1px solid #dce3e9;border-radius:7px;background:#fff;padding:8px 9px;color:#243747;font-size:14px;font-weight:400;resize:vertical;line-height:1.35;box-sizing:border-box;}
-@media (max-width:380px){}
+
 
 /* Use one identical chevron glyph and rotate only the expanded ones. */
-@media (prefers-reduced-motion:reduce){}
+
 
 /* Explicit history actions instead of a popover that can misbehave in Telegram Web. */
 
 /* Reordering is available from a collapsed object too. All buttons remain finger-friendly. */
 .v612-object-actions button:focus-visible,.v612-menu-button:focus-visible,.v612-move-grip:focus-visible{outline:2px solid #597a9a;outline-offset:2px;}
-@media (max-width:430px){}
-@media (max-width:600px){}
+
+
 
 /* Task title and metadata occupy a single header row on desktop. */
 .step-unit .step-left-part{flex:1 1 auto;min-width:0;align-items:flex-start;}
@@ -1675,32 +1678,6 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
     </section>
   </div>
 
-  <!-- Atomic object + first task; direction and district are explicit, never guessed. -->
-  <div class="modal-overlay" id="v614ObjectModal" aria-hidden="true" onclick="if(event.target===this)v614CloseNewObject()">
-    <section class="modal-box v55-modal" role="dialog" aria-modal="true" aria-labelledby="v614ObjectHeading" onclick="event.stopPropagation()">
-      <div class="modal-top"><h2 id="v614ObjectHeading">Новый объект и первая задача</h2><button type="button" class="modal-x" onclick="v614CloseNewObject()" aria-label="Закрыть">✕</button></div>
-      <form class="v55-fields" id="v614ObjectForm" onsubmit="event.preventDefault();v614SubmitNewObject()">
-        <label for="v614ObjectDistrict">Район <input id="v614ObjectDistrict" readonly></label>
-        <label for="v614Direction">Направление <select id="v614Direction" required onchange="v614ToggleDirection()"></select></label>
-        <label for="v614NewDirection" id="v614NewDirectionLabel" hidden>Новое направление <input id="v614NewDirection" maxlength="300"></label>
-        <label for="v614ObjectName">Название объекта <input id="v614ObjectName" maxlength="300" required placeholder="Дорога Сарыкамыс"></label>
-        <label for="v614TaskName">Первая задача <input id="v614TaskName" maxlength="1000" required placeholder="Акт сверки НАО"></label>
-        <label for="v614TaskOwner">Ответственный <input id="v614TaskOwner" maxlength="160"></label>
-        <label for="v614TaskAction">Что конкретно нужно сделать <input id="v614TaskAction" maxlength="1000"></label>
-        <label for="v614TaskResult">Ожидаемый результат <input id="v614TaskResult" maxlength="1000"></label>
-        <label for="v614TaskDate">Основной срок <input id="v614TaskDate" type="date"></label>
-        <div class="v55-actions"><button type="button" onclick="v614CloseNewObject()">Отмена</button><button type="submit" class="primary">Создать объект и задачу</button></div>
-      </form>
-    </section>
-  </div>
-  <div class="modal-overlay" id="v60DistrictModal" aria-hidden="true" onclick="if(event.target===this)v60CloseDistrict()">
-    <section class="modal-box v55-modal" role="dialog" aria-modal="true" aria-labelledby="v60DistrictHeading" onclick="event.stopPropagation()">
-      <div class="modal-top"><h2 id="v60DistrictHeading">Район объекта</h2><button type="button" class="modal-x" aria-label="Закрыть" onclick="v60CloseDistrict()">✕</button></div>
-      <p class="v55-subtitle" id="v60DistrictObjectName"></p>
-      <label class="v60-district-label" for="v60DistrictChoice">Район<select id="v60DistrictChoice"></select></label>
-      <div class="v55-actions"><button type="button" onclick="v60CloseDistrict()">Отмена</button><button type="button" class="primary" onclick="v60SaveDistrict()">Сохранить</button></div>
-    </section>
-  </div>
     <!-- Одно понятное меню для резервных копий, истории и состояния облака. -->
   <div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()" aria-hidden="true">
     <section class="settings-panel" id="settingsPanel" role="dialog" aria-modal="true" aria-label="Настройки и данные" onclick="event.stopPropagation()">
@@ -1712,7 +1689,6 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
       <div class="settings-group-label">Инструменты</div>
       
       <button type="button" class="settings-option" onclick="closeSettings();openAddProcessModal()">Новое направление</button>
-      <button type="button" class="settings-option" onclick="closeSettings();v60OpenMaintenance()">Архив и управление старыми направлениями</button>
       <button type="button" class="settings-option" onclick="closeSettings();openAiModal()">AI-помощник (по запросу)</button>
       <div class="settings-group-label">История</div>
       <button type="button" class="settings-option" onclick="closeSettings();showAuditLog()">История изменений</button>
@@ -2605,13 +2581,19 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
       catch(e){lastSyncError='Недостаточно места для резервной локальной копии';
         syncStatus('⚠ Не удалось сохранить локальную копию',lastSyncError,true);return false;}
     }
-    function archiveSnapshot(snapshot,reason){
-      if(!snapshot)return;
+    function archiveSnapshot(snapshot,reason,identity=null){
+      if(!snapshot)return false;
       try{
         const old=JSON.parse(localStorage.getItem(LOCAL_HISTORY_KEY)||'[]');
-        old.unshift({reason,createdAt:new Date().toISOString(),snapshot});
-        localStorage.setItem(LOCAL_HISTORY_KEY,JSON.stringify(old.slice(0,5)));
-      }catch(e){console.warn('Резервная локальная копия не создана',e);}
+        if(!Array.isArray(old))throw new Error('Повреждён список копий');
+        old.unshift({reason,createdAt:new Date().toISOString(),snapshot,
+          ...(identity ? {procId:identity.procId,objId:identity.objId} : {})});
+        // Keep the five most recent deletions independently of import/conflict backups.
+        const deleted=old.filter(x=>x?.procId!==undefined&&x?.objId!==undefined).slice(0,5);
+        const other=old.filter(x=>x?.procId===undefined||x?.objId===undefined).slice(0,5);
+        localStorage.setItem(LOCAL_HISTORY_KEY,JSON.stringify([...deleted,...other]));
+        return true;
+      }catch(e){console.warn('Резервная локальная копия не создана',e);return false;}
     }
     function syncStatus(label,detail='',failed=false){
       const tag=document.getElementById('syncTag');if(tag)tag.textContent=label;
@@ -3126,7 +3108,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
     function toggleObjectCollapse(procId, objId) {
       const p = state.find(x => String(x.id) === String(procId));
       if (!p) return;
-      const obj = p.objects.find(o => o.id === objId);
+      const obj = p.objects.find(o => String(o.id) === String(objId));
       if (!obj) return;
       obj.collapsed = !obj.collapsed;
       render();
@@ -3224,7 +3206,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
     function moveObject(procId, objId, direction) {
       const p = state.find(x => String(x.id) === String(procId));
       if (!p) return;
-      const idx = p.objects.findIndex(o => o.id === objId);
+      const idx = p.objects.findIndex(o => String(o.id) === String(objId));
       if (idx < 0) return;
       const newIdx = idx + direction;
       if (newIdx < 0 || newIdx >= p.objects.length) return;
@@ -3240,9 +3222,20 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
       if (!p || !obj) return;
 
       askConfirm(`Удалить объект «${obj.title}»?`, () => {
-        p.objects = p.objects.filter(o => String(o.id) !== String(objId));
-        saveData();
-        showToast("Объект удален");
+        if(!readyForEditing||onlinePending||conflictRemote){showToast('Дождитесь завершения синхронизации');return;}
+        const current=state.find(x=>String(x.id)===String(procId));
+        const removing=current?.objects.find(o=>String(o.id)===String(objId));
+        if(!removing){showToast('Объект уже удалён или перемещён');return;}
+        // A dedicated recovery record survives page reload; all task fields and comments remain intact.
+        const recovery={snapshotId:createId(),rev:serverRevision,data:[{
+          id:current.id,title:current.title,objects:[Model.clone(removing)]
+        }]};
+        if(!archiveSnapshot(recovery,'Перед удалением объекта',{procId:current.id,objId:removing.id})){
+          showToast('Удаление отменено: не удалось создать резервную копию');return;
+        }
+        current.objects=current.objects.filter(o=>String(o.id)!==String(objId));
+        saveData('Удалён объект: '+removing.title);
+        showToast('Объект удалён · доступно восстановление в настройках');
       });
     }
 
@@ -3514,7 +3507,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
 
     function getStepAtTarget(){
       const {procId,objId,stepId}=activeModalTarget;
-      return state.find(p=>p.id===procId)?.objects.find(o=>o.id===objId)?.steps.find(s=>s.id===stepId);
+      return state.find(p=>String(p.id)===String(procId))?.objects.find(o=>String(o.id)===String(objId))?.steps.find(s=>String(s.id)===String(stepId));
     }
     function openStepDetails(procId,objId,stepId){
       activeModalTarget={procId,objId,stepId};
@@ -3539,7 +3532,7 @@ body.is-personal .dashboard-panel{margin-bottom:0!important;}
     function openRiskModal(procId, objId, stepId) {
       activeModalTarget = { procId, objId, stepId };
       const step=getStepAtTarget();
-      const obj=state.find(p=>p.id===procId)?.objects.find(o=>o.id===objId);
+      const obj=state.find(p=>String(p.id)===String(procId))?.objects.find(o=>String(o.id)===String(objId));
       if(!step||!obj)return;
       if(!step.history)step.history=[];
       if(step.blocker && !step.history.some(h=>h.active)) {
@@ -4238,7 +4231,7 @@ function v614AddCommentFromDetail(){
                 <span class="counter-badge ${folderBadgeClass}">${allActiveObjects.length}</span>
               </div>
               <div class="folder-right-tools" onclick="event.stopPropagation()">
-                <button class="btn-row-menu" onclick="toggleMenuGeneric(event, 'fmenu-${proc.id}')" title="Действия с направлением">···</button>
+                <button class="btn-row-menu" onclick="toggleMenuGeneric(event, ${jsId('fmenu-' + String(proc.id))})" title="Действия с направлением">···</button>
                 <div class="obj-dropdown-menu" id="fmenu-${escapeHtml(String(proc.id))}">
                   <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editProcessTitle(${jsId(proc.id)})">✏️ Переименовать</button>
                   ${procIdx > 0 ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); moveProcess(${jsId(proc.id)}, -1)">⬆️ Вверх</button>` : ''}
@@ -4302,7 +4295,7 @@ function v614AddCommentFromDetail(){
 
                       </div>
                       <div class="item-menu-controls" onclick="event.stopPropagation()">
-                        <button type="button" class="btn-item-more" onclick="toggleMenuGeneric(event, 'omenu-${obj.id}')" aria-label="Меню объекта" title="Меню объекта">···</button>
+                        <button type="button" class="btn-item-more" onclick="toggleMenuGeneric(event, ${jsId('omenu-' + String(obj.id))})" aria-label="Меню объекта" title="Меню объекта">···</button>
                         <div class="obj-dropdown-menu" id="omenu-${escapeHtml(String(obj.id))}">
                           <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); editObjectTitle(${jsId(proc.id)},${jsId(obj.id)})">✏️ Переименовать</button>
                           <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation(); cloneObject(${jsId(proc.id)},${jsId(obj.id)})">📋 Копировать</button>
@@ -4360,8 +4353,8 @@ function v614AddCommentFromDetail(){
                                   </div>
                                 </div>
                                 <div class="step-menu-controls" onclick="event.stopPropagation()">
-                                  <button type="button" class="step-del-btn" onclick="toggleMenuGeneric(event, 'smenu-${s.id}')" aria-label="Действия с этапом" aria-haspopup="dialog" aria-expanded="false" title="Действия с этапом">···</button>
-                                  <div class="obj-dropdown-menu" id="smenu-${s.id}">
+                                  <button type="button" class="step-del-btn" onclick="toggleMenuGeneric(event, ${jsId('smenu-' + String(s.id))})" aria-label="Действия с этапом" aria-haspopup="dialog" aria-expanded="false" title="Действия с этапом">···</button>
+                                  <div class="obj-dropdown-menu" id="smenu-${escapeHtml(String(s.id))}">
                                     <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openProcessDetail(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Комментарии</button>
                                     <button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openEntryWizard(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Изменить запись</button>
                                     ${!s.date ? `<button type="button" class="obj-dropdown-item" onclick="event.stopPropagation();openDateModal(${jsId(proc.id)},${jsId(obj.id)},${jsId(s.id)})">Назначить срок</button>` : ''}
@@ -5035,12 +5028,6 @@ let v59AttentionOnly=false;
 
 
 
-function v59OpenStructure(){
-  // Maintenance also uses the approved structure registry, never a second UI.
-  v56SetScreen('projects');
-}
-
-
 // One approved interface: all object navigation returns to the structure registry.
 function v56SetScreen(screen){
   v56Screen='projects';v59AttentionOnly=false;v56Legacy=true;
@@ -5082,7 +5069,7 @@ function v60DistrictOf(obj,proc){
 }
 
 const v60ClosedRegions=new Set();
-let v60Steps=[],v60LastDone=null,v60DistrictTarget=null;
+let v60LastDone=null;
 const v60ShowEveryStep=new Set();
 const v60ViewKey='notebook_v60_view';
 try{
@@ -5131,15 +5118,6 @@ function v612EnsureDistrictOrder(district){
 // V6.1: one-row working notes. Store owner/deadline on the EVENT, never on the parent task.
 let v61Editor=null;
 const v61HistoryOpen=new Set();
-function v61StepKey(proc,obj,step){return JSON.stringify([String(proc.id),String(obj.id),String(step.id)]);}
-function v61WorkingEvents(step){
- const all=Array.isArray(step.progressEvents)?step.progressEvents:[];
- return all.map((e,i)=>({e,i})).filter(({e})=>e&&String(e.what||'').trim()&&!e.created&&!e.editChange&&!e.completionChange&&!e.systemChange&&!/^Фактический результат:/i.test(String(e.what||'')))
-  .sort((a,b)=>{
-   const date=x=>Date.parse(x.e.at||x.e.date||'')||0;
-   return date(b)-date(a)||b.i-a.i;
-  }).map(x=>x.e);
-}
 function v61DateISO(raw){const date=String(raw||'').replace(/^до\s*/i,'').trim();const iso=v55StrictISO(date)?date:displayToISO(date);return v55StrictISO(iso)?iso:'';}
 
 function v60Order(row){
@@ -5155,71 +5133,11 @@ function v60Order(row){
 
 function v60ToggleEventExtra(){const extra=document.getElementById('v60EventExtra'),toggle=document.getElementById('v60EventExpand');extra.hidden=!extra.hidden;toggle.setAttribute('aria-expanded',String(!extra.hidden));toggle.textContent=extra.hidden?'+ Дополнительные поля: причина, действие, дата контроля':'− Скрыть дополнительные поля';}
 
-function v60CloseDistrict(){document.getElementById('v60DistrictModal').style.display='none';v60DistrictTarget=null;}
-function v60SaveDistrict(){
- if(!readyForEditing){showToast('Дождитесь соединения с облаком');return;}
- const obj=v60DistrictTarget&&v55Obj(v60DistrictTarget.procId,v60DistrictTarget.objId);
- const sel=document.getElementById('v60DistrictChoice');
- if(!obj||!v60DistrictNames.includes(sel.value))return;
- const oldDistrict=v60DistrictOf(obj,state.find(p=>String(p.id)===String(v60DistrictTarget.procId)));
- if(oldDistrict!==sel.value){const nextOrder=v612EnsureDistrictOrder(sel.value);obj.district=sel.value;obj.manualOrder=nextOrder;}
- v60CloseDistrict();saveData('Изменён район объекта');showToast('Район объекта сохранён');
-}
-
-function v614ToggleDirection(){
- const creating=document.getElementById('v614Direction').value==='__new__';
- const label=document.getElementById('v614NewDirectionLabel');label.hidden=!creating;
- document.getElementById('v614NewDirection').required=creating;
-}
-function v614CloseNewObject(){
- const modal=document.getElementById('v614ObjectModal');modal.style.display='none';modal.setAttribute('aria-hidden','true');
-}
-function v614SubmitNewObject(){
- if(!readyForEditing||onlinePending||conflictRemote){showToast('Дождитесь синхронизации текущих изменений');return;}
- const form=document.getElementById('v614ObjectForm');
- if(!form.reportValidity())return;
- const district=document.getElementById('v614ObjectDistrict').value;
- const name=document.getElementById('v614ObjectName').value.trim().slice(0,300);
- const title=document.getElementById('v614TaskName').value.trim().slice(0,1000);
- const owner=document.getElementById('v614TaskOwner').value.trim().slice(0,160);
- const action=document.getElementById('v614TaskAction').value.trim().slice(0,1000);
- const expectedResult=document.getElementById('v614TaskResult').value.trim().slice(0,1000);
- const date=document.getElementById('v614TaskDate').value;
- const directionId=document.getElementById('v614Direction').value;
- if(!name||!title||!v60DistrictNames.includes(district)||!directionId){showToast('Укажите район, направление, объект и задачу');return;}
- if(date&&!v55StrictISO(date)){showToast('Неверный срок');return;}
- let proc=state.find(p=>String(p.id)===String(directionId));
- let newDirection=null;
- if(directionId==='__new__'){
-  const value=document.getElementById('v614NewDirection').value.trim().slice(0,300);
-  if(!value){showToast('Укажите название направления');return;}
-  proc=state.find(p=>p.title.trim().toLowerCase()===value.toLowerCase());
-  if(!proc){newDirection={id:createId(),title:value,objects:[],collapsed:true};proc=newDirection;}
- }
- if(!proc){showToast('Выберите направление');return;}
- if((proc.objects||[]).some(o=>!o.archived&&v60DistrictOf(o,proc)===district&&String(o.title).trim().toLowerCase()===name.toLowerCase())){
-  showToast('В этом направлении и районе объект уже существует');return;
- }
- const now=new Date().toISOString();
- const step={id:createId(),text:title,owner,action,expectedResult,date:date?isoToDisplay(date):'',
-  done:false,completedAt:null,doc:'',documentUrl:'',blocker:null,history:[],
-  workflowStatus:'active',progressEvents:[{id:createId(),at:now,date:getTodayISO(),what:'Рабочая запись создана',created:true}],
-  nextAction:'',nextDate:'',createdAt:now,updatedAt:getTimestampStr()};
- const order=v612EnsureDistrictOrder(district);
- const obj={id:createId(),title:name,district,manualOrder:order,archived:false,collapsed:false,steps:[step]};
- if(newDirection)state.push(newDirection);
- proc.objects.push(obj);
- v60ClosedRegions.delete(district);v59OpenedObjects.clear();v59OpenedObjects.add(v57ObjectKey(proc,obj));v60PersistView();
- v614CloseNewObject();saveData('Создан объект с первой задачей: '+name+' / '+title);
- showToast('Объект и первая задача сохраняются в облако');
-}
-
 // V6.1.3: deletion from the ordinary object menu. Keep a local pre-delete
 // snapshot even when the in-memory undo list is cleared on page reload.
 
 
 
-function v60OpenMaintenance(){v59OpenStructure();}
 
 // Existing legacy registry is preserved only for backups/archives in Settings.
 const v60OriginalOpenWizard=openEntryWizard;
@@ -5333,32 +5251,6 @@ document.getElementById('v60ReportCandidates').addEventListener('click',event=>{
  const b=event.target.closest('button[data-v60-report]');if(b)v60AddReportItem(Number(b.dataset.v60Report));
 });
 
-function v61StartEvent(index,eventId){
- const x=v60Steps[index];if(!x)return;
- const key=v61StepKey(x.proc,x.obj,x.step);
- if(eventId!==null&&!v61WorkingEvents(x.step).some(e=>String(e.id)===String(eventId))){showToast('Запись не найдена');return;}
- v61Editor={key,id:eventId===null?null:String(eventId)};
-
- const field=document.querySelector('.v61-editor textarea[data-v61-what]');
- if(field)field.focus({preventScroll:true});
-}
-
-
-
-// The details arrow stays unchanged; adding a note there now returns to the inline editor.
-openProcessEvent=function(){
- const t=v55DetailTarget;
- if(!t||t.stepId===null)return;
- closeProcessDetail();
- const i=v60Steps.findIndex(x=>String(x.proc.id)===String(t.procId)&&String(x.obj.id)===String(t.objId)&&String(x.step.id)===String(t.stepId));
- if(i>=0){v61StartEvent(i,null);return;}
- v59OpenedObjects.add(JSON.stringify([String(t.procId),String(t.objId)]));
-
- const next=v60Steps.findIndex(x=>String(x.proc.id)===String(t.procId)&&String(x.obj.id)===String(t.objId)&&String(x.step.id)===String(t.stepId));
- if(next>=0)v61StartEvent(next,null);
-};
-
-
 // V6.1.4: validated operations and protections for one-person notebook.
 
 
@@ -5389,7 +5281,7 @@ function v614RestoreLastDeleted(){
  let entries=[];try{entries=JSON.parse(localStorage.getItem(LOCAL_HISTORY_KEY)||'[]');}catch(e){}
  if(!Array.isArray(entries)){showToast('Резервные записи не найдены');return;}
  const candidate=entries.find(entry=>{
-  if(!entry?.procId||!entry?.objId||!Array.isArray(entry.snapshot?.data))return false;
+  if(entry?.procId===undefined||entry?.objId===undefined||!Array.isArray(entry.snapshot?.data))return false;
   const p=entry.snapshot.data.find(p=>String(p.id)===String(entry.procId));
   const old=p?.objects?.find(o=>String(o.id)===String(entry.objId));
   const current=state.some(p=>(p.objects||[]).some(o=>String(o.id)===String(entry.objId)));
@@ -5635,15 +5527,28 @@ const PersonalNotebook=(()=>{
     state=data;cloudMeta={revision,base:clone(remote),pending:true};
     persistPersonal();render();queuePersonalSave(100);
   }
-  function startPersonalCloud(){
-    if(cloudStarted)return;cloudStarted=true;
-    if(!cloudEnabled){cloudNotice('⚠ Личные записи сохраняются только на этом устройстве. Для облака нужен Telegram и серверный модуль.',true);return;}
-    cloudNotice('Подключение к личному облаку…');
-    void refreshPersonalCloud();
-    refreshTimer=setInterval(()=>{if(document.visibilityState==='visible'&&!cloudBusy&&!cloudConflict)void refreshPersonalCloud();},20000);
+  function pausePersonalPolling(){
+    if(refreshTimer!==null){clearInterval(refreshTimer);refreshTimer=null;}
   }
-  window.addEventListener('online',()=>{if(cloudMeta.pending)queuePersonalSave(100);else void refreshPersonalCloud();});
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void refreshPersonalCloud();});
+  function startPersonalCloud(){
+    if(!cloudStarted){
+      cloudStarted=true;
+      if(!cloudEnabled){cloudNotice('⚠ Личные записи сохраняются только на этом устройстве. Для облака нужен Telegram и серверный модуль.',true);return;}
+      cloudNotice('Подключение к личному облаку…');
+    }
+    if(!cloudEnabled)return;
+    if(refreshTimer===null)refreshTimer=setInterval(()=>{
+      if(document.body.classList.contains('is-personal')&&document.visibilityState==='visible'&&!cloudBusy&&!cloudConflict)void refreshPersonalCloud();
+    },20000);
+    void refreshPersonalCloud();
+  }
+  window.addEventListener('online',()=>{
+    if(cloudMeta.pending){if(!cloudStarted)cloudStarted=true;void refreshPersonalCloud();}
+    else if(cloudStarted&&document.body.classList.contains('is-personal'))void refreshPersonalCloud();
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'&&cloudStarted&&document.body.classList.contains('is-personal'))void refreshPersonalCloud();
+  });
 
   function commit(modify){const previous=JSON.stringify(state),was=clone(cloudMeta);try{modify();validate(state);cloudMeta.pending=true;persistPersonal();render();cloudNotice('Личное · сохранено на устройстве, отправляю в облако…');queuePersonalSave(300);return true;}
     catch(err){state=JSON.parse(previous);cloudMeta=was;try{persistPersonal();}catch(e){}render();cloudNotice('Не удалось сохранить личные данные: '+err.message,true);return false;}}
@@ -5671,7 +5576,7 @@ const PersonalNotebook=(()=>{
     el('personalWorkspace').hidden=!personal;
     el('pnWorkTab').setAttribute('aria-pressed',String(!personal));el('pnPersonalTab').setAttribute('aria-pressed',String(personal));
     const caption=document.querySelector('.v56-brand-caption');if(caption)caption.textContent=personal?'Личные дела':'Объекты и поручения';
-    if(personal){render();startPersonalCloud();if(cloudConflict)showCloudConflict();}else if(typeof v56SetScreen==='function'){v56SetScreen('projects');}
+    if(personal){render();startPersonalCloud();if(cloudConflict)showCloudConflict();}else{pausePersonalPolling();if(typeof v56SetScreen==='function')v56SetScreen('projects');}
     window.scrollTo({top:0,behavior:'instant'});
   }
   function closeModal(){el('pnModal').hidden=true;el('pnModal').setAttribute('aria-hidden','true');el('pnModalContents').innerHTML='';modal=null;}
@@ -5748,7 +5653,10 @@ const PersonalNotebook=(()=>{
   el('pnModal').addEventListener('click',e=>{if(e.target===el('pnModal'))closeModal();});
   el('pnSearch').addEventListener('input',e=>{query=e.target.value.trim().slice(0,120);render();});
   window.addEventListener('storage',e=>{if(e.key===storageKey){try{const parsed=JSON.parse(e.newValue);validate(parsed);state=parsed;expanded=new Set(state.directions.map(g=>g.id));editor=null;render();feedback('Личные записи обновлены из другой вкладки этого браузера.');}catch(err){feedback('Ошибка чтения данных другой вкладки',true);}}});
-  render();startPersonalCloud();return {show};
+  render();
+  // Preserve unsent personal edits from a previous session, without polling when only Work is open.
+  if(cloudMeta.pending&&cloudEnabled){cloudStarted=true;void refreshPersonalCloud();}
+  return {show};
 })();
 </script>
 </body>
